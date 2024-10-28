@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     Grid,
     Dialog,
@@ -24,16 +24,22 @@ const AddEmployeeDialog = (props) => {
     const { open, setOpen, employee } = props;
     const [ id, setId ] = useState(employee?.id || 0);
 
-    console.log(employee);
+    console.log(employee.id);
+    console.log('id' ,id);
+    
+    useEffect(() => {
+        console.log('id: ', id);
+        
+    }, [id])
 
     const handleCloseDialog = () => {
         setOpen(false);
     }
 
     const tabs = [
-        { label: "Thông tin nhân viên", a11yPropsIndex: 0, content: <TabEmployee employee={employee} setOpen={setOpen} setId={setId} /> },
-        { label: "Thông tin văn bằng", a11yPropsIndex: 1, content: <TabCertificate idEmployee={id} disabled={!id} /> },
-        { label: "Thông tin gia đình", a11yPropsIndex: 2, content: <TabFamily idEmployee={id} disabled={!id} /> }
+        { label: "Thông tin nhân viên", a11yPropsIndex: 0, content: <TabEmployee employee={employee} setOpen={setOpen} id={id} setId={setId} /> },
+        { label: "Thông tin văn bằng", a11yPropsIndex: 1, disabled: id ? false : true, content: <TabCertificate idEmployee={id} /> },
+        { label: "Thông tin gia đình", a11yPropsIndex: 2, disabled: id ? false : true, content: <TabFamily idEmployee={id} /> }
     ]
 
     return (

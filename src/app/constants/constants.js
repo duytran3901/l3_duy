@@ -35,7 +35,7 @@ export const PROCESS_STATUS = {
   REJECT: "5,9",
 };
 export const GENDER = [
-  { id: 0, name: "Khác" },
+  { id: 3, name: "Khác" },
   { id: 1, name: "Nam" },
   { id: 2, name: "Nữ" },
 ];

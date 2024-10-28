@@ -94,7 +94,7 @@ export const CustomTab = (props) => {
           aria-label="full width tabs example"
         >
           {tabs.map((tab, index) => (
-            <Tab key={index} label={tab.label} {...a11yProps(tab.a11yPropsIndex)} />
+            <Tab key={index} label={tab.label} {...a11yProps(tab.a11yPropsIndex)} disabled={tab.disabled}/>
           ))}
         </Tabs>
       </AppBar>

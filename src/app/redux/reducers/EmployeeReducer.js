@@ -2,9 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   employees: [],
-  employee: {},
+  employee: null,
+  idEmployee: 0,
   totalElements: 0,
-  reload: false
 };
 
 const EmployeeSlice = createSlice({
@@ -19,7 +19,8 @@ const EmployeeSlice = createSlice({
       state.employee = action.payload.data;
     },
     createEmployee: (state, action) => {
-      state.employees.push(action.payload.data);
+      state.idEmployee = action.payload.id;
+      state.totalElements = state.totalElements + 1;
     },
     editEmployee: (state, action) => {
       const index = state.employees.findIndex(employee => employee.id === action.payload.id);
@@ -27,7 +28,8 @@ const EmployeeSlice = createSlice({
     },
     deleteEmployee: (state, action) => {
       state.employees = state.employees.filter(employee => employee.id !== action.payload);
-      state.reload = !state.reload;
+      state.employee = null;
+      state.totalElements = state.totalElements - 1;
     }
   },
 });
