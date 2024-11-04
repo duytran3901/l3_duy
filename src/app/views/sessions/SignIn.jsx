@@ -76,7 +76,7 @@ class SignIn extends Component {
                       name="email"
                       value={email.trim()}
                       validators={["required"]}
-                      errorMessages={[t("general.errorMessages_required")]}
+                      errorMessages={[t("Vui lòng nhập tài khoản")]}
                     />
                     <TextValidator
                       className="mb-16 w-100"
@@ -87,7 +87,7 @@ class SignIn extends Component {
                       type="password"
                       value={password.trim()}
                       validators={["required"]}
-                      errorMessages={[t("general.errorMessages_required")]}
+                      errorMessages={[t("Vui lòng nhập mật khẩu")]}
                     />
                     <div className="flex flex-center mb-8">
                       <div className={classes.wrapper} style={{width: "100%"}}>

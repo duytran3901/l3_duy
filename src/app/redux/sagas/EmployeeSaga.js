@@ -14,92 +14,87 @@ import ConstantList from "../../appConfig";
 const apiEmployeeURL = ConstantList.API_ENPOINT + "employee/";
 const SUCCESS_CODE = 200;
 
-function* createEmployeeSaga(action) {
-  console.log('create: ');
-  console.log(action.payload);
-  
+function* uploadImage(file) {
+  if (!file) return "";
   const formData = new FormData();
-  formData.append("file", action.payload?.file);
+  formData.append("file", file);
   try {
-    let image = "";
-    if (action.payload.file) {
-      const data = yield call(postData, apiEmployeeURL + "upload-image", formData);
-      if (data.id) {
-        image = data?.name
-          ? ConstantList.API_ENPOINT + `public/image/${data?.name}`
-          : "";
-      } else {
-        toast.error("Thêm ảnh thất bại");
-      }
+    const data = yield call(postData, apiEmployeeURL + "upload-image", formData);
+    if (data.id) {
+      return data?.name
+        ? ConstantList.API_ENPOINT + `public/image/${data?.name}`
+        : "";
     } else {
-      image = action?.payload?.image;
-    }
-    const result = yield call(
-      postData,
-      apiEmployeeURL,
-      {
-        ...action.payload,
-        image: image,
-        certificatesDto: [],
-        employeeFamilyDtos: [],
-      }
-    );
-    if (result?.code === SUCCESS_CODE) {
-      yield put(createEmployee(result?.data));
-      toast.success('Thêm thành công!');
-    } else {
-      toast.error(`Thêm không thành công! ${result?.data?.message}`);
+      toast.error("Thêm ảnh thất bại");
+      return "";
     }
   } catch (error) {
-    if (error) {
-      toast.error('Thêm không thành công!');
+    toast.error("Upload ảnh thất bại");
+    return "";
+  }
+}
+
+function* createEmployeeSaga(action) {
+  try {
+    const image = action.payload.file
+      ? yield call(uploadImage, action.payload.file)
+      : action.payload.image;
+    const result = yield call(postData, apiEmployeeURL, {
+      ...action.payload,
+      image,
+      certificatesDto: [],
+      employeeFamilyDtos: [],
+    });
+    if (result?.code === SUCCESS_CODE) {
+      yield put(createEmployee(result?.data));
+      toast.success("Thêm thành công!");
+    } else {
+      toast.error(`Thêm không thành công!`);
     }
+  } catch (error) {
+    toast.error("Thêm không thành công!");
   }
 }
 
 function* editEmployeeSaga(action) {
-  console.log('edit: ');
-  console.log(action.payload);
-  
   const editEmployeeUrl = apiEmployeeURL + `${action.payload.id}`;
-  const formData = new FormData();
-  formData.append("file", action.payload?.file);
   try {
-    let image = "";
-    if (action.payload.file) {
-      const data = yield call(postData, apiEmployeeURL + "upload-image", formData);
-      if (data.id) {
-        image = data?.name
-          ? ConstantList.API_ENPOINT + `public/image/${data?.name}`
-          : "";
-      } else {
-        toast.error("Thêm ảnh thất bại");
-      }
-    } else {
-      image = action?.payload?.image;
-    }
-    const result = yield call(
-      putData,
-      editEmployeeUrl,
-      {
-        ...action.payload.data,
-        image: image,
-      }
-    );
-    console.log(result);
+    const image = action.payload.file
+      ? yield call(uploadImage, action.payload.file)
+      : action.payload.image;
+    const result = yield call(putData, editEmployeeUrl, {
+      ...action.payload.data,
+      image,
+    });
+    console.log('res: ', result);
     
     if (result?.code === SUCCESS_CODE) {
       yield put(editEmployee(result?.data));
-      toast.success('Chỉnh sửa thành công!');
+      switch (action.payload?.action) {
+        case 'sendLeader':
+          toast.success("Trình lãnh đạo thành công!");
+          break;
+        case 'rejectEmployee':
+          toast.success("Từ chối nhân viên thành công!");
+          break;
+        case 'additionalRequest':
+          toast.success("Yêu cầu bổ sung thành công!");
+          break;
+        case 'leaderApprove':
+          toast.success("Đã duyệt nhân viên!");
+          break;
+        default:
+          toast.success("Chỉnh sửa thành công!");
+          break;
+      }
     } else {
-      toast.error(`Chỉnh sửa không thành công! ${result?.data?.message}`);
+      toast.error(`Có lỗi xảy ra!`);
     }
   } catch (error) {
-    if (error) {
-      toast.error('Chỉnh sửa không thành công!');
-    }
+    toast.error("Có lỗi xảy ra!");
   }
 }
+
 
 function* searchEmployeeSaga(action) {
   const searchEmployeesUrl = apiEmployeeURL + `search`;
@@ -139,9 +134,9 @@ function* getEmployeeByIdSaga(action) {
   try {
     const result = yield call(getData, url);
     console.log(result);
-    
+
     if (result?.code === SUCCESS_CODE) {
-      yield put(getEmployeeById(result));
+      yield put(getEmployeeById(result?.data));
     } else {
       toast.error('Có lỗi xảy ra!');
     }

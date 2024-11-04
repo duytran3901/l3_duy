@@ -5,6 +5,7 @@ const initialState = {
   employee: null,
   idEmployee: 0,
   totalElements: 0,
+  reload: false
 };
 
 const EmployeeSlice = createSlice({
@@ -16,7 +17,10 @@ const EmployeeSlice = createSlice({
       state.totalElements = action.payload.totalElements;
     },
     getEmployeeById: (state, action) => {
-      state.employee = action.payload.data;
+      state.employee = action.payload;
+    },
+    resetEmployeeId: (state) => {
+      state.idEmployee = 0;
     },
     createEmployee: (state, action) => {
       state.idEmployee = action.payload.id;
@@ -25,17 +29,19 @@ const EmployeeSlice = createSlice({
     editEmployee: (state, action) => {
       const index = state.employees.findIndex(employee => employee.id === action.payload.id);
       state.employees.splice(index, 1, action.payload);
+      state.reload = !state.reload;
     },
     deleteEmployee: (state, action) => {
-      state.employees = state.employees.filter(employee => employee.id !== action.payload);
       state.employee = null;
       state.totalElements = state.totalElements - 1;
+      state.reload = !state.reload
     }
   },
 });
 
 export const {
   getEmployeeById,
+  resetEmployeeId,
   createEmployee,
   editEmployee,
   searchEmployee,

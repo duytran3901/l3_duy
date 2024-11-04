@@ -11,8 +11,8 @@ import AddEmployeeDialog from './ManageEmployeeDialog';
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { EMPLOYEE } from "../../../redux/actions/actions";
-import CustomTable from "../../components/CustomTable";
-import { CustomColumnsEmployee } from "app/views/components/CustomColumns";
+import CustomTable from "../../components/Custom/CustomTable";
+import { CustomColumnsEmployee } from "../../components/Custom/CustomColumns";
 import { ACTION_EMPLOYEE } from "app/constants/constants";
 
 const Employee = () => {

@@ -15,7 +15,7 @@ const Breadcrumb = ({ routeSegments }) => {
         </Fragment>
       ) : null} */}
       <NavLink to={ConstantList.ROOT_PATH + "home"}>
-        <Icon className="text-middle ml-8 mb-1" color="primary">
+        <Icon className="text-middle mb-1" color="primary">
           home
         </Icon>
       </NavLink>

@@ -25,7 +25,6 @@ const FamilySlice = createSlice({
       state.family.splice(index, 1, action.payload);
     },
     deleteFamilyMember: (state, action) => {
-      state.family = state.family.filter(familyMember => familyMember.id !== action.payload);
       state.totalElements = state.totalElements - 1;
     }
   },

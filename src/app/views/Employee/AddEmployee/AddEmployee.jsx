@@ -5,6 +5,7 @@ import {
     Delete as DeleteIcon,
     Visibility as VisibilityIcon,
     Notifications as NotificationsIcon,
+    Description as DescriptionIcon,
 } from "@material-ui/icons";
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from "react-router-dom";
@@ -13,21 +14,23 @@ import AddEmployeeDialog from './AddEmployeeDialog';
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { EMPLOYEE } from "../../../redux/actions/actions";
-import CustomTable from "../../components/CustomTable";
-import { CustomColumnsEmployee } from "app/views/components/CustomColumns";
-import { ACTION_EMPLOYEE } from "app/constants/constants";
+import CustomTable from "../../components/Custom/CustomTable";
+import { CustomColumnsEmployee } from "../../components/Custom/CustomColumns";
+import { ACTION_EMPLOYEE, EMPLOYEE_STATUS } from "app/constants/constants";
+import RegisterEmployeeDialog from "app/views/components/Dialog/RegisterEmployeeDialog";
 
 const Employee = () => {
     const [pageSize, setPageSize] = useState(10);
     const [page, setPage] = useState(0);
     const [isConfirmDeleteEmployeeOpen, setIsConfirmDeleteEmployeeOpen] = useState(false);
     const [isEditEmployeeDialogOpen, setIsEditEmployeeDialogOpen] = useState(false);
+    const [isRegisterEmployeeDialogOpen, setIsRegisterEmployeeDialogOpen] = useState(false);
     const [employeeSelected, setEmployeeSelected] = useState({});
     const [searchKeyword, setSearchKeyword] = useState('');
+    const [action, setAction] = useState('');
     const dispatch = useDispatch();
     const employees = useSelector((state) => state.employee.employees);
-    const totalEmployees = useSelector((state) => state.employee.totalElements);
-    const reload = useSelector((state) => state.employee.reload);
+    const totalElements = useSelector((state) => state.employee.totalElements);
     const dataTable = employees?.map((employee) => ({ ...employee }));
 
     const reloadTable = () => {
@@ -35,22 +38,29 @@ const Employee = () => {
             keyword: searchKeyword,
             pageIndex: page + 1,
             pageSize: pageSize,
-            listStatus: '1,2,4,5',
+            listStatus: EMPLOYEE_STATUS.ADD,
         };
         dispatch({ type: EMPLOYEE.SEARCH_EMPLOYEE, payload: objectPage });
     }
 
     useEffect(() => {
         reloadTable();
-    }, [searchKeyword, pageSize, page, reload]);
+    }, [searchKeyword, pageSize, page, totalElements]);
 
-    const handleOpenDialog = (rowData) => {
+    const handleOpenDialogEdit = (rowData) => {
         if (rowData) {
             setEmployeeSelected(rowData);
         } else {
             setEmployeeSelected({});
         }
         setIsEditEmployeeDialogOpen(true);
+        setAction('register')
+    }
+
+    const handleOpenDialogView = (rowData) => {
+        setIsRegisterEmployeeDialogOpen(true);
+        setEmployeeSelected(rowData);
+        setAction('view');
     }
 
     const handleClickDelete = (rowData) => {
@@ -59,7 +69,7 @@ const Employee = () => {
     }
 
     const handleDeleteEmployee = (id) => {
-        dispatch({ type: EMPLOYEE.DELETE_EMPLOYEE, payload: id })
+        dispatch({ type: EMPLOYEE.DELETE_EMPLOYEE, payload: id });
         setIsConfirmDeleteEmployeeOpen(false);
         setEmployeeSelected({});
     }
@@ -69,11 +79,11 @@ const Employee = () => {
 
     }
 
-    const action = ({ rowData }) => {
+    const actions = ({ rowData }) => {
         return (
             <div>
                 {ACTION_EMPLOYEE.EDIT.includes(Number(rowData?.submitProfileStatus)) && (
-                    <IconButton size="small" onClick={() => handleOpenDialog(rowData)}>
+                    <IconButton size="small" onClick={() => handleOpenDialogEdit(rowData)}>
                         <EditIcon color="primary" fontSize="small" />
                     </IconButton>
                 )}
@@ -83,33 +93,30 @@ const Employee = () => {
                     </IconButton>
                 )}
                 {ACTION_EMPLOYEE.VIEW.includes(Number(rowData?.submitProfileStatus)) && (
-                    <IconButton size="small" onClick={() => handleOpenDialog(rowData)}>
-                        <VisibilityIcon color="secondary" fontSize="small"
-                        //   onClick={() => handleOpenRegisterDialog(item)}
-                        />
+                    <IconButton size="small" onClick={() => handleOpenDialogView(rowData)}>
+                        <VisibilityIcon color="secondary" fontSize="small" />
+                    </IconButton>
+                )}
+                {ACTION_EMPLOYEE.PENDING_END.includes(Number(rowData?.submitProfileStatus)) && (
+                    <IconButton size="small" onClick={() => handleOpenDialogView(rowData)}>
+                        <DescriptionIcon color="primary" fontSize="small" />
                     </IconButton>
                 )}
                 {ACTION_EMPLOYEE.REQUEST.includes(Number(rowData.submitProfileStatus)) && (
                     <IconButton size="small">
-                        <NotificationsIcon color="secondary" fontSize="small"
-                        // onClick={() => handleOpenRequestDialog(rowData)}
-                        />
+                        <NotificationsIcon color="secondary" fontSize="small" />
                     </IconButton>
                 )}
                 {ACTION_EMPLOYEE.REJECT.includes(Number(rowData.submitProfileStatus)) && (
                     <IconButton size="small">
-                        <NotificationsIcon
-                            color="secondary"
-                            fontSize="small"
-                        // onClick={() => handleOpenRejectDialog(rowData)}
-                        />
+                        <NotificationsIcon color="secondary" fontSize="small" />
                     </IconButton>
                 )}
             </div>
         );
     };
 
-    const columns = CustomColumnsEmployee({ Action: action, page, pageSize })
+    const columns = CustomColumnsEmployee({ Action: actions, page, pageSize })
 
     return (
         <div className="m-30">
@@ -124,7 +131,7 @@ const Employee = () => {
                         variant="contained"
                         className="mb-8 mr-16 align-bottom"
                         color="primary"
-                        onClick={() => handleOpenDialog({})}
+                        onClick={() => handleOpenDialogEdit({})}
                     >
                         Thêm nhân viên mới
                     </Button>
@@ -153,7 +160,7 @@ const Employee = () => {
                     <CustomTable
                         data={dataTable}
                         columns={columns}
-                        total={totalEmployees}
+                        total={totalElements}
                         pageSize={pageSize}
                         page={page}
                         setPageSize={setPageSize}
@@ -169,7 +176,7 @@ const Employee = () => {
                     setOpen={setIsEditEmployeeDialogOpen}
                     employee={employeeSelected}
                     setEmployee={setEmployeeSelected}
-                    renderActions={action}
+                    action={action}
                 />
             )}
             {isConfirmDeleteEmployeeOpen && (
@@ -180,6 +187,14 @@ const Employee = () => {
                     onYesClick={() => handleDeleteEmployee(employeeSelected.id)}
                     Yes='Có'
                     No='Không'
+                />
+            )}
+            {isRegisterEmployeeDialogOpen && (
+                <RegisterEmployeeDialog
+                    open={isRegisterEmployeeDialogOpen}
+                    setOpen={setIsRegisterEmployeeDialogOpen}
+                    idEmployee={employeeSelected.id}
+                    action={action}
                 />
             )}
         </div>

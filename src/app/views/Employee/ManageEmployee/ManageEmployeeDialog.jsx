@@ -19,7 +19,7 @@ import { IconButton, Icon } from '@material-ui/core';
 import MaterialTable from 'material-table'
 // import CertificateDialog from "../Certificate/CertificateDialog";
 import { ConfirmationDialog } from 'egret';
-import { CustomTab } from "app/views/components/CustomTabs";
+import { CustomTab } from "app/views/components/Custom/CustomTabs";
 
 toast.configure({
     autoClose: 3000,

@@ -6,6 +6,7 @@ import sessionRoutes from "./views/sessions/SessionRoutes";
 import AddEmployeeRoutes from "./views/Employee/AddEmployee/AddEmployeeRoutes"
 import ManageEmployeeRoutes from "./views/Employee/ManageEmployee/ManageEmployeeRoutes"
 import EndEmployeeRoutes from "./views/Employee/EndEmployee/EndEmployeeRoutes"
+import LeaderProcessRoutes from "./views/Leader/LeaderProcess/LeaderProcessRoutes";
 
 const redirectRoute = [
   {
@@ -27,6 +28,7 @@ const routes = [
   ...AddEmployeeRoutes,
   ...ManageEmployeeRoutes,
   ...EndEmployeeRoutes,
+  ...LeaderProcessRoutes,
   ...errorRoute,
 ];
 

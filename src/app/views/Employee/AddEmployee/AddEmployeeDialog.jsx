@@ -1,18 +1,22 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
     Grid,
     Dialog,
+    DialogContent, 
+    DialogTitle
 } from "@material-ui/core";
 import { toast } from "react-toastify";
-import { DialogContent, DialogTitle } from "@material-ui/core";
 import "react-toastify/dist/ReactToastify.css";
 import { useState } from "react";
 import '../../../../styles/views/_style.scss';
 import '../../../../styles/utilities/_positionings.scss';
-import { CustomTab } from "app/views/components/CustomTabs";
-import TabEmployee from "app/views/Tab/TabEmployee";
-import TabCertificate from "app/views/Tab/TabCertificate";
-import TabFamily from "app/views/Tab/TabFamily";
+import { CustomTab } from "app/views/components/Custom/CustomTabs";
+import TabEmployee from "app/views/Tabs/TabsAddEmployee/TabEmployee";
+import TabCertificate from "app/views/Tabs/TabsAddEmployee/TabCertificate";
+import TabFamily from "app/views/Tabs/TabsAddEmployee/TabFamily";
+import { resetEmployeeId } from "app/redux/reducers/EmployeeReducer";
+import { useDispatch } from "react-redux";
+import RegisterEmployeeDialog from "app/views/components/Dialog/RegisterEmployeeDialog";
 
 toast.configure({
     autoClose: 3000,
@@ -21,25 +25,57 @@ toast.configure({
 });
 
 const AddEmployeeDialog = (props) => {
-    const { open, setOpen, employee } = props;
-    const [ id, setId ] = useState(employee?.id || 0);
+    const { open, setOpen, employee, setEmployee, action } = props;
+    const [id, setId] = useState(employee.id || 0);
+    const [isRegisterEmployeeDialogOpen, setIsRegisterEmployeeDialogOpen] = useState(false);
+    const dispatch = useDispatch();
 
-    console.log(employee.id);
-    console.log('id' ,id);
-    
-    useEffect(() => {
-        console.log('id: ', id);
-        
-    }, [id])
+    console.log('id: ', id);
+
 
     const handleCloseDialog = () => {
         setOpen(false);
+        dispatch(resetEmployeeId());
+    }
+
+    const handleRegisterEmployee = () => {
+        console.log('click dang ki!');
+        setIsRegisterEmployeeDialogOpen(true);
     }
 
     const tabs = [
-        { label: "Thông tin nhân viên", a11yPropsIndex: 0, content: <TabEmployee employee={employee} setOpen={setOpen} id={id} setId={setId} /> },
-        { label: "Thông tin văn bằng", a11yPropsIndex: 1, disabled: id ? false : true, content: <TabCertificate idEmployee={id} /> },
-        { label: "Thông tin gia đình", a11yPropsIndex: 2, disabled: id ? false : true, content: <TabFamily idEmployee={id} /> }
+        {
+            label: "Thông tin nhân viên",
+            a11yPropsIndex: 0,
+            content: <TabEmployee
+                employee={employee}
+                setOpen={setOpen}
+                setEmployee={setEmployee}
+                id={id}
+                setId={setId}
+                handleRegisterEmployee={handleRegisterEmployee}
+            />
+        },
+        {
+            label: "Thông tin văn bằng",
+            a11yPropsIndex: 1,
+            disabled: id ? false : true,
+            content: <TabCertificate
+                idEmployee={employee ? id : 0}
+                setOpen={setOpen}
+                handleRegisterEmployee={handleRegisterEmployee}
+            />
+        },
+        {
+            label: "Thông tin gia đình",
+            a11yPropsIndex: 2,
+            disabled: id ? false : true,
+            content: <TabFamily
+                idEmployee={employee ? id : 0}
+                setOpen={setOpen}
+                handleRegisterEmployee={handleRegisterEmployee}
+            />
+        }
     ]
 
     return (
@@ -61,7 +97,14 @@ const AddEmployeeDialog = (props) => {
                     </Grid>
                 </Grid>
             </DialogContent>
-            
+            {isRegisterEmployeeDialogOpen && (
+                <RegisterEmployeeDialog
+                    open={isRegisterEmployeeDialogOpen}
+                    setOpen={setIsRegisterEmployeeDialogOpen}
+                    idEmployee={id}
+                    action={action}
+                />
+            )}
         </Dialog>
     )
 }

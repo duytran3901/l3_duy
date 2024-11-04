@@ -25,7 +25,6 @@ const CertificateSlice = createSlice({
       state.certificates.splice(index, 1, action.payload);
     },
     deleteCertificate: (state, action) => {
-      state.certificates = state.certificates.filter(certificate => certificate.id !== action.payload);
       state.totalElements = state.totalElements - 1;
     }
   },
