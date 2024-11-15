@@ -3,115 +3,82 @@ import "../../../../styles/views/_tab-CV.scss";
 import {
   ACTION_EMPLOYEE,
   GENDER,
-  POSITION,
   TEAM,
-  // STATUS_EMPLOYEE,
+  EMPLOYEE_STATUS,
 } from "app/constants/constants";
 import { useDispatch, useSelector } from "react-redux";
-// import {
-//   deleteExpByEmployeeActionRequest,
-//   getExperienceRequest,
-// } from "app/redux/actions/experienceAction";
 import moment from "moment";
-// import {
-//   deleteCertificateActionRequest,
-//   searchCertificateByEmployeeAction,
-// } from "app/redux/actions/certificateAction";
-import { Button, Divider, Fab, Icon, IconButton } from "@material-ui/core";
-// import AddCertificateDialog from "app/views/organisms/addCertificate/addCertificateDialog";
+import { Button, Icon, IconButton } from "@material-ui/core";
 import { ConfirmationDialog } from "egret";
-// import AddExprcienceDialog from "app/views/organisms/addExpercienceDialog/addExpercienceDialog";
 import iconGender from "../../../assets/images/gender.png";
 import iconCake from "../../../assets/images/cake.png";
 import iconLocation from "../../../assets/images/location.png";
 import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
-// import { updateEmployeeAction } from "app/redux/actions/employeeAction";
+import { CERTIFICATE, EMPLOYEE, EXPERIENCE } from "app/redux/actions/actions";
+import ExperienceDialog from "app/views/components/Dialog/ExperienceDialog";
+
 const TabCV = (props) => {
-  const { employee, setEmployee, employeeSkill } = props;
-  const DELETE_CERTIFICATE = "DELETE_CERTIFICATE";
-  const DELETE_EXP = "DELETE_EXP";
+  const { employee } = props;
+  const [employeeSkill, setEmployeeSkill] = useState(employee?.skill);
   const dispatch = useDispatch();
-  // const { reload: experienceReload, experienceList } = useSelector(
-  //   (state) => state.experience
-  // );
-
-  // const { reload: certificateReload, certificateData } = useSelector(
-  //   (state) => state.certificate
-  // );
-
-  const [openCertificateDialog, setOpenCertificateDialog] = useState(false);
+  const certificates = useSelector(state => state.certificate.certificates);
+  const experiences = useSelector(state => state.experience.experiences);
+  const reload = useSelector(state => state.experience.reload);
   const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
-  const [typeDelete, setTypeDelete] = useState("");
-  const [dataDelete, setDataDelete] = useState();
-  const [certificate, setCertificate] = useState({});
   const [exp, setExp] = useState({});
-  const [openExpDialog, setOpenExpDialog] = useState(false);
-  const updatePage = () => {
-    // dispatch(getExperienceRequest(employee?.id));
-    // dispatch(searchCertificateByEmployeeAction(employee?.id));
-  };
+  const [isOpenExpDialog, setIsOpenExpDialog] = useState(false);
   const [isTextSkill, setIsTextSkill] = useState(false);
+
   useEffect(() => {
-    updatePage();
-  }, [employee?.id]);
-  const handleAddCertificateOverview = () => {
-    setOpenCertificateDialog(true);
-  };
-  const handleCloseAddCertificateDialog = () => {
-    setOpenCertificateDialog(false);
-  };
-  const handleOpenCertificate = () => {
-    handleAddCertificateOverview(true);
-    setCertificate({});
-  };
-  const handleOpenExp = () => {
-    setOpenExpDialog(true);
-    setExp({});
-  };
-  const handleCloseAddExpDialog = () => {
-    setOpenExpDialog(false);
-  };
-  const handleEdit = (certificate) => {
-    handleAddCertificateOverview(true);
-    setCertificate(certificate);
-  };
-  const handleEditExp = (exp) => {
-    setOpenExpDialog(true);
+    setEmployeeSkill(employee?.skill);
+    if (employee) {
+      dispatch({ type: CERTIFICATE.GET_CERTIFICATES, payload: { employeeId: employee.id } });
+      dispatch({ type: EXPERIENCE.GET_EXPERIENCES, payload: { employeeId: employee.id } });
+    }
+  }, [employee, reload]);
+
+  const handleOpenExpDialog = (exp) => {
+    setIsOpenExpDialog(true);
     setExp(exp);
   };
-  const handleDialogDeleteClose = () => {
-    setOpenConfirmationDialog(false);
-  };
-  const handleDelete = (item, type) => {
-    setTypeDelete(type);
+
+  const handleDelete = (item) => {
+    setExp(item);
     setOpenConfirmationDialog(true);
-    setDataDelete(item);
   };
+
   const handleConfirmDelete = (id) => {
-    if (typeDelete === DELETE_CERTIFICATE) {
-      // dispatch(deleteCertificateActionRequest(id));
-    } else {
-      // dispatch(deleteExpByEmployeeActionRequest(id));
-    }
-    handleDialogDeleteClose();
+    if (id) dispatch({ type: EXPERIENCE.DELETE_EXPERIENCE, payload: id })
+    setOpenConfirmationDialog(false);
+    setExp({})
   };
+
   const handleOpenTextSkill = () => {
     setIsTextSkill(true);
   };
+
   const handleSubmit = () => {
-    // dispatch(updateEmployeeAction(employeeSkill));
+    dispatch({
+      type: EMPLOYEE.UPDATE_EMPLOYEE,
+      payload: {
+        id: employee?.id,
+        data: {
+          ...employee,
+          skill: employeeSkill
+        }
+      }
+    });
     setIsTextSkill(false);
   };
+
   const handleChange = (event) => {
-    setEmployee({
-      ...employeeSkill,
-      [event.target.name]: event.target.value,
-    });
+    setEmployeeSkill(event.target.value);
   };
+
   const cancleAddSkill = () => {
     setIsTextSkill(false);
-    setEmployee(employee);
   };
+
   return (
     <div className="cv">
       <div className="left-content">
@@ -156,75 +123,63 @@ const TabCV = (props) => {
           </p>
         </div>
         <div className="cv-skills">
-          {/* <h4 className="skills-tittle">
+          <h4 className="skills-tittle">
             kỹ năng
-            {ACTION_EMPLOYEE.EDIT.includes(
-              Number(employee?.submitProfileStatus)
-            ) &&
-              STATUS_EMPLOYEE.ADD.includes(
-                Number(employee?.submitProfileStatus)
-              ) && (
-                <IconButton size="small">
-                  <Icon
-                    fontSize="small"
-                    color="primary"
-                    onClick={handleOpenTextSkill}
-                  >
-                    edit
-                  </Icon>
-                </IconButton>
-              )}
-          </h4> */}
+            {ACTION_EMPLOYEE.EDIT.includes(Number(employee?.submitProfileStatus))
+              && EMPLOYEE_STATUS.ADD.includes(Number(employee?.submitProfileStatus))
+              && (<IconButton size="small">
+                <Icon
+                  fontSize="small"
+                  color="primary"
+                  onClick={handleOpenTextSkill}
+                >
+                  edit
+                </Icon>
+              </IconButton>)
+            }
+          </h4>
           <div></div>
           {!isTextSkill && (
             <ul className="skill-list">
-              {employeeSkill?.skill &&
-                employeeSkill?.skill
+              {employee?.skill &&
+                employee?.skill
                   .split("\n")
                   .filter((skill) => skill.trim() !== "")
                   .map((skill, index) => <li key={index}>{skill}</li>)}
             </ul>
           )}
-
           <div>
             {isTextSkill && (
-              <>
-                <>
-                  <ValidatorForm onSubmit={handleSubmit}>
-                    <TextValidator
-                      multiline
-                      fullWidth
-                      className="mt-16 "
-                      name="skill"
-                      value={employeeSkill?.skill || ""}
-                      onChange={handleChange}
-                      validators={["maxStringLength:1000"]}
-                      // errorMessages={[`${t("giới hạn")}(1000 kí tự)`]}
-                      errorMessages={["giới hạn 1000 kí tự"]}
-                    />
-                    <Button
-                      className="mt-12 mr-12"
-                      size="small"
-                      variant="contained"
-                      color="primary"
-                      type="submit"
-                    >
-                      Lưu
-                    </Button>
-                    <Button
-                      className="mt-12 color-error"
-                      size="small"
-                      variant="contained"
-                      color="secondary"
-                      onClick={() => {
-                        cancleAddSkill();
-                      }}
-                    >
-                      Hủy
-                    </Button>
-                  </ValidatorForm>
-                </>
-              </>
+              <ValidatorForm onSubmit={handleSubmit} className="ml-30 mr-14">
+                <TextValidator
+                  multiline
+                  fullWidth
+                  className="mt-16 "
+                  name="skill"
+                  value={employeeSkill || ""}
+                  onChange={(e) => handleChange(e)}
+                />
+                <Button
+                  className="mt-12 mr-12"
+                  size="small"
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                >
+                  Lưu
+                </Button>
+                <Button
+                  className="mt-12 color-error"
+                  size="small"
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => {
+                    cancleAddSkill();
+                  }}
+                >
+                  Hủy
+                </Button>
+              </ValidatorForm>
             )}
           </div>
         </div>
@@ -342,37 +297,29 @@ const TabCV = (props) => {
         <div className="cv-experiences border-left">
           <h3 className="experiences-heading">
             kinh nghiệm làm việc{" "}
-            {/* <div className="button-exp">
-              {ACTION_EMPLOYEE.EDIT.includes(
-                Number(employee?.submitProfileStatus)
-              ) &&
-                STATUS_EMPLOYEE.ADD.includes(
-                  Number(employee?.submitProfileStatus)
-                ) && (
-                  <IconButton>
-                    <Icon
-                      fontSize="small"
-                      color="primary "
-                      onClick={() => {
-                        handleOpenExp();
-                      }}
-                    >
-                      add
-                    </Icon>
-                  </IconButton>
-                )}
-            </div> */}
+            <div className="button-exp">
+              {ACTION_EMPLOYEE.EDIT.includes(Number(employee?.submitProfileStatus))
+                && EMPLOYEE_STATUS.ADD.includes(Number(employee?.submitProfileStatus))
+                && (<IconButton size="small">
+                  <Icon
+                    fontSize="small"
+                    color="primary"
+                    onClick={() => handleOpenExpDialog(exp)}
+                  >
+                    add
+                  </Icon>
+                </IconButton>)
+              }
+            </div>
           </h3>
 
-          {/* {experienceList?.map((item) => {
+          {experiences?.map((item) => {
             return (
               <div className="cv-experience" key={item.id}>
                 <h4 className="experience-tittle">
                   <div>
                     <span className="experience-process">
-                      {`${moment(item?.startDate).format("MM/YYYY")} - ${moment(
-                        item?.endDate
-                      ).format("MM/YYYY")}`}
+                      {`${moment(item?.startDate).format("MM/YYYY")} - ${moment(item?.endDate).format("MM/YYYY")}`}
                       <span className="experience-dot">&#x2022;</span>
                     </span>
                     <span className="experience-company">
@@ -380,20 +327,15 @@ const TabCV = (props) => {
                     </span>
                     <span className="button-exp">
                       {" "}
-                      {ACTION_EMPLOYEE.EDIT.includes(
-                        Number(employee?.submitProfileStatus)
-                      ) &&
-                        STATUS_EMPLOYEE.ADD.includes(
-                          Number(employee?.submitProfileStatus)
-                        ) && (
+                      {ACTION_EMPLOYEE.EDIT.includes(Number(employee?.submitProfileStatus))
+                        && EMPLOYEE_STATUS.ADD.includes(Number(employee?.submitProfileStatus))
+                        && (
                           <>
                             <IconButton>
                               <Icon
                                 fontSize="small"
                                 color="primary"
-                                onClick={() => {
-                                  handleEditExp(item);
-                                }}
+                                onClick={() => handleOpenExpDialog(item)}
                               >
                                 edit
                               </Icon>
@@ -402,20 +344,19 @@ const TabCV = (props) => {
                               <Icon
                                 fontSize="small"
                                 color="error"
-                                onClick={() => {
-                                  handleDelete(item, DELETE_EXP);
-                                }}
+                                onClick={() => handleDelete(item)}
                               >
                                 delete
                               </Icon>
                             </IconButton>
                           </>
-                        )}
+                        )
+                      }
                     </span>
                   </div>
                 </h4>
 
-                <h5 className="experience-job">Nhân Viên Bán Hàng</h5>
+                <h5 className="experience-job">Mô tả công việc</h5>
 
                 <div className="experience-list">
                   {item?.jobDescription?.split("-").map((part, index) => (
@@ -432,47 +373,41 @@ const TabCV = (props) => {
                 </div>
               </div>
             );
-          })} */}
+          })}
         </div>
         <div className="cv-certificates border-left">
           <h3 className="certificates-tittle">Chứng chỉ</h3>
           <div className="certificates-list">
-            {/* {employee?.id &&
-              certificateData &&
-              certificateData.map((certificate) => {
-                return (
-                  <span className="certificates-detail">
-                    <span className="detail-dot">&#x2022;</span>
-                    <span className="detail-content">
-                      {typeof certificate?.issueDate
-                        ? moment(certificate?.issueDate).format("YYYY")
-                        : ""}
-                      : {certificate.certificateName}
-                    </span>
+            {certificates?.map((certificate) => {
+              return (
+                <span className="certificates-detail">
+                  <span className="detail-dot">&#x2022;</span>
+                  <span className="detail-content">
+                    {typeof certificate?.issueDate
+                      ? moment(certificate?.issueDate).format("YYYY")
+                      : ""}
+                    : {certificate.certificateName}
                   </span>
-                );
-              })} */}
+                </span>
+              );
+            })}
           </div>
         </div>
       </div>
-      {/* {openExpDialog && (
-        // <AddExprcienceDialog
-        //   open={openExpDialog}
-        //   onClose={handleCloseAddExpDialog}
-        //   exp={exp}
-        //   employeeId={employee?.id}
-        // />
-      )} */}
+      {isOpenExpDialog && (
+        <ExperienceDialog
+          open={isOpenExpDialog}
+          setOpen={setIsOpenExpDialog}
+          exp={exp}
+          setExp={setExp}
+          employeeId={employee?.id}
+        />
+      )}
       <ConfirmationDialog
         open={openConfirmationDialog}
-        onConfirmDialogClose={handleDialogDeleteClose}
-        onYesClick={() => handleConfirmDelete(dataDelete?.id)}
-        title='Bạn có chắc chắn muốn xóa nhân viên này không?'
-        text={
-          typeDelete === DELETE_CERTIFICATE
-            ? `Bạn có chắc chắn xóa chứng chỉ ${dataDelete?.certificateName} ?`
-            : `Bạn có chắc chắn xóa kinh nghiệm ở ${dataDelete?.companyName} ?`
-        }
+        onYesClick={() => handleConfirmDelete(exp?.id)}
+        title='Bạn có chắc chắn muốn xóa kinh nghiệm làm việc này không?'
+
         Yes='Có'
         No='Không'
       />

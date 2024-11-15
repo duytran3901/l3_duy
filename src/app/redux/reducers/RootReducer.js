@@ -8,6 +8,10 @@ import EcommerceReducer from "./EcommerceReducer";
 import EmployeeReducer from "./EmployeeReducer";
 import CertificateReducer from "./CertificateReducer"
 import FamilyReducer from "./FamilyReducer"
+import ExperienceReducer from "./ExperienceReducer"
+import SalaryReducer from "./SalaryReducer"
+import ProcessReducer from "./ProcessReducer"
+import ProposalReducer from "./ProposalReducer"
 
 const RootReducer = combineReducers({
   login: LoginReducer,
@@ -18,7 +22,11 @@ const RootReducer = combineReducers({
   ecommerce: EcommerceReducer,
   employee: EmployeeReducer,
   certificate: CertificateReducer,
-  family: FamilyReducer
+  family: FamilyReducer,
+  experience: ExperienceReducer,
+  salary: SalaryReducer,
+  process: ProcessReducer,
+  proposal: ProposalReducer
 });
 
 export default RootReducer;

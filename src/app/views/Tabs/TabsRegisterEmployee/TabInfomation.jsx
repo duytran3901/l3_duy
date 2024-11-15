@@ -16,11 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 const TabInformation = (props) => {
   const { employee } = props;
   const dataFamily = employee?.employeeFamilyDtos;
-  // const dataFamily = useSelector((state) => state.family.FamilyData);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    // dispatch(searchFamilyByEmployeeAction(employee?.id));
-  }, []);
+
   return (
     <div className="resume-wrapper">
       <Grid container spacing={2} className="mb-20">
@@ -182,11 +178,7 @@ const TabInformation = (props) => {
                         </TableCell>
                         <TableCell align="center" className="table-cell p-8">
                           <span>
-                            {
-                              FAMILY_MEMBER.find(
-                                (item) => item.id === family?.relationShip
-                              )?.name
-                            }
+                            {FAMILY_MEMBER.find((item) => item.id === family?.relationShip)?.name}
                           </span>
                         </TableCell>
                         <TableCell align="center" className="table-cell p-8">

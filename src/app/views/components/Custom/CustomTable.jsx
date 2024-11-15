@@ -30,7 +30,7 @@ const CustomTable = (props) => {
           }),
           maxBodyHeight: height,
           headerStyle: {
-            backgroundColor: '#358600',
+            backgroundColor: '#7467ef',
             color: "#fff",
             border: "1px solid #e6e6e6",
             textAlign: "center",

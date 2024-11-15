@@ -12,17 +12,16 @@ import { useSelector } from "react-redux";
 import "../../../../styles/views/_tab-certificate.scss";
 const TabCertificate = (props) => {
   const { employee } = props;
-  const dataCertificate = employee.certificatesDto;
+  const dataCertificate = employee?.certificatesDto;
   const [certificate, setCertificate] = useState();
   useEffect(() => {
-
-
     if (employee?.id) {
       setCertificate(dataCertificate);
     } else {
       setCertificate();
     }
   }, [employee?.id]);
+  
   return (
     <div className="height-A4">
       <div className="certificate-wrapper">

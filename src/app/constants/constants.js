@@ -18,9 +18,8 @@ export const EMPLOYEE_STATUS = {
   APPROVED: "0,3,7",
 };
 export const ACTION_EMPLOYEE = {
-  VIEW: [2, 3, 4, 5, 6, 7, 8],
-  EDIT: [1, 4, 5],
-  // EDIT: [1, 4, 3, 5, 8, 9],
+  VIEW: [2, 3, 6, 8, 9],
+  EDIT: [1, 3, 4, 5, 8, 9],
   DELETE: [1],
   REQUEST: [4, 8],
   REJECT: [5, 9],
@@ -44,7 +43,35 @@ export const ACTION_EMPLOYEE = {
 //   END: "0,7",
 //   NOT_SAVED: "7"
 // }
-
+export const UPDATE_EMPLOYEE_STATUS = {
+  VIEW_PROCESS: "2,3",
+  EDIT: "1,4,5",
+  REMOVE: "1",
+  ADDITIONAL: "4,8",
+  REJECT: "5,9",
+};
+export const SUBMIT_UPDATE_STATUS = [
+  { id: '1', name: "Thêm mới" },
+  { id: '2', name: "Chờ duyệt" },
+  { id: '3', name: "Đã duyệt" },
+  { id: '4', name: "Yêu cầu bổ sung" },
+  { id: '5', name: "Từ chối" },
+];
+export const EMPLOYEE_POSITION = [
+  { name: "Nhân viên", id: 1 },
+  { name: "Phó nhóm", id: 2 },
+  { name: "Trưởng nhóm", id: 3 },
+  { name: "Phó phòng", id: 4 },
+  { name: "Trưởng phòng", id: 5 },
+  { name: "Phó giám đốc", id: 6 },
+  { name: "Giám đốc", id: 7 },
+];
+export const TYPE_PROPOSAL = [
+  { name: "Đề xuất tăng lương", id: 1 },
+  { name: "Đề xuất giảm giờ làm", id: 2 },
+  { name: "Đề xuất chế độ nghỉ", id: 3 },
+  { name: "Đề xuất tăng giờ làm", id: 4 },
+];
 // export const PROCESS_STATUS = {
 //   VIEW: "2,3",
 //   EDIT: "1,4,5",

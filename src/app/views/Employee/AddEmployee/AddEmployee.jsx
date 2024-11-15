@@ -10,21 +10,23 @@ import {
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from "react-router-dom";
 import { Breadcrumb, ConfirmationDialog } from 'egret';
-import AddEmployeeDialog from './AddEmployeeDialog';
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { EMPLOYEE } from "../../../redux/actions/actions";
 import CustomTable from "../../components/Custom/CustomTable";
 import { CustomColumnsEmployee } from "../../components/Custom/CustomColumns";
 import { ACTION_EMPLOYEE, EMPLOYEE_STATUS } from "app/constants/constants";
+import EditEmployeeDialog from '../../components/Dialog/AddEmployeeDialog';
 import RegisterEmployeeDialog from "app/views/components/Dialog/RegisterEmployeeDialog";
+import NotificationDialog from "app/views/components/Dialog/NotificationDialog";
 
-const Employee = () => {
+const AddEmployee = () => {
     const [pageSize, setPageSize] = useState(10);
     const [page, setPage] = useState(0);
     const [isConfirmDeleteEmployeeOpen, setIsConfirmDeleteEmployeeOpen] = useState(false);
     const [isEditEmployeeDialogOpen, setIsEditEmployeeDialogOpen] = useState(false);
     const [isRegisterEmployeeDialogOpen, setIsRegisterEmployeeDialogOpen] = useState(false);
+    const [isNotificationDialogOpen, setIsNotificationDialogOpen] = useState(false);
     const [employeeSelected, setEmployeeSelected] = useState({});
     const [searchKeyword, setSearchKeyword] = useState('');
     const [action, setAction] = useState('');
@@ -74,9 +76,9 @@ const Employee = () => {
         setEmployeeSelected({});
     }
 
-    const handleEdit = () => {
-        console.log(123);
-
+    const handleOpenDialogNotification = (rowData) => {
+        setIsNotificationDialogOpen(true);
+        setEmployeeSelected(rowData);
     }
 
     const actions = ({ rowData }) => {
@@ -103,12 +105,12 @@ const Employee = () => {
                     </IconButton>
                 )}
                 {ACTION_EMPLOYEE.REQUEST.includes(Number(rowData.submitProfileStatus)) && (
-                    <IconButton size="small">
+                    <IconButton size="small" onClick={() => handleOpenDialogNotification(rowData)}>
                         <NotificationsIcon color="secondary" fontSize="small" />
                     </IconButton>
                 )}
                 {ACTION_EMPLOYEE.REJECT.includes(Number(rowData.submitProfileStatus)) && (
-                    <IconButton size="small">
+                    <IconButton size="small" onClick={() => handleOpenDialogNotification(rowData)}>
                         <NotificationsIcon color="secondary" fontSize="small" />
                     </IconButton>
                 )}
@@ -171,7 +173,7 @@ const Employee = () => {
                 </Grid>
             </Grid>
             {isEditEmployeeDialogOpen && (
-                <AddEmployeeDialog
+                <EditEmployeeDialog
                     open={isEditEmployeeDialogOpen}
                     setOpen={setIsEditEmployeeDialogOpen}
                     employee={employeeSelected}
@@ -197,8 +199,15 @@ const Employee = () => {
                     action={action}
                 />
             )}
+            {isNotificationDialogOpen && (
+                <NotificationDialog
+                    open={isNotificationDialogOpen}
+                    setOpen={setIsNotificationDialogOpen}
+                    employee={employeeSelected}
+                />
+            )}
         </div>
     )
 }
 
-export default Employee;
+export default AddEmployee;

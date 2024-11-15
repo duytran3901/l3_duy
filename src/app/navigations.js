@@ -3,7 +3,7 @@ import { authRoles } from "./auth/authRoles";
 export const navigations = [
   {
     name: "Trang chủ",
-    role: authRoles.guest,
+    // role: authRoles.guest,
     icon: "home",
     path: ConstantList.ROOT_PATH + "home",
     isVisible:true,

@@ -27,7 +27,7 @@ toast.configure({
 });
 
 const RegisterEmployeeDialog = (props) => {
-  const { open, setOpen, idEmployee, action } = props;
+  const { open, setOpen, setOpenEditDialog, idEmployee, action } = props;
   const [isSendLeaderDialogOpen, setIsSendLeaderDialogOpen] = useState(false);
   const [isLeaderActionDialogOpen, setIsLeaderActionDialogOpen] = useState(false);
   const [actionLeader, setActionLeader] = useState('');
@@ -37,7 +37,6 @@ const RegisterEmployeeDialog = (props) => {
   useEffect(() => {
     dispatch({ type: EMPLOYEE.GET_EMPLOYEE_BY_ID, payload: idEmployee });
   }, [idEmployee])
-
 
   const handleCloseDialog = () => {
     setOpen(false);
@@ -70,26 +69,17 @@ const RegisterEmployeeDialog = (props) => {
     {
       label: "Hồ sơ",
       a11yPropsIndex: 0,
-      content: <TabCV
-        employee={employee}
-        setOpen={setOpen}
-      />
+      content: <TabCV employee={employee} />
     },
     {
       label: "Sơ yếu lý lịch",
       a11yPropsIndex: 1,
-      content: <TabInfomation
-        employee={employee}
-        setOpen={setOpen}
-      />
+      content: <TabInfomation employee={employee} />
     },
     {
       label: "Thông tin văn bằng",
       a11yPropsIndex: 2,
-      content: <TabCertificate
-        employee={employee}
-        setOpen={setOpen}
-      />
+      content: <TabCertificate employee={employee} />
     }
   ];
 
@@ -181,6 +171,8 @@ const RegisterEmployeeDialog = (props) => {
         <SendLeaderDialog
           open={isSendLeaderDialogOpen}
           setOpen={setIsSendLeaderDialogOpen}
+          setOpenRegisterDialog={setOpen}
+          setOpenEditDialog={setOpenEditDialog}
           employee={employee}
         />
       )}

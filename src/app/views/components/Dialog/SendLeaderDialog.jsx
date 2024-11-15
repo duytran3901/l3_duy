@@ -15,7 +15,7 @@ import { useDispatch } from 'react-redux';
 import { EMPLOYEE } from 'app/redux/actions/actions';
 
 const SendLeaderDialog = (props) => {
-  const { employee, setOpen, open } = props;
+  const { employee, setOpen, setOpenRegisterDialog, setOpenEditDialog, open } = props;
   const [dataSendLeader, setDataSendLeader] = useState({
     ...employee,
     submitContent: '',
@@ -70,6 +70,9 @@ const SendLeaderDialog = (props) => {
         }
       })
     } 
+    setOpen(false);
+    setOpenRegisterDialog(false);
+    setOpenEditDialog(false);
   };
 
   return (

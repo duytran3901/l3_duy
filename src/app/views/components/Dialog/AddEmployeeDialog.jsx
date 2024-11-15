@@ -24,7 +24,7 @@ toast.configure({
     limit: 3
 });
 
-const AddEmployeeDialog = (props) => {
+const EditEmployeeDialog = (props) => {
     const { open, setOpen, employee, setEmployee, action } = props;
     const [id, setId] = useState(employee.id || 0);
     const [isRegisterEmployeeDialogOpen, setIsRegisterEmployeeDialogOpen] = useState(false);
@@ -101,6 +101,7 @@ const AddEmployeeDialog = (props) => {
                 <RegisterEmployeeDialog
                     open={isRegisterEmployeeDialogOpen}
                     setOpen={setIsRegisterEmployeeDialogOpen}
+                    setOpenEditDialog={setOpen}
                     idEmployee={id}
                     action={action}
                 />
@@ -109,4 +110,4 @@ const AddEmployeeDialog = (props) => {
     )
 }
 
-export default AddEmployeeDialog;
+export default EditEmployeeDialog;
