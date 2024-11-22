@@ -61,9 +61,50 @@ const RegisterEmployeeDialog = (props) => {
     setActionLeader('approve');
   }
 
-  const handleCloseLeaderActionDialog = () => {
-    setIsLeaderActionDialogOpen(false);
-  }
+  const handleApproveEmployee = (contentDialog) => {
+    const updatedData = {
+      ...employee,
+      submitProfileStatus: '3',
+      appointmentDate: contentDialog.content
+    };
+    dispatch({
+      type: EMPLOYEE.UPDATE_EMPLOYEE,
+      payload: {
+        id: employee.id,
+        data: updatedData
+      }
+    });
+  };
+
+  const handleRequestEmployee = (contentDialog) => {
+    const updatedData = {
+      ...employee,
+      submitProfileStatus: '4',
+      additionalRequest: contentDialog.content
+    };
+    dispatch({
+      type: EMPLOYEE.UPDATE_EMPLOYEE,
+      payload: {
+        id: employee.id,
+        data: updatedData
+      }
+    });
+  };
+
+  const handleRejectEmployee = (contentDialog) => {
+    const updatedData = {
+      ...employee,
+      submitProfileStatus: '5',
+      reasonForRejection: contentDialog.content
+    };
+    dispatch({
+      type: EMPLOYEE.UPDATE_EMPLOYEE,
+      payload: {
+        id: employee.id,
+        data: updatedData
+      }
+    });
+  };
 
   const tabs = [
     {
@@ -119,7 +160,6 @@ const RegisterEmployeeDialog = (props) => {
             variant="contained"
             color="secondary"
             onClick={handleCloseDialog}
-            className="mr-12"
           >
             Đóng
           </Button>
@@ -138,7 +178,6 @@ const RegisterEmployeeDialog = (props) => {
             variant="contained"
             color="secondary"
             onClick={handleCloseDialog}
-            className="mr-12"
           >
             Đóng
           </Button>
@@ -146,7 +185,6 @@ const RegisterEmployeeDialog = (props) => {
             variant="contained"
             color="primary"
             onClick={handleLeaderClickReject}
-            className="mr-12"
           >
             Từ chối
           </Button>
@@ -154,7 +192,6 @@ const RegisterEmployeeDialog = (props) => {
             variant="contained"
             color="primary"
             onClick={handleLeaderClickRequest}
-            className="mr-12"
           >
             Yêu cầu bổ sung
           </Button>
@@ -180,9 +217,13 @@ const RegisterEmployeeDialog = (props) => {
         <LeaderActionDialog
           open={isLeaderActionDialogOpen}
           employee={employee}
+          type='pending'
           handleCloseRegisterDialog={handleCloseDialog}
           setOpen={setIsLeaderActionDialogOpen}
           action={actionLeader}
+          handleApprove={handleApproveEmployee}
+          handleReject={handleRejectEmployee}
+          handleRequest={handleRequestEmployee}
         />
       )}
     </Dialog>

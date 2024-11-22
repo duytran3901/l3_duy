@@ -1,10 +1,10 @@
 import { EgretLoadable } from "egret";
 import ConstantList from "../../../appConfig";
 import { withTranslation } from 'react-i18next';
-const Employee = EgretLoadable({
+const EndEmployee = EgretLoadable({
   loader: () => import("./EndEmployee")
 });
-const ViewComponent = withTranslation()(Employee);
+const ViewComponent = withTranslation()(EndEmployee);
 
 const EmployeeRoutes = [
   {

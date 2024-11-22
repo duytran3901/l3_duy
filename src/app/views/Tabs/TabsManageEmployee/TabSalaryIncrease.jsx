@@ -49,6 +49,8 @@ const TabSalaryIncrease = (props) => {
   const [checkStatus, setCheckStatus] = useState(false);
   const [checkResponseLeader, setCheckResponseLeader] = useState(false);
   const [disableSubmit, setDisableSubmit] = useState();
+  const [idSalaryDelete, setIdSalaryDelete] = useState(0);
+  const [action, setAction] = useState('');
   const dispatch = useDispatch();
   const dataTable = salarys?.map((salary) => ({ ...salary }));
 
@@ -101,7 +103,12 @@ const TabSalaryIncrease = (props) => {
       setSalary({
         ...salary,
         oldSalary: oldSalary.newSalary
-      })
+      });
+    } else {
+      setSalary({
+        ...salary,
+        oldSalary: 0
+      });
     }
   }, [salarys]);
 
@@ -128,21 +135,23 @@ const TabSalaryIncrease = (props) => {
       ...salary,
       [name]: inputValue
     });
+    // if (salary?.newSalary) {
+    //   setSalary({
+    //     ...salary,
+    //     newSalary: Number(salary.newSalary)
+    //   })
+    // }
   };
 
   const handleEditSalary = (rowData) => {
-    if (rowData.oldSalary === oldSalaryApproved) {
-      if (checkResponseLeader) {
-        setDisableSubmit(false);
-      }
-      const formattedStartDate = rowData.startDate
-        ? moment(rowData.startDate).format("YYYY-MM-DD")
-        : moment().format("YYYY-MM-DD");
-
-      setSalary({
-        ...rowData,
-        startDate: formattedStartDate,
-      });
+    if (rowData?.oldSalary === salary?.oldSalary) {
+      // if (checkResponseLeader) {
+      //   setDisableSubmit(false);
+      // }
+      // const formattedStartDate = rowData.startDate
+      //   ? moment(rowData.startDate).format("YYYY-MM-DD")
+      //   : moment().format("YYYY-MM-DD");
+      setSalary(rowData);
     } else {
       toast.error("Mức lương cũ không đúng!");
     }
@@ -151,17 +160,14 @@ const TabSalaryIncrease = (props) => {
   const handleOpenDialogFormSalary = (rowData) => {
     setSalary(rowData);
     setIsOpenFormSalary(true);
+    setAction('sendLeader')
   };
 
   const handleViewFormSalary = (item) => {
     setIsSendLeader(false);
     setSalary(item);
     setIsOpenFormSalary(true);
-  };
-
-  const handleCloseDialogFormSalary = () => {
-    setIsOpenFormSalary(false);
-    resetSalary();
+    setAction('view');
   };
 
   const handleAdditional = (item) => {
@@ -183,19 +189,19 @@ const TabSalaryIncrease = (props) => {
 
   const handleClickDelete = (rowData) => {
     setIsConfirmDeleteSalaryOpen(true);
-    setSalary(rowData);
+    setIdSalaryDelete(rowData?.id);
   };
 
   const handleDeleteSalary = (id) => {
     dispatch({ type: SALARY.DELETE_SALARY, payload: id });
     setIsConfirmDeleteSalaryOpen(false);
-    setSalary({});
+    setIdSalaryDelete(0);
   }
 
   const handleSubmit = () => {
     handleOpenDialogFormSalary();
     setSalary(salary);
-    setIsSendLeader(true);
+    // setIsSendLeader(true);
   };
 
   const Action = ({ rowData }) => {
@@ -275,7 +281,7 @@ const TabSalaryIncrease = (props) => {
                 "Trường này bắt buộc nhập"
               ]}
               inputProps={{
-                min: moment().format("YYYY-MM-DD")
+                min: salary?.startDate ? moment(salary?.startDate).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")
               }}
             />
           </Grid>
@@ -286,7 +292,7 @@ const TabSalaryIncrease = (props) => {
               label={<span className="font font-size-13">Mức lương cũ (VND)</span>}
               onChange={e => handleChangeInput(e)}
               onBlur={e => handleBlurInput(e)}
-              type="text"
+              type="number"
               name="oldSalary"
               size="small"
               variant="outlined"
@@ -311,7 +317,7 @@ const TabSalaryIncrease = (props) => {
               }
               onChange={e => handleChangeInput(e)}
               onBlur={e => handleBlurInput(e)}
-              type="text"
+              type="number"
               name="newSalary"
               size="small"
               variant="outlined"
@@ -382,7 +388,6 @@ const TabSalaryIncrease = (props) => {
               variant="contained"
               color="primary"
               type="submit"
-              disabled={disableSubmit}
             >
               Lưu
             </Button>
@@ -393,16 +398,6 @@ const TabSalaryIncrease = (props) => {
         </Grid>
       </ValidatorForm>
       <div className="mt-6">
-        {/* <CustomTable
-          columns={columns}
-          data={salarys}
-          // totalElements={salarys?.length || 0}
-          page={page}
-          pageSize={pageSize}
-          setPage={handlePageChange}
-          setPageSize={handlePageSizeChange}
-          height={260}
-        /> */}
         <CustomTable
           data={totalElements <= pageSize ? dataTable : dataTable.slice(page * pageSize, page * pageSize + pageSize)}
           columns={columns}
@@ -419,11 +414,13 @@ const TabSalaryIncrease = (props) => {
         <FormSalaryIncrease
           open={isOpenFormSalary}
           setOpen={setIsOpenFormSalary}
+          resetSalary={resetSalary}
           dataSalaryIncrease={salary}
           employee={employee}
           isSendLeader={isSendLeader}
           checkStatus={checkStatus}
           testCheck={checkResponseLeader}
+          action={action}
         />
       )}
       {isConfirmDeleteSalaryOpen && (
@@ -431,7 +428,7 @@ const TabSalaryIncrease = (props) => {
           title="Bạn có chắc chắn xóa không?"
           open={isConfirmDeleteSalaryOpen}
           onConfirmDialogClose={() => setIsConfirmDeleteSalaryOpen(false)}
-          onYesClick={() => handleDeleteSalary(salary.id)}
+          onYesClick={() => handleDeleteSalary(idSalaryDelete)}
           Yes='Có'
           No='Không'
         />

@@ -7,7 +7,6 @@ import {
     DialogActions,
     Button,
     TextField,
-    MenuItem,
     makeStyles,
 } from "@material-ui/core";
 import Avatar from '@material-ui/core/Avatar';
@@ -17,14 +16,13 @@ import { useState } from "react";
 import '../../../../styles/views/_style.scss';
 import '../../../../styles/utilities/_positionings.scss';
 import { CustomTab } from "app/views/components/Custom/CustomTabs";
-import { resetEmployeeId } from "app/redux/reducers/EmployeeReducer";
-import { useDispatch } from "react-redux";
 import RegisterEmployeeDialog from "app/views/components/Dialog/RegisterEmployeeDialog";
 import moment from "moment";
 import { GENDER } from "app/constants/constants";
 import TabSalaryIncrease from "app/views/Tabs/TabsManageEmployee/TabSalaryIncrease";
 import TabProposal from "app/views/Tabs/TabsManageEmployee/TabProposal";
 import TabProcess from "app/views/Tabs/TabsManageEmployee/TabProcess";
+import FormResignation from "../Form/FormResignation";
 
 toast.configure({
     autoClose: 3000,
@@ -41,19 +39,25 @@ const useStyles = makeStyles({
 
 const ManageEmployeeDialog = (props) => {
     const classes = useStyles();
-    const { open, setOpen, employee, setEmployee, action } = props;
-    const [id, setId] = useState(employee.id || 0);
+    const { open, setOpen, employee } = props;
     const [isRegisterEmployeeDialogOpen, setIsRegisterEmployeeDialogOpen] = useState(false);
-    const dispatch = useDispatch();
+    const [isResignationFormOpen, setIsResignationFormOpen] = useState(false);
+    const [action, setAction] = useState('');
 
-    console.log('id: ', id);
+    console.log('id: ', employee.id);
 
     const handleCloseDialog = () => {
         setOpen(false);
     }
 
+    const handleClickEnd = () => {
+        setIsResignationFormOpen(true);
+        setAction('sendLeader');
+    }
+
     const handleClickView = () => {
         setIsRegisterEmployeeDialogOpen(true);
+        setAction('view');
     }
 
     const tabs = [
@@ -94,8 +98,8 @@ const ManageEmployeeDialog = (props) => {
                                 alt="avatar"
                                 src={
                                     employee?.image
-                                        ? employee?.image
-                                        : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTht9-qZYmqErdGMhJVbRf7BfhLRGspNWaFnR8nddu3x7Da7nqh23vsG6VWtG_VE9G9kLU&usqp=CAU"
+                                    ? employee?.image
+                                    : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTht9-qZYmqErdGMhJVbRf7BfhLRGspNWaFnR8nddu3x7Da7nqh23vsG6VWtG_VE9G9kLU&usqp=CAU"
                                 }
                                 className={`m-auto ${classes.largeAvatar}`}
                             />
@@ -176,15 +180,13 @@ const ManageEmployeeDialog = (props) => {
                     variant="contained"
                     color="secondary"
                     onClick={handleCloseDialog}
-                    className="mr-12"
                 >
                     Đóng
                 </Button>
                 <Button
                     variant="contained"
                     color="primary"
-                    // onClick={handleLeaderClickReject}
-                    className="mr-12"
+                    onClick={handleClickEnd}
                 >
                     Kết thúc
                 </Button>
@@ -192,7 +194,6 @@ const ManageEmployeeDialog = (props) => {
                     variant="contained"
                     color="primary"
                     onClick={handleClickView}
-                    className="mr-12"
                 >
                     Xem hồ sơ
                 </Button>
@@ -202,7 +203,16 @@ const ManageEmployeeDialog = (props) => {
                     open={isRegisterEmployeeDialogOpen}
                     setOpen={setIsRegisterEmployeeDialogOpen}
                     idEmployee={employee.id}
-                    action='view'
+                    action={action}
+                />
+            )}
+            {isResignationFormOpen && (
+                <FormResignation
+                    open={isResignationFormOpen}
+                    setOpen={setIsResignationFormOpen}
+                    employee={employee}
+                    action={action}
+                    handleCloseDialog={handleCloseDialog}
                 />
             )}
         </Dialog>

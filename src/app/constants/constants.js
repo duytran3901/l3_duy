@@ -27,22 +27,6 @@ export const ACTION_EMPLOYEE = {
   PENDING_END: [6],
   PENDING: [2],
 };
-// export const EMPLOYEE_STATUS = {
-//   ADD: "1,2,4,5",
-//   MANAGE: "3,6,8,9",
-//   EDIT: "1,4,5,8,9",
-//   VIEW: "2,3,4,5,6,7,8",
-//   REMOVE: "1",
-//   WAITING_APPROVAL: "2,6",
-//   WAITING_END_PROCESS: "6",
-//   APPROVED: "0,3,7",
-//   EDIT_CV: "1,4,5,6,8",
-//   NOTIFY: "4,5,8,9",
-//   ADDITIONAL_REQUEST_NOTIFY: "4,8",
-//   REJECT_NOTIFY: "5,9",
-//   END: "0,7",
-//   NOT_SAVED: "7"
-// }
 export const UPDATE_EMPLOYEE_STATUS = {
   VIEW_PROCESS: "2,3",
   EDIT: "1,4,5",
@@ -72,13 +56,6 @@ export const TYPE_PROPOSAL = [
   { name: "Đề xuất chế độ nghỉ", id: 3 },
   { name: "Đề xuất tăng giờ làm", id: 4 },
 ];
-// export const PROCESS_STATUS = {
-//   VIEW: "2,3",
-//   EDIT: "1,4,5",
-//   REMOVE: "1",
-//   ADDITIONAL: "4,8",
-//   REJECT: "5,9",
-// };
 export const GENDER = [
   { id: 3, name: "Khác" },
   { id: 1, name: "Nam" },
@@ -110,43 +87,6 @@ export const POSITION = [
   { id: 6, name: 'Mobile team member' },
   { id: 7, name: 'FE Leader' },
   { id: 8, name: 'Design Leader' }
-]
-export const LEADER = [
-  {
-    id: 36,
-    leaderName: 'Nguyen Van B',
-    leaderPosition: 3,
-    activeStatus: 1,
-    userId: 7
-  },
-  {
-    id: 35,
-    leaderName: 'Nguyen Van E',
-    leaderPosition: 3,
-    activeStatus: 2,
-    userId: 6
-  },
-  {
-    id: 34,
-    leaderName: 'Nguyen Van D',
-    leaderPosition: 3,
-    activeStatus: 1,
-    userId: 5
-  },
-  {
-    id: 2,
-    leaderName: 'Nguyen Van C',
-    leaderPosition: 2,
-    activeStatus: 1,
-    userId: 4
-  },
-  {
-    id: 1,
-    leaderName: 'Nguyen Van A',
-    leaderPosition: 4,
-    activeStatus: 1,
-    userId: 3
-  }
 ]
 export const LEADER_POSITION = [
   { id: 0, name: "Game Leader" },

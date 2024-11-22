@@ -17,19 +17,21 @@ const SUCCESS_CODE = 200;
 function* createProposalSaga(action) {
   try {
     console.log(action.payload);
-    const { idEmployee, data } = action.payload;
-    const result = yield call(postData, apiProposalURL + '?employeeId=' + idEmployee, data);
+    const { employeeId, data, type } = action.payload;
+    const result = yield call(postData, apiProposalURL + '?employeeId=' + employeeId, data);
     console.log(result);
 
     if (result?.code === SUCCESS_CODE) {
       yield put(createProposal(result?.data));
-      toast.success('Thêm thành công!');
+      if (type) {
+        toast.success('Trình lãnh đạo thành công!')
+      } else toast.success('Thêm thành công!');
     } else {
-      toast.error(`Thêm không thành công! ${result?.data?.message}`);
+      toast.error(`Có lỗi xảy ra!`);
     }
   } catch (error) {
     if (error) {
-      toast.error('Thêm không thành công!');
+      toast.error(`Có lỗi xảy ra!`);
     }
   }
 }
@@ -40,13 +42,15 @@ function* editProposalSaga(action) {
     const result = yield call(putData, editProposalUrl, action.payload.data);
     if (result?.code === SUCCESS_CODE) {
       yield put(editProposal(result?.data));
-      toast.success('Chỉnh sửa thành công!');
+      if (action.payload?.type) {
+        toast.success('Trình lãnh đạo thành công!');
+      } else toast.success('Chỉnh sửa thành công!');
     } else {
-      toast.error(`Chỉnh sửa không thành công! ${result?.data?.message}`);
+      toast.error(`Có lỗi xảy ra!`);
     }
   } catch (error) {
     if (error) {
-      toast.error('Chỉnh sửa không thành công!');
+      toast.error(`Có lỗi xảy ra!`);
     }
   }
 }
@@ -69,10 +73,10 @@ function* getProposalsByIdEmployeeSaga(action) {
   }
 }
 
-function* getProposalsByLeaderSaga(action) {
-  const getProposalsUrl = apiProposalURL;
+function* getProposalsByLeaderSaga() {
+  const getProposalsUrl = apiProposalURL + '/current-leader';
   try {
-    const result = yield call(getData, getProposalsUrl, action.payload);
+    const result = yield call(getData, getProposalsUrl);
     console.log(result.data);
 
     if (result?.code === SUCCESS_CODE) {

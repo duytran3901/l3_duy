@@ -5,10 +5,7 @@ import {
   DialogActions,
   Button,
   DialogContent,
-  Icon,
-  IconButton,
   Grid,
-  TextField,
 } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import { EMPLOYEE } from '../../../redux/actions/actions'
@@ -22,6 +19,10 @@ const LeaderActionDialog = (props) => {
     action,
     employee,
     setOpen,
+    handleApprove,
+    handleReject,
+    handleRequest,
+
   } = props;
   const dispatch = useDispatch();
   const [contentDialog, setContentDialog] = useState({
@@ -40,7 +41,7 @@ const LeaderActionDialog = (props) => {
     switch (action) {
       case 'approve':
         setContentDialog({
-          title: 'Ngày hẹn',
+          title: 'Ngày duyệt',
           type: 'date',
           value: todayFormatted
         })
@@ -64,29 +65,6 @@ const LeaderActionDialog = (props) => {
     }
   }, []);
 
-  // const setStatusBasedOnDialog = useCallback((action) => {
-  //   switch (action) {
-  //     case 0:
-  //       return {
-  //         action: "Ngày hẹn",
-  //         statusType: "date",
-  //         inputValue: '',
-  //       };
-  //     case 1:
-  //       return { action: "Nội dung bổ sung", statusType: "text" };
-  //     case 2:
-  //       return { action: "Nội dung từ chối", statusType: "text" };
-  //     default:
-  //       return { action: "", statusType: "text" };
-  //   }
-  // }, []);
-  // useEffect(() => {
-  //   setFormNotify((prevState) => ({
-  //     ...prevState,
-  //     ...setStatusBasedOnDialog(action),
-  //   }));
-  // }, [action, setStatusBasedOnDialog]);
-
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
     setContentDialog({
@@ -95,58 +73,16 @@ const LeaderActionDialog = (props) => {
     });
   };
 
-  const handleApproveEmployee = () => {
-    dispatch({
-      type: EMPLOYEE.UPDATE_EMPLOYEE,
-      payload: {
-        id: employee.id,
-        data: {
-          ...employee,
-          submitProfileStatus: '3',
-          appointmentDate: contentDialog.content,
-        }
-      }
-    });
-  };
-
-  const handleRequestEmployee = () => {
-    dispatch({
-      type: EMPLOYEE.UPDATE_EMPLOYEE,
-      payload: {
-        id: employee.id,
-        data: {
-          ...employee,
-          submitProfileStatus: '4',
-          additionalRequest: contentDialog.content,
-        }
-      }
-    });
-  };
-
-  const handleRejectEmployee = () => {
-    dispatch({
-      type: EMPLOYEE.UPDATE_EMPLOYEE,
-      payload: {
-        id: employee.id,
-        data: {
-          ...employee,
-          submitProfileStatus: '5',
-          reasonForRejection: contentDialog.content,
-        }
-      }
-    });
-  };
-
   const handleSubmitForm = () => {
     switch (action) {
       case 'approve':
-        handleApproveEmployee();
+        handleApprove(contentDialog);
         break;
       case 'request':
-        handleRequestEmployee();
+        handleRequest(contentDialog);
         break;
       case 'reject':
-        handleRejectEmployee();
+        handleReject(contentDialog);
         break;
       default:
         break;
@@ -177,7 +113,7 @@ const LeaderActionDialog = (props) => {
                   label={
                     <span className="font pr-10">
                       <span className="span-required"> * </span>
-                      {contentDialog?.title}
+                      Ngày từ chối
                     </span>
                   }
                   onChange={e => handleChangeInput(e)}
@@ -196,7 +132,7 @@ const LeaderActionDialog = (props) => {
                 label={
                   <span className="font pr-10">
                     <span className="span-required"> * </span>
-                    {action === 'approve' ? 'Ngày hẹn' : 'Nội dung'}
+                    {action === 'approve' ? 'Ngày duyệt' : 'Nội dung'}
                   </span>
                 }
                 onChange={e => handleChangeInput(e)}
@@ -213,7 +149,7 @@ const LeaderActionDialog = (props) => {
                   "Trường này bắt buộc nhập"
                 ]}
                 inputProps={{
-                  min: todayFormatted,
+                  min: contentDialog?.content ? moment(contentDialog?.content).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")
                 }}
               />
             </Grid>

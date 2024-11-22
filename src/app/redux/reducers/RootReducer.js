@@ -12,6 +12,7 @@ import ExperienceReducer from "./ExperienceReducer"
 import SalaryReducer from "./SalaryReducer"
 import ProcessReducer from "./ProcessReducer"
 import ProposalReducer from "./ProposalReducer"
+import LeaderReducer from "./LeaderReducer"
 
 const RootReducer = combineReducers({
   login: LoginReducer,
@@ -26,7 +27,8 @@ const RootReducer = combineReducers({
   experience: ExperienceReducer,
   salary: SalaryReducer,
   process: ProcessReducer,
-  proposal: ProposalReducer
+  proposal: ProposalReducer,
+  leader: LeaderReducer
 });
 
 export default RootReducer;

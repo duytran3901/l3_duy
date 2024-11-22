@@ -13,12 +13,12 @@ import {
 } from "@material-ui/core";
 import "../../../../styles/components/_form.scss";
 import moment from "moment";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { SUBMIT_UPDATE_STATUS } from "app/constants/constants";
-import { SALARY } from "app/redux/actions/actions";
+import { EMPLOYEE_POSITION, SUBMIT_UPDATE_STATUS } from "app/constants/constants";
 import UpdateEmployeeSendLeaderDialog from "../Dialog/UpdateEmployeeSendLeaderDialog";
+import { PROCESS } from "app/redux/actions/actions";
 import LeaderActionDialog from "../Dialog/LeaderActionDialog";
 
 toast.configure({
@@ -27,20 +27,24 @@ toast.configure({
   limit: 3,
 });
 
-const FormSalaryIncrease = (props) => {
+const FormProcess = (props) => {
   const {
     open,
     setOpen,
     employee,
-    dataSalaryIncrease,
-    resetSalary,
+    dataProcess,
+    resetProcess,
+    isLeaderAction,
+    checkStatus,
+    testCheck,
     action
   } = props;
   const dispatch = useDispatch();
+  // const [statusForm, setStatusForm] = useState(TYPE_ADD.index);
   const [isOpenSendLeaderDialog, setIsOpenSendLeaderDialog] = useState(false);
   const [isLeaderActionDialogOpen, setIsLeaderActionDialogOpen] = useState(false);
   const [actionLeader, setActionLeader] = useState('');
-  const [salaryForm, setSalaryForm] = useState(dataSalaryIncrease);
+  const [isProcess, setIsProcess] = useState(false);
   const [
     openLeaderSendNotifyProcessDialog,
     setOpenLeaderSendNotifyProcessDialog,
@@ -48,48 +52,58 @@ const FormSalaryIncrease = (props) => {
   const [statusDialog, setStatusDialog] = useState();
 
   useEffect(() => {
-    if (dataSalaryIncrease?.id) {
+    if (dataProcess?.id) {
       // setStatusForm(TYPE_EDIT.index);
     } else {
       // setStatusForm(TYPE_ADD.index);
     }
-    setSalaryForm(dataSalaryIncrease);
-  }, [dataSalaryIncrease]);
+  }, [dataProcess]);
+
+  const handleAddProcess = () => {
+    const data = {
+      id: employee?.id,
+      data: [{ ...dataProcess }],
+    };
+    if (!checkStatus) {
+      // dispatch(addProcessActionRequest(data));
+    } else {
+      toast.error("Đang trong quá trình duyệt không thể thêm bản ghi!");
+    }
+  };
 
   const handleCloseDialog = () => {
     setOpen(false);
-    if (resetSalary) resetSalary();
+    if (resetProcess) resetProcess();
   };
 
   const handleCloseForm = () => {
     setOpen(false);
   }
 
-  const handleSubmitSalary = () => {
-    if (dataSalaryIncrease?.id) {
+  const handleSubmitProcess = () => {
+    if (dataProcess?.id) {
       dispatch({
-        type: SALARY.UPDATE_SALARY,
+        type: PROCESS.UPDATE_PROCESS,
         payload: {
-          id: dataSalaryIncrease.id,
-          data: dataSalaryIncrease
+          id: dataProcess.id,
+          data: dataProcess
         }
       })
     } else {
       dispatch({
-        type: SALARY.CREATE_SALARY,
+        type: PROCESS.CREATE_PROCESS,
         payload: {
           employeeId: employee?.id,
-          data: [dataSalaryIncrease]
+          data: [dataProcess]
         }
       })
     }
     handleCloseDialog();
   };
-
   const handleSendLeader = () => {
     setIsOpenSendLeaderDialog(true);
+    setIsProcess(true);
   };
-
   const handleCloseLeaderSendNotifyProcessDialog = () => {
     setOpenLeaderSendNotifyProcessDialog(false);
   };
@@ -107,47 +121,47 @@ const FormSalaryIncrease = (props) => {
     setIsLeaderActionDialogOpen(true);
     setActionLeader('approve');
   }
-  
-  const handleApproveSalaryIncrease = (contentDialog) => {
+
+  const handleApproveProcess = (contentDialog) => {
     const updatedData = {
-      ...dataSalaryIncrease,
-      salaryIncreaseStatus: '3',
+      ...dataProcess,
+      processStatus: '3',
       acceptanceDate: contentDialog.content
     };
     dispatch({
-      type: SALARY.UPDATE_SALARY,
+      type: PROCESS.UPDATE_PROCESS,
       payload: {
-        id: dataSalaryIncrease.id,
+        id: dataProcess.id,
         data: updatedData
       }
     });
   };
 
-  const handleRequestSalaryIncrease = (contentDialog) => {
+  const handleRequestProcess = (contentDialog) => {
     const updatedData = {
-      ...dataSalaryIncrease,
-      salaryIncreaseStatus: '4',
+      ...dataProcess,
+      processStatus: '4',
       additionalRequest: contentDialog.content
     };
     dispatch({
-      type: SALARY.UPDATE_SALARY,
+      type: PROCESS.UPDATE_PROCESS,
       payload: {
-        id: dataSalaryIncrease.id,
+        id: dataProcess.id,
         data: updatedData
       }
     });
   };
 
-  const handleRejectSalaryIncrease = (contentDialog) => {
+  const handleRejectProcess = (contentDialog) => {
     const updatedData = {
-      ...dataSalaryIncrease,
-      salaryIncreaseStatus: '5',
+      ...dataProcess,
+      processStatus: '5',
       reasonForRefusal: contentDialog.content
     };
     dispatch({
-      type: SALARY.UPDATE_SALARY,
+      type: PROCESS.UPDATE_PROCESS,
       payload: {
-        id: dataSalaryIncrease.id,
+        id: dataProcess.id,
         data: updatedData
       }
     });
@@ -157,7 +171,7 @@ const FormSalaryIncrease = (props) => {
     <Dialog open={open} fullWidth maxWidth="md">
       <DialogTitle id="draggable-dialog-title">
         <Grid container justify="space-between" alignItems="center">
-          <Grid item>Đề xuất tăng lương</Grid>
+          <Grid item>Đề xuất thăng chức</Grid>
           <Grid item>
             <IconButton onClick={handleCloseDialog}>
               <Icon color="secondary">close</Icon>
@@ -176,7 +190,7 @@ const FormSalaryIncrease = (props) => {
                   </Typography>
                 </div>
                 <Typography className="flex-center">
-                  <b> Số {employee?.id}/ QĐ - TL</b>
+                  <b> Số {employee?.id}/ QĐ - BN</b>
                 </Typography>
               </Grid>
               <Grid item xs={8}>
@@ -202,19 +216,19 @@ const FormSalaryIncrease = (props) => {
                       {" "}
                       Hà Nội, ngày{" "}
                       {
-                        moment(new Date(dataSalaryIncrease?.startDate))
+                        moment(new Date(dataProcess?.promotionDay))
                           .format("DD/MM/YYYY")
                           .split("/")[0]
                       }{" "}
                       tháng{" "}
                       {
-                        moment(new Date(dataSalaryIncrease?.startDate))
+                        moment(new Date(dataProcess?.promotionDay))
                           .format("DD/MM/YYYY")
                           .split("/")[1]
                       }{" "}
                       năm{" "}
                       {
-                        moment(new Date(dataSalaryIncrease?.startDate))
+                        moment(new Date(dataProcess?.promotionDay))
                           .format("DD/MM/YYYY")
                           .split("/")[2]
                       }
@@ -228,51 +242,34 @@ const FormSalaryIncrease = (props) => {
               <b>QUYẾT ĐỊNH</b>
             </Typography>
             <Typography className="flex-center pb-12" fontStyle="italic">
-              <em>V/v tăng lương cho người lao động.</em>
+              <em>V/v thăng chức.</em>
             </Typography>
-            <Typography>
-              <em>
-                - Căn cứ vào Điều lệ, nội quy, quy chế của Công ty OCEANTECH.
-              </em>
-            </Typography>
-            <Typography>
-              <em>
-                {" "}
-                - Căn cứ vào hợp đồng số <b>{employee?.code}</b> được ký giữa
-                Công ty OCEANTECH và Ông/Bà <b>{employee?.name}</b> ngày{" "}
-                {
-                  moment(new Date(employee?.submitDay))
-                    .format("DD/MM/YYYY")
-                    .split("/")[0]
-                }{" "}
-                tháng{" "}
-                {
-                  moment(new Date(employee?.submitDay))
-                    .format("DD/MM/YYYY")
-                    .split("/")[1]
-                }{" "}
-                năm{" "}
-                {
-                  moment(new Date(employee?.submitDay))
-                    .format("DD/MM/YYYY")
-                    .split("/")[2]
-                }
-                .
-              </em>
-            </Typography>
-            <Typography className="pb-12">
-              <em>
-                {" "}
-                - Căn cứ vào sự đóng góp thực tế của ông/bà:{" "}
-                <b>{employee?.name}</b> đổi với sự phát triển của Công ty{" "}
-                <b>OCEANTECH.</b>
-              </em>
-            </Typography>
-            <div className="flex-center">
-              <Typography className="text-overflow" fontWeight="bold">
-                <b>GIÁM ĐỐC CÔNG TY OCEANTECH</b>
+            <div className="fex-center">
+              <Typography fontWeight="bold" className="text-overflow">
+                <b>HỘI ĐỒNG THÀNH VIÊN CÔNG TY OCEANTECH</b>
               </Typography>
             </div>
+            <Typography>
+              <em>
+                {" "}
+                - Căn cứ Luật Doanh nghiệp 2020 và các văn bản hướng dẫn thi
+                hành.
+              </em>
+            </Typography>
+            <Typography>
+              <em>
+                - Căn cứ Điều lệ Công ty <b>OCEANTECH.</b>
+              </em>
+            </Typography>
+            <Typography>
+              <em>- Căn cứ yêu cầu hoạt động sản xuất kinh doanh.</em>
+            </Typography>
+            <Typography>
+              <em>
+                - Xét năng lực, phẩm chất và trình độ của Ông/Bà{" "}
+                <b>{employee?.name}.</b>
+              </em>
+            </Typography>
             <Typography
               className="flex-center line-height-25"
               fontWeight="bold"
@@ -280,97 +277,113 @@ const FormSalaryIncrease = (props) => {
               <b>QUYẾT ĐỊNH</b>
             </Typography>
             <Typography>
-              <b>- Điều 1:</b> Tăng lương cho Ông/Bà: <b>{employee?.name}</b>{" "}
-              đang làm việc tại công ty kể từ tháng{" "}
-              {
-                moment(new Date(dataSalaryIncrease?.startDate))
-                  .format("DD/MM/YYYY")
-                  .split("/")[1]
-              }{" "}
-              ngày{" "}
-              {
-                moment(new Date(dataSalaryIncrease?.startDate))
-                  .format("DD/MM/YYYY")
-                  .split("/")[0]
-              }{" "}
-              năm{" "}
-              {
-                moment(new Date(dataSalaryIncrease?.startDate))
-                  .format("DD/MM/YYYY")
-                  .split("/")[2]
-              }
-              , cụ thể như sau:
-            </Typography>
-            <Typography className="ml-20">
-              Mức lương hiện tại:{" "}
+              <b>Điều 1:</b> Bổ nhiệm chức danh{" "}
               <b>
-                {dataSalaryIncrease?.oldSalary?.toLocaleString("en-US")} VND.
-              </b>
-            </Typography>
-            <Typography className="ml-20">
-              Mức lương sau điều chỉnh:{" "}
-              <b>
-                {dataSalaryIncrease?.newSalary?.toLocaleString("en-US")} VND.
-              </b>
-            </Typography>
-            <Typography className="ml-20">
-              Lý do:{" "}
-              <b>
-                {dataSalaryIncrease?.reason}.
-              </b>
+                {
+                  EMPLOYEE_POSITION?.find(
+                    (item) => item?.id === dataProcess?.newPosition
+                  )?.name
+                }
+              </b>{" "}
+              đối với:
             </Typography>
             <Typography>
-              <b>- Điều 2: </b>Các Ông/Bà Phòng nhân sự, Phòng tài chính kế toán
-              căn cứ thi hành quyết định này.
+              - Ông/Bà: <b>{employee?.name}</b>. Giới tính:{" "}
+              {employee?.gender === 0 ? "Nữ" : "Nam"}.
             </Typography>
+            <Typography>
+              - Sinh ngày:{" "}
+              {moment(new Date(employee?.dateOfBirth)).format("DD/MM/YYYY")}.
+            </Typography>
+            <Typography>
+              - Số chứng minh nhân dân/Thẻ căn cước công dân:{" "}
+              {employee?.citizenIdentificationNumber}. Nơi cấp:{" "}
+              {employee?.placeOfIssueCard}. Ngày cấp:{" "}
+              {moment(new Date(employee?.dateOfIssuanceCard)).format(
+                "DD/MM/YYYY"
+              )}
+              .
+            </Typography>
+            <Typography>
+              - Nơi đăng ký hộ khẩu thường trú: {employee?.address}.
+            </Typography>
+            <Typography>- Nơi ở hiện tại: {employee?.address}.</Typography>
+            <Typography>
+              <b>Điều 2: </b>Quyền và nghĩa vụ
+            </Typography>
+            <Typography>
+              - Thực hiện quyền và nghĩa vụ của cấp bậc được bổ nhiệm theo quy.
+              định của công ty.
+            </Typography>
+            <Typography>
+              <b>Điều 3: </b>Hiệu lực thi hành
+            </Typography>
+            <Typography>
+              - Ông/Bà có tên tại Điều 1 và các cơ quan, tổ chức, cá nhân liên
+              quan chịu trách nhiệm thi hành quyết định này.
+            </Typography>
+            <Typography>Quyết định có hiệu lực kể từ ngày ký.</Typography>
             <Box className="flex-between mt-32">
-              <Box className="px-32">
+              <Box>
                 <Typography fontWeight="bold" fontStyle="italic">
                   <b>Nơi Nhận:</b>
                 </Typography>
                 <Typography>
-                  <em>-Như điều 2.</em>
+                  <em>
+                    -Ông/Bà:
+                    {
+                      <b>
+                        {employee?.leaderName}
+                      </b>
+                    }
+                    .
+                  </em>
+                </Typography>
+                <Typography>
+                  <em>-Cơ quan, tổ chức, cá nhân liên quan.</em>
                 </Typography>
                 <Typography>
                   <em>-Lưu HS,VP.</em>
                 </Typography>
               </Box>
-              <Box className="px-32">
-                <div className="flex-center">
-                  <Typography
-                    className="text-overflow line-height-25"
-                    fontStyle="italic"
-                  >
-                    <em>
-                      {" "}
+              <Box>
+                <div className="flex-center mt-32">
+                  <em>
+                    <Typography
+                      className="text-overflow line-height-25"
+                      fontStyle="italic"
+                    >
                       Hà Nội, ngày{" "}
                       {
-                        moment(new Date(dataSalaryIncrease?.startDate))
+                        moment(new Date(dataProcess?.promotionDay))
                           .format("DD/MM/YYYY")
                           .split("/")[0]
                       }{" "}
                       tháng{" "}
                       {
-                        moment(new Date(dataSalaryIncrease?.startDate))
+                        moment(new Date(dataProcess?.promotionDay))
                           .format("DD/MM/YYYY")
                           .split("/")[1]
                       }{" "}
                       năm{" "}
                       {
-                        moment(new Date(dataSalaryIncrease?.startDate))
+                        moment(new Date(dataProcess?.promotionDay))
                           .format("DD/MM/YYYY")
                           .split("/")[2]
                       }
-                    </em>
-                  </Typography>
+                    </Typography>
+                  </em>
                 </div>
+                <Typography fontWeight="bold" className="flex-center">
+                  <b>TM. HỘI ĐỒNG THÀNH VIÊN</b>
+                </Typography>
                 <Typography fontWeight="bold" className="flex-center mt-2">
-                  <b>GIÁM ĐỐC</b>
+                  <b>Chủ tịch Hội đồng thành viên</b>
                 </Typography>
                 <Typography fontStyle="italic" className="flex-center">
                   (Ký tên, đóng dấu)
                 </Typography>
-                {dataSalaryIncrease?.salaryIncreaseStatus === 3 && (
+                {dataProcess?.processStatus === '3' && (
                   <div className="mt-30 flex-center">
                     <span className="sign-text ">{employee?.leaderName}</span>
                   </div>
@@ -419,9 +432,9 @@ const FormSalaryIncrease = (props) => {
           <Button
             variant="contained"
             color="primary"
-            onClick={handleSubmitSalary}
+            onClick={handleSubmitProcess}
           >
-            {dataSalaryIncrease?.id ? "Lưu" : "Thêm"}
+            {dataProcess?.id ? "Lưu" : "Thêm"}
           </Button>
         )}
         {action === 'sendLeader' && (
@@ -440,8 +453,8 @@ const FormSalaryIncrease = (props) => {
           setOpen={handleCloseDialog}
           setOpenForm={setOpen}
           employee={employee}
-          data={dataSalaryIncrease}
-          type='salary'
+          data={dataProcess}
+          type='process'
           handleCloseDialog={handleCloseDialog}
         />
       )}
@@ -452,13 +465,13 @@ const FormSalaryIncrease = (props) => {
           handleCloseRegisterDialog={handleCloseForm}
           setOpen={setIsLeaderActionDialogOpen}
           action={actionLeader}
-          handleApprove={handleApproveSalaryIncrease}
-          handleReject={handleRejectSalaryIncrease}
-          handleRequest={handleRequestSalaryIncrease}
+          handleApprove={handleApproveProcess}
+          handleReject={handleRejectProcess}
+          handleRequest={handleRequestProcess}
         />
       )}
     </Dialog>
   );
 };
 
-export default FormSalaryIncrease;
+export default FormProcess;

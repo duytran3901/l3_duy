@@ -10,9 +10,9 @@ import {
 } from "@material-ui/core";
 import { ValidatorForm, TextValidator, SelectValidator } from "react-material-ui-form-validator";
 import moment from 'moment';
-import { LEADER, LEADER_POSITION } from 'app/constants/constants';
-import { useDispatch } from 'react-redux';
-import { EMPLOYEE } from 'app/redux/actions/actions';
+import { LEADER_POSITION } from 'app/constants/constants';
+import { useDispatch, useSelector } from 'react-redux';
+import { EMPLOYEE, LEADER } from 'app/redux/actions/actions';
 
 const SendLeaderDialog = (props) => {
   const { employee, setOpen, setOpenRegisterDialog, setOpenEditDialog, open } = props;
@@ -24,6 +24,11 @@ const SendLeaderDialog = (props) => {
       : moment().format("YYYY-MM-DD"),
   });
   const dispatch = useDispatch();
+  const leaders = useSelector(state => state.leader.leaders);
+
+  useEffect(() => {
+    dispatch({ type: LEADER.GET_LEADERS });
+  }, [])
 
   const handleCloseDialog = () => {
     setOpen(false);
@@ -48,7 +53,7 @@ const SendLeaderDialog = (props) => {
 
   useEffect(() => {
     if (dataSendLeader?.leaderName) {
-      let leader = LEADER.find(leader => leader.leaderName === dataSendLeader.leaderName);
+      let leader = leaders.find(leader => leader.leaderName === dataSendLeader.leaderName);
       setDataSendLeader({
         ...dataSendLeader,
         leaderPosition: leader?.leaderPosition
@@ -135,7 +140,7 @@ const SendLeaderDialog = (props) => {
                 validators={["required"]}
                 errorMessages={["Trường này bắt buộc chọn"]}
               >
-                {LEADER?.map((leader) => (
+                {leaders?.map((leader) => (
                   <MenuItem key={leader.id} value={leader?.leaderName}>
                     {leader?.leaderName}
                   </MenuItem>

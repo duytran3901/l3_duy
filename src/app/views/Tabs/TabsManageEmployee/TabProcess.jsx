@@ -6,12 +6,9 @@ import {
   Visibility as VisibilityIcon,
   Notifications as NotificationsIcon,
 } from "@material-ui/icons";
-// import { CustomColumnsProcessIncrease } from "app/views/atoms/customColums";
-// import CustomTable from "app/views/atoms/customTable";
 import { useDispatch, useSelector } from "react-redux";
 import { TextValidator, ValidatorForm, SelectValidator } from "react-material-ui-form-validator";
 import moment from "moment";
-// import FormProcess from "../formRegister/FormProcessIncrease";
 import { ConfirmationDialog } from "egret";
 // import RequestEmployeeDialog from "app/views/organisms/requestDialog/RequestEmployeeDialog";
 import { toast } from "react-toastify";
@@ -20,6 +17,7 @@ import { EMPLOYEE_POSITION, UPDATE_EMPLOYEE_STATUS } from "app/constants/constan
 import CustomTable from "app/views/components/Custom/CustomTable";
 import { CustomColumnsProcess } from "app/views/components/Custom/CustomColumns";
 import { PROCESS } from "app/redux/actions/actions";
+import FormProcess from "app/views/components/Form/FormProcess";
 // import FormProcessIncrease from "app/views/components/Form/FormProcessIncrease";
 
 toast.configure({
@@ -38,7 +36,6 @@ const TabProcess = (props) => {
   });
   const { processList, totalElements, reload } = useSelector(state => state.process);
   const [isOpenFormProcess, setIsOpenFormProcess] = useState(false);
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [isConfirmDeleteProcessOpen, setIsConfirmDeleteProcessOpen] = useState(false);
   const [openAdditionalDialog, setOpenAdditionalDialog] = useState(false);
   const [openRejectDialog, setOpenRejectDialog] = useState(false);
@@ -48,6 +45,8 @@ const TabProcess = (props) => {
   const [checkStatus, setCheckStatus] = useState(false);
   const [checkResponseLeader, setCheckResponseLeader] = useState(false);
   const [disableSubmit, setDisableSubmit] = useState();
+  const [idProcessDelete, setIdProcessDelete] = useState(0);
+  const [action, setAction] = useState('');
   const dispatch = useDispatch();
   const dataTable = processList?.map((process) => ({ ...process }));
 
@@ -57,9 +56,6 @@ const TabProcess = (props) => {
     }
   };
 
-  console.log('process: ', processList);
-  
-
   useEffect(() => {
     updatePage();
   }, [page, pageSize, reload]);
@@ -67,12 +63,12 @@ const TabProcess = (props) => {
   useEffect(() => {
     ValidatorForm.addValidationRule('isGreaterThanOldProcess', (value) => {
       if (!value) return true;
-      return parseFloat(value) > parseFloat(process?.oldProcess);
+      return parseFloat(value) > parseFloat(process?.currentPosition);
     });
     return () => {
       ValidatorForm.removeValidationRule('isGreaterThanOldProcess');
     };
-  }, [process?.oldProcess]);
+  }, [process?.currentPosition]);
 
   useEffect(() => {
     const oldProcess = processList.find((item) => item.processStatus === 3);
@@ -80,15 +76,20 @@ const TabProcess = (props) => {
       setProcess({
         ...process,
         currentPosition: oldProcess.newPosition
-      })
+      });
+    } else {
+      setProcess({
+        ...process,
+        currentPosition: 1
+      });
     }
   }, [processList]);
 
 
   const resetProcess = () => {
     setProcess({
-      oldProcess: process.oldProcess,
-      startDate: moment().format("YYYY-MM-DD"),
+      currentPosition: process.currentPosition,
+      promotionDay: moment().format("YYYY-MM-DD"),
     });
   };
 
@@ -110,32 +111,24 @@ const TabProcess = (props) => {
   };
 
   const handleEditProcess = (rowData) => {
-    if (rowData.oldProcess === oldProcessApproved) {
-      if (checkResponseLeader) {
-        setDisableSubmit(false);
-      }
-      const formattedStartDate = rowData.startDate
-        ? moment(rowData.startDate).format("YYYY-MM-DD")
-        : moment().format("YYYY-MM-DD");
-
-      setProcess({
-        ...rowData,
-        startDate: formattedStartDate,
-      });
+    if (rowData.currentPosition === process?.currentPosition) {
+      setProcess(rowData);
     } else {
-      toast.error("Mức lương cũ không đúng!");
+      toast.error("Chức vụ hiện tại không đúng!");
     }
   };
 
   const handleOpenDialogFormProcess = (rowData) => {
     setProcess(rowData);
     setIsOpenFormProcess(true);
+    setAction('sendLeader');
   };
 
   const handleViewFormProcess = (item) => {
     setIsSendLeader(false);
     setProcess(item);
     setIsOpenFormProcess(true);
+    setAction('view');
   };
 
   const handleCloseDialogFormProcess = () => {
@@ -162,19 +155,19 @@ const TabProcess = (props) => {
 
   const handleClickDelete = (rowData) => {
     setIsConfirmDeleteProcessOpen(true);
-    setProcess(rowData);
+    setIdProcessDelete(rowData?.id);
   };
 
   const handleDeleteProcess = (id) => {
     dispatch({ type: PROCESS.DELETE_PROCESS, payload: id });
     setIsConfirmDeleteProcessOpen(false);
-    setProcess({});
+    setIdProcessDelete(0);
   }
 
   const handleSubmit = () => {
     handleOpenDialogFormProcess();
     setProcess(process);
-    setIsSendLeader(true);
+    // setIsSendLeader(true);
   };
 
   const Action = ({ rowData }) => {
@@ -243,10 +236,10 @@ const TabProcess = (props) => {
               onChange={e => handleChangeInput(e)}
               onBlur={e => handleBlurInput(e)}
               type="date"
-              name="startDate"
+              name="promotionDay"
               size="small"
               variant="outlined"
-              value={process?.startDate ? moment(process?.startDate).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")}
+              value={process?.promotionDay ? moment(process?.promotionDay).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")}
               validators={[
                 "required"
               ]}
@@ -254,7 +247,7 @@ const TabProcess = (props) => {
                 "Trường này bắt buộc nhập"
               ]}
               inputProps={{
-                min: moment().format("YYYY-MM-DD")
+                min: process?.promotionDay ? moment(process?.promotionDay).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")
               }}
             />
           </Grid>
@@ -263,8 +256,6 @@ const TabProcess = (props) => {
               disabled
               className="w-100"
               label={<span className="font font-size-13">Chức vụ hiện tại</span>}
-              onChange={e => handleChangeInput(e)}
-              onBlur={e => handleBlurInput(e)}
               type="text"
               name="currentPosition"
               size="small"
@@ -288,13 +279,18 @@ const TabProcess = (props) => {
                 </span>
               }
               onChange={e => handleChangeInput(e)}
-              type="text"
-              name="team"
+              name="newPosition"
               size="small"
               variant="outlined"
-              value={process.newPosition || ''}
-              validators={["required"]}
-              errorMessages={["Trường này bắt buộc chọn"]}
+              value={process?.newPosition || ''}
+              validators={[
+                "required",
+                "isGreaterThanOldProcess"
+              ]}
+              errorMessages={[
+                "Trường này bắt buộc chọn",
+                "Chức vụ mới phải lớn hơn chức vụ hiện tại"
+              ]}
             >
               {EMPLOYEE_POSITION?.map((position) => (
                 <MenuItem key={position.id} value={position.id}>
@@ -344,16 +340,6 @@ const TabProcess = (props) => {
         </Grid>
       </ValidatorForm>
       <div className="mt-6">
-        {/* <CustomTable
-          columns={columns}
-          data={salarys}
-          // totalElements={salarys?.length || 0}
-          page={page}
-          pageSize={pageSize}
-          setPage={handlePageChange}
-          setPageSize={handlePageSizeChange}
-          height={260}
-        /> */}
         <CustomTable
           data={totalElements <= pageSize ? dataTable : dataTable.slice(page * pageSize, page * pageSize + pageSize)}
           columns={columns}
@@ -366,23 +352,25 @@ const TabProcess = (props) => {
           height='calc(100vh - 556px)'
         />
       </div>
-      {/* {isOpenFormProcess && (
-        <FormProcessIncrease
+      {isOpenFormProcess && (
+        <FormProcess
           open={isOpenFormProcess}
           setOpen={setIsOpenFormProcess}
-          dataProcessIncrease={process}
+          resetProcess={resetProcess}
+          dataProcess={process}
           employee={employee}
           isSendLeader={isSendLeader}
           checkStatus={checkStatus}
           testCheck={checkResponseLeader}
+          action={action}
         />
-      )} */}
+      )}
       {isConfirmDeleteProcessOpen && (
         <ConfirmationDialog
           title="Bạn có chắc chắn xóa không?"
           open={isConfirmDeleteProcessOpen}
           onConfirmDialogClose={() => setIsConfirmDeleteProcessOpen(false)}
-          onYesClick={() => handleDeleteProcess(process.id)}
+          onYesClick={() => handleDeleteProcess(idProcessDelete)}
           Yes='Có'
           No='Không'
         />

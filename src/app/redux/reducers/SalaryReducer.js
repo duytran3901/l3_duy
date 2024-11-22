@@ -4,7 +4,7 @@ const initialState = {
   salarys: [],
   salary: null,
   totalElements: 0,
-  reload:  false
+  reload: false
 };
 
 const SalarySlice = createSlice({
@@ -29,6 +29,7 @@ const SalarySlice = createSlice({
     editSalary: (state, action) => {
       const index = state.salarys.findIndex(salary => salary.id === action.payload.id);
       state.salarys.splice(index, 1, action.payload);
+      state.reload = !state.reload;
     },
     deleteSalary: (state, action) => {
       state.reload = !state.reload;

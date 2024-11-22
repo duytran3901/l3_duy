@@ -6,12 +6,9 @@ import {
   Visibility as VisibilityIcon,
   Notifications as NotificationsIcon,
 } from "@material-ui/icons";
-// import { CustomColumnsProcessIncrease } from "app/views/atoms/customColums";
-// import CustomTable from "app/views/atoms/customTable";
 import { useDispatch, useSelector } from "react-redux";
 import { TextValidator, ValidatorForm, SelectValidator } from "react-material-ui-form-validator";
 import moment from "moment";
-// import FormProcess from "../formRegister/FormProcessIncrease";
 import { ConfirmationDialog } from "egret";
 // import RequestEmployeeDialog from "app/views/organisms/requestDialog/RequestEmployeeDialog";
 import { toast } from "react-toastify";
@@ -20,7 +17,8 @@ import { EMPLOYEE_POSITION, TYPE_PROPOSAL, UPDATE_EMPLOYEE_STATUS } from "app/co
 import CustomTable from "app/views/components/Custom/CustomTable";
 import { CustomColumnsProposal } from "app/views/components/Custom/CustomColumns";
 import { PROPOSAL } from "app/redux/actions/actions";
-// import FormProcessIncrease from "app/views/components/Form/FormProcessIncrease";
+import FormProposal from "app/views/components/Form/FormProposal";
+// import FormProposalIncrease from "app/views/components/Form/FormProposalIncrease";
 
 toast.configure({
   autoClose: 2000,
@@ -33,21 +31,22 @@ const TabProposal = (props) => {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(3);
   const [proposal, setProposal] = useState({
-    promotionDay: moment().format("YYYY-MM-DD"),
+    proposalDate: moment().format("YYYY-MM-DD"),
     currentPosition: 1
   });
   const { proposals, totalElements, reload } = useSelector(state => state.proposal);
-  const [isOpenFormProcess, setIsOpenFormProcess] = useState(false);
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [isConfirmDeleteProcessOpen, setIsConfirmDeleteProcessOpen] = useState(false);
+  const [isOpenFormProposal, setIsOpenFormProposal] = useState(false);
+  const [isConfirmDeleteProposalOpen, setIsConfirmDeleteProposalOpen] = useState(false);
   const [openAdditionalDialog, setOpenAdditionalDialog] = useState(false);
   const [openRejectDialog, setOpenRejectDialog] = useState(false);
   const [disable, setDisable] = useState(false);
-  const [oldProcessApproved, setOldProcessApproved] = useState();
+  const [oldProposalApproved, setOldProposalApproved] = useState();
   const [isSendLeader, setIsSendLeader] = useState(false);
   const [checkStatus, setCheckStatus] = useState(false);
   const [checkResponseLeader, setCheckResponseLeader] = useState(false);
   const [disableSubmit, setDisableSubmit] = useState();
+  const [idProposalDelete, setIdProposalDelete] = useState(0);
+  const [action, setAction] = useState('');
   const dispatch = useDispatch();
   const dataTable = proposals?.map((proposal) => ({ ...proposal }));
 
@@ -57,29 +56,26 @@ const TabProposal = (props) => {
     }
   };
 
-  console.log('proposal: ', proposals);
-
-
   useEffect(() => {
     updatePage();
   }, [page, pageSize, reload]);
 
   useEffect(() => {
-    ValidatorForm.addValidationRule('isGreaterThanOldProcess', (value) => {
+    ValidatorForm.addValidationRule('isGreaterThanOldProposal', (value) => {
       if (!value) return true;
-      return parseFloat(value) > parseFloat(proposal?.oldProcess);
+      return parseFloat(value) > parseFloat(proposal?.oldProposal);
     });
     return () => {
-      ValidatorForm.removeValidationRule('isGreaterThanOldProcess');
+      ValidatorForm.removeValidationRule('isGreaterThanOldProposal');
     };
-  }, [proposal?.oldProcess]);
+  }, [proposal?.oldProposal]);
 
   useEffect(() => {
-    const oldProcess = proposals.find((item) => item.proposalStatus === 3);
-    if (oldProcess) {
+    const oldProposal = proposals.find((item) => item.proposalStatus === 3);
+    if (oldProposal) {
       setProposal({
         ...proposal,
-        currentPosition: oldProcess.newPosition
+        currentPosition: oldProposal.newPosition
       })
     }
   }, [proposals]);
@@ -87,7 +83,7 @@ const TabProposal = (props) => {
 
   const resetProposal = () => {
     setProposal({
-      oldProcess: proposal.oldProcess,
+      oldProposal: proposal.oldProposal,
       proposalDate: moment().format("YYYY-MM-DD"),
     });
   };
@@ -109,8 +105,8 @@ const TabProposal = (props) => {
     });
   };
 
-  const handleEditProcess = (rowData) => {
-    if (rowData.oldProcess === oldProcessApproved) {
+  const handleEditProposal = (rowData) => {
+    if (rowData.oldProposal === oldProposalApproved) {
       if (checkResponseLeader) {
         setDisableSubmit(false);
       }
@@ -127,19 +123,21 @@ const TabProposal = (props) => {
     }
   };
 
-  const handleOpenDialogFormProcess = (rowData) => {
+  const handleOpenDialogFormProposal = (rowData) => {
     setProposal(rowData);
-    setIsOpenFormProcess(true);
+    setIsOpenFormProposal(true);
+    setAction('sendLeader');
   };
 
-  const handleViewFormProcess = (item) => {
+  const handleViewFormProposal = (item) => {
     setIsSendLeader(false);
     setProposal(item);
-    setIsOpenFormProcess(true);
+    setIsOpenFormProposal(true);
+    setAction('view');
   };
 
-  const handleCloseDialogFormProcess = () => {
-    setIsOpenFormProcess(false);
+  const handleCloseDialogFormProposal = () => {
+    setIsOpenFormProposal(false);
     resetProposal();
   };
 
@@ -161,27 +159,27 @@ const TabProposal = (props) => {
   };
 
   const handleClickDelete = (rowData) => {
-    setIsConfirmDeleteProcessOpen(true);
-    setProposal(rowData);
+    setIsConfirmDeleteProposalOpen(true);
+    setIdProposalDelete(rowData?.id);
   };
 
-  const handleDeleteProcess = (id) => {
-    dispatch({ type: PROPOSAL.DELETE_PROCESS, payload: id });
-    setIsConfirmDeleteProcessOpen(false);
-    setProposal({});
+  const handleDeleteProposal = (id) => {
+    dispatch({ type: PROPOSAL.DELETE_PROPOSAL, payload: id });
+    setIsConfirmDeleteProposalOpen(false);
+    setIdProposalDelete(0);
   }
 
   const handleSubmit = () => {
-    handleOpenDialogFormProcess();
+    handleOpenDialogFormProposal();
     setProposal(proposal);
-    setIsSendLeader(true);
+    // setIsSendLeader(true);
   };
 
   const Action = ({ rowData }) => {
     return (
       <div>
         {UPDATE_EMPLOYEE_STATUS.EDIT.includes(rowData?.proposalStatus) && (
-          <IconButton size="small" onClick={() => handleEditProcess(rowData)}>
+          <IconButton size="small" onClick={() => handleEditProposal(rowData)}>
             <EditIcon color="primary" fontSize="small" />
           </IconButton>
         )}
@@ -190,7 +188,7 @@ const TabProposal = (props) => {
             <VisibilityIcon
               color="secondary"
               fontSize="small"
-              onClick={() => handleViewFormProcess(rowData)}
+              onClick={() => handleViewFormProposal(rowData)}
             />
           </IconButton>
         )}
@@ -286,7 +284,12 @@ const TabProposal = (props) => {
           <Grid item md={2} sm={6} xs={6}>
             <TextValidator
               className="w-100"
-              label={<span className="font font-size-13">Nội dung</span>}
+              label={
+                <span className="font pr-10  font-size-13">
+                  <span className="span-required"> * </span>
+                  Nội dung
+                </span>
+              }
               onChange={e => handleChangeInput(e)}
               onBlur={e => handleBlurInput(e)}
               type="text"
@@ -305,7 +308,12 @@ const TabProposal = (props) => {
           <Grid item md={2} sm={6} xs={6}>
             <TextValidator
               className="w-100"
-              label={<span className="font font-size-13">Nội dung</span>}
+              label={
+                <span className="font pr-10  font-size-13">
+                  <span className="span-required"> * </span>
+                  Mô tả
+                </span>
+              }
               onChange={e => handleChangeInput(e)}
               onBlur={e => handleBlurInput(e)}
               type="text"
@@ -362,16 +370,6 @@ const TabProposal = (props) => {
         </Grid>
       </ValidatorForm>
       <div className="mt-6">
-        {/* <CustomTable
-          columns={columns}
-          data={salarys}
-          // totalElements={salarys?.length || 0}
-          page={page}
-          pageSize={pageSize}
-          setPage={handlePageChange}
-          setPageSize={handlePageSizeChange}
-          height={260}
-        /> */}
         <CustomTable
           data={totalElements <= pageSize ? dataTable : dataTable.slice(page * pageSize, page * pageSize + pageSize)}
           columns={columns}
@@ -384,23 +382,25 @@ const TabProposal = (props) => {
           height='calc(100vh - 556px)'
         />
       </div>
-      {/* {isOpenFormProcess && (
-        <FormProcessIncrease
-          open={isOpenFormProcess}
-          setOpen={setIsOpenFormProcess}
-          dataProcessIncrease={proposal}
-          employee={employee}
-          isSendLeader={isSendLeader}
-          checkStatus={checkStatus}
-          testCheck={checkResponseLeader}
+      {isOpenFormProposal && (
+        <FormProposal
+        open={isOpenFormProposal}
+        setOpen={setIsOpenFormProposal}
+        resetProposal={resetProposal}
+        dataProposal={proposal}
+        employee={employee}
+        isSendLeader={isSendLeader}
+        checkStatus={checkStatus}
+        testCheck={checkResponseLeader}
+        action={action}
         />
-      )} */}
-      {isConfirmDeleteProcessOpen && (
+      )}
+      {isConfirmDeleteProposalOpen && (
         <ConfirmationDialog
           title="Bạn có chắc chắn xóa không?"
-          open={isConfirmDeleteProcessOpen}
-          onConfirmDialogClose={() => setIsConfirmDeleteProcessOpen(false)}
-          onYesClick={() => handleDeleteProcess(proposal.id)}
+          open={isConfirmDeleteProposalOpen}
+          onConfirmDialogClose={() => setIsConfirmDeleteProposalOpen(false)}
+          onYesClick={() => handleDeleteProposal(idProposalDelete)}
           Yes='Có'
           No='Không'
         />

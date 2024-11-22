@@ -7,7 +7,7 @@ import {
 } from "@material-ui/icons";
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from "react-router-dom";
-import { Breadcrumb, ConfirmationDialog } from 'egret';
+import { Breadcrumb } from 'egret';
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { EMPLOYEE } from "../../../redux/actions/actions";
@@ -21,7 +21,6 @@ import ManageEmployeeDialog from "app/views/components/Dialog/ManageEmployeeDial
 const ManageEmployee = () => {
     const [pageSize, setPageSize] = useState(10);
     const [page, setPage] = useState(0);
-    const [isConfirmDeleteEmployeeOpen, setIsConfirmDeleteEmployeeOpen] = useState(false);
     const [isEditEmployeeDialogOpen, setIsEditEmployeeDialogOpen] = useState(false);
     const [isRegisterEmployeeDialogOpen, setIsRegisterEmployeeDialogOpen] = useState(false);
     const [isNotificationDialogOpen, setIsNotificationDialogOpen] = useState(false);
@@ -61,17 +60,6 @@ const ManageEmployee = () => {
         setIsRegisterEmployeeDialogOpen(true);
         setEmployeeSelected(rowData);
         setAction('view');
-    }
-
-    const handleClickDelete = (rowData) => {
-        setIsConfirmDeleteEmployeeOpen(true);
-        setEmployeeSelected(rowData);
-    }
-
-    const handleDeleteEmployee = (id) => {
-        dispatch({ type: EMPLOYEE.DELETE_EMPLOYEE, payload: id });
-        setIsConfirmDeleteEmployeeOpen(false);
-        setEmployeeSelected({});
     }
 
     const handleOpenDialogNotification = (rowData) => {
@@ -157,16 +145,6 @@ const ManageEmployee = () => {
                     employee={employeeSelected}
                     setEmployee={setEmployeeSelected}
                     action={action}
-                />
-            )}
-            {isConfirmDeleteEmployeeOpen && (
-                <ConfirmationDialog
-                    title='Bạn có chắc chắn muốn xóa nhân viên này không?'
-                    open={isConfirmDeleteEmployeeOpen}
-                    onConfirmDialogClose={() => setIsConfirmDeleteEmployeeOpen(false)}
-                    onYesClick={() => handleDeleteEmployee(employeeSelected.id)}
-                    Yes='Có'
-                    No='Không'
                 />
             )}
             {isRegisterEmployeeDialogOpen && (

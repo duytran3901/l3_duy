@@ -6,54 +6,54 @@ export const navigations = [
     // role: authRoles.guest,
     icon: "home",
     path: ConstantList.ROOT_PATH + "home",
-    isVisible:true,
+    isVisible: true,
   },
   {
     name: "Quản lý nhân viên",
     role: authRoles.user,
     icon: "person",
-    isVisible:true,
+    isVisible: true,
     children: [
       {
         name: "Thêm nhân viên",
         role: authRoles.user,
         path: ConstantList.ROOT_PATH + "employee_manager/add_employee",
         icon: "keyboard_arrow_right",
-        isVisible:true,
+        isVisible: true,
       },
       {
         name: "Quản lý nhân viên",
         role: authRoles.user,
         path: ConstantList.ROOT_PATH + "employee_manager/manage_employee",
         icon: "keyboard_arrow_right",
-        isVisible:true,
+        isVisible: true,
       },
       {
         name: "Kết thúc nhân viên",
         role: authRoles.user,
         path: ConstantList.ROOT_PATH + "employee_manager/end_employee",
         icon: "keyboard_arrow_right",
-        isVisible:true,
+        isVisible: true,
       },
     ]
   },
   {
     name: "Lãnh đạo",
     role: authRoles.manage,
-    isVisible:true,
+    isVisible: true,
     icon: "receipt",
     children: [
       {
         name: "Lãnh đạo chờ duyệt",
         role: authRoles.manage,
-        isVisible:true,
+        isVisible: true,
         path: ConstantList.ROOT_PATH + "leader/leader_process",
         icon: "keyboard_arrow_right"
       },
       {
         name: "Lãnh đạo đã duyệt",
         role: authRoles.manage,
-        isVisible:true,
+        isVisible: true,
         path: ConstantList.ROOT_PATH + "leader/leader_approved",
         icon: "keyboard_arrow_right"
       }

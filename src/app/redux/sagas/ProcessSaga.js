@@ -17,13 +17,13 @@ const SUCCESS_CODE = 200;
 function* createProcessSaga(action) {
   try {
     console.log(action.payload);
-    const { idEmployee, data } = action.payload;
-    const result = yield call(postData, apiProcessURL + '?employeeId=' + idEmployee, data);
-    console.log(result);
-
+    const { employeeId, data, type } = action.payload;
+    const result = yield call(postData, apiProcessURL + '?employeeId=' + employeeId, data);
     if (result?.code === SUCCESS_CODE) {
       yield put(createProcess(result?.data));
-      toast.success('Thêm thành công!');
+      if (type) {
+        toast.success('Trình lãnh đạo thành công!')
+      } else toast.success('Thêm thành công!');
     } else {
       toast.error(`Thêm không thành công! ${result?.data?.message}`);
     }
@@ -40,13 +40,15 @@ function* editProcessSaga(action) {
     const result = yield call(putData, editProcessUrl, action.payload.data);
     if (result?.code === SUCCESS_CODE) {
       yield put(editProcess(result?.data));
-      toast.success('Chỉnh sửa thành công!');
+      if (action.payload?.type) {
+        toast.success('Trình lãnh đạo thành công!');
+      } else toast.success('Chỉnh sửa thành công!');
     } else {
-      toast.error(`Chỉnh sửa không thành công! ${result?.data?.message}`);
+      toast.error(`Có lỗi xảy ra!`);
     }
   } catch (error) {
     if (error) {
-      toast.error('Chỉnh sửa không thành công!');
+      toast.error('Có lỗi xảy ra!');
     }
   }
 }
@@ -69,10 +71,10 @@ function* getProcesssByIdEmployeeSaga(action) {
   }
 }
 
-function* getProcesssByLeaderSaga(action) {
-  const getProcesssUrl = apiProcessURL;
+function* getProcesssByLeaderSaga() {
+  const getProcesssUrl = apiProcessURL + '/current-leader';
   try {
-    const result = yield call(getData, getProcesssUrl, action.payload);
+    const result = yield call(getData, getProcesssUrl);
     console.log(result.data);
 
     if (result?.code === SUCCESS_CODE) {

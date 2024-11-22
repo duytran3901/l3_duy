@@ -17,36 +17,38 @@ const SUCCESS_CODE = 200;
 function* createSalarySaga(action) {
   try {
     console.log(action.payload);
-    const { idEmployee, data } = action.payload;
-    const result = yield call(postData, apiSalaryURL + '?employeeId=' + idEmployee, data);
-    console.log(result);
-    
+    const { employeeId, data, type } = action.payload;
+    const result = yield call(postData, apiSalaryURL + '?employeeId=' + employeeId, data);
     if (result?.code === SUCCESS_CODE) {
       yield put(createSalary(result?.data));
-      toast.success('Thêm thành công!');
+      if (type) {
+        toast.success('Trình lãnh đạo thành công!')
+      } else toast.success('Thêm thành công!');
     } else {
-      toast.error(`Thêm không thành công! ${result?.data?.message}`);
+      toast.error(`Có lỗi xảy ra!`);
     }
   } catch (error) {
     if (error) {
-      toast.error('Thêm không thành công!');
+      toast.error('Có lỗi xảy ra!');
     }
   }
 }
 
 function* editSalarySaga(action) {
-  const editSalaryUrl = apiSalaryURL + `/${action.payload.id}`;
+  const editSalaryUrl = apiSalaryURL + `/${action.payload?.id}`;
   try {
-    const result = yield call(putData, editSalaryUrl, action.payload.data);
+    const result = yield call(putData, editSalaryUrl, action.payload?.data);
     if (result?.code === SUCCESS_CODE) {
       yield put(editSalary(result?.data));
-      toast.success('Chỉnh sửa thành công!');
+      if (action.payload?.type) {
+        toast.success('Trình lãnh đạo thành công!');
+      } else toast.success('Chỉnh sửa thành công!');
     } else {
-      toast.error(`Chỉnh sửa không thành công! ${result?.data?.message}`);
+      toast.error(`Có lỗi xảy ra!`);
     }
   } catch (error) {
     if (error) {
-      toast.error('Chỉnh sửa không thành công!');
+      toast.error('Có lỗi xảy ra!');
     }
   }
 }
@@ -69,10 +71,10 @@ function* getSalarysByIdEmployeeSaga(action) {
   }
 }
 
-function* getSalarysByLeaderSaga(action) {
-  const getSalarysUrl = apiSalaryURL;
+function* getSalarysByLeaderSaga() {
+  const getSalarysUrl = apiSalaryURL + '/current-leader';
   try {
-    const result = yield call(getData, getSalarysUrl, action.payload);
+    const result = yield call(getData, getSalarysUrl);
     console.log(result.data);
     
     if (result?.code === SUCCESS_CODE) {

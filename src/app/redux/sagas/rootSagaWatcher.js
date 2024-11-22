@@ -6,6 +6,7 @@ import experienceSaga from "./ExperienceSaga";
 import salarySaga from "./SalarySaga";
 import processSaga from "./ProcessSaga";
 import proposalSaga from "./ProposalSaga";
+import leaderSaga from "./LeaderSaga";
 
 export default function* rootSagaWatcher() {
   yield all([
@@ -16,5 +17,6 @@ export default function* rootSagaWatcher() {
     fork(salarySaga),
     fork(processSaga),
     fork(proposalSaga),
+    fork(leaderSaga),
   ]);
 }

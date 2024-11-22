@@ -29,6 +29,7 @@ const ProcessSlice = createSlice({
     editProcess: (state, action) => {
       const index = state.processList.findIndex(process => process.id === action.payload.id);
       state.processList.splice(index, 1, action.payload);
+      state.reload = !state.reload;
     },
     deleteProcess: (state, action) => {
       state.reload = !state.reload;

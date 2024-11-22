@@ -7,6 +7,7 @@ import AddEmployeeRoutes from "./views/Employee/AddEmployee/AddEmployeeRoutes"
 import ManageEmployeeRoutes from "./views/Employee/ManageEmployee/ManageEmployeeRoutes"
 import EndEmployeeRoutes from "./views/Employee/EndEmployee/EndEmployeeRoutes"
 import LeaderProcessRoutes from "./views/Leader/LeaderProcess/LeaderProcessRoutes";
+import LeaderApprovedRoutes from "./views/Leader/LeaderApproved/LeaderApprovedRoutes";
 
 const redirectRoute = [
   {
@@ -29,6 +30,7 @@ const routes = [
   ...ManageEmployeeRoutes,
   ...EndEmployeeRoutes,
   ...LeaderProcessRoutes,
+  ...LeaderApprovedRoutes,
   ...errorRoute,
 ];
 

@@ -29,6 +29,7 @@ const ProposalSlice = createSlice({
     editProposal: (state, action) => {
       const index = state.proposals.findIndex(proposal => proposal.id === action.payload.id);
       state.proposals.splice(index, 1, action.payload);
+      state.reload = !state.reload;
     },
     deleteProposal: (state, action) => {
       state.reload = !state.reload;

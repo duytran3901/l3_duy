@@ -2,30 +2,28 @@ import React, { useState } from "react";
 import { Grid, IconButton, Input, InputAdornment } from '@material-ui/core';
 import {
     Visibility as VisibilityIcon,
-    Save as SaveIcon,
 } from "@material-ui/icons";
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from "react-router-dom";
-import { Breadcrumb } from 'egret';
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { EMPLOYEE } from "../../../redux/actions/actions";
 import CustomTable from "../../components/Custom/CustomTable";
 import { CustomColumnsEmployee } from "../../components/Custom/CustomColumns";
-import { ACTION_EMPLOYEE, EMPLOYEE_STATUS } from "app/constants/constants";
+import { EMPLOYEE_STATUS } from "app/constants/constants";
 import RegisterEmployeeDialog from "app/views/components/Dialog/RegisterEmployeeDialog";
-import SaveEmployeeDialog from "app/views/components/Dialog/SaveEmployeeDialog";
 
-const EndEmployee = () => {
+const LeaderApproved = () => {
     const [pageSize, setPageSize] = useState(10);
     const [page, setPage] = useState(0);
-    const [isSaveEmployeeDialogOpen, setIsSaveEmployeeDialogOpen] = useState(false);
     const [isRegisterEmployeeDialogOpen, setIsRegisterEmployeeDialogOpen] = useState(false);
+    const [isResignationFormOpen, setIsResignationFormOpen] = useState(false);
     const [employeeSelected, setEmployeeSelected] = useState({});
     const [searchKeyword, setSearchKeyword] = useState('');
     const [action, setAction] = useState('');
     const dispatch = useDispatch();
     const employees = useSelector((state) => state.employee.employees);
+    const reload = useSelector((state) => state.employee.reload);
     const totalElements = useSelector((state) => state.employee.totalElements);
     const dataTable = employees?.map((employee) => ({ ...employee }));
 
@@ -34,19 +32,14 @@ const EndEmployee = () => {
             keyword: searchKeyword,
             pageIndex: page + 1,
             pageSize: pageSize,
-            listStatus: EMPLOYEE_STATUS.END,
+            listStatus: EMPLOYEE_STATUS.APPROVED,
         };
         dispatch({ type: EMPLOYEE.SEARCH_EMPLOYEE, payload: objectPage });
     }
 
     useEffect(() => {
         reloadTable();
-    }, [searchKeyword, pageSize, page, totalElements]);
-
-    const handleOpenDialogSave = (rowData) => {
-        setEmployeeSelected(rowData);
-        setIsSaveEmployeeDialogOpen(true);
-    }
+    }, [searchKeyword, pageSize, page, totalElements, reload]);
 
     const handleOpenDialogView = (rowData) => {
         setIsRegisterEmployeeDialogOpen(true);
@@ -56,37 +49,15 @@ const EndEmployee = () => {
 
     const actions = ({ rowData }) => {
         return (
-            <div>
-                {ACTION_EMPLOYEE.END.includes(Number(rowData.submitProfileStatus)) && (
-                    <IconButton size="small">
-                        <SaveIcon
-                            color="primary"
-                            fontSize="small"
-                            onClick={() => handleOpenDialogSave(rowData)}
-                        />
-                    </IconButton>
-                )}
-                <IconButton size="small">
-                    <VisibilityIcon
-                        color="secondary"
-                        fontSize="small"
-                        onClick={() => handleOpenDialogView(rowData)}
-                    />
-                </IconButton>
-
-            </div>
+            <IconButton size="small" onClick={() => handleOpenDialogView(rowData)}>
+                <VisibilityIcon color="secondary" fontSize="small" />
+            </IconButton>
         );
     };
-
-    const columns = CustomColumnsEmployee({ Action: actions, page, pageSize })
+    const columns = CustomColumnsEmployee({ Action: actions, page, pageSize });
 
     return (
         <div className="m-30">
-            <div className="mb-sm-30">
-                <Breadcrumb
-                    routeSegments={[{ name: "Quản lý nhân viên" }]}
-                />
-            </div>
             <Grid container spacing={2} justifyContent="space-between">
                 <Grid item lg={2} md={3} sm={3} xs={12}>
                     <Input
@@ -122,13 +93,6 @@ const EndEmployee = () => {
                     />
                 </Grid>
             </Grid>
-            {isSaveEmployeeDialogOpen && (
-                <SaveEmployeeDialog
-                    open={isSaveEmployeeDialogOpen}
-                    setOpen={setIsSaveEmployeeDialogOpen}
-                    employee={employeeSelected}
-                />
-            )}
             {isRegisterEmployeeDialogOpen && (
                 <RegisterEmployeeDialog
                     open={isRegisterEmployeeDialogOpen}
@@ -141,4 +105,4 @@ const EndEmployee = () => {
     )
 }
 
-export default EndEmployee;
+export default LeaderApproved;
