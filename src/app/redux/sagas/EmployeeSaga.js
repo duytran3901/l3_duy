@@ -20,6 +20,8 @@ function* uploadImage(file) {
   formData.append("file", file);
   try {
     const data = yield call(postData, apiEmployeeURL + "upload-image", formData);
+    console.log('data: ', data);
+    
     if (data.id) {
       return data?.name
         ? ConstantList.API_ENPOINT + `public/image/${data?.name}`
@@ -58,10 +60,11 @@ function* createEmployeeSaga(action) {
 
 function* editEmployeeSaga(action) {
   const editEmployeeUrl = apiEmployeeURL + `${action.payload.id}`;
+  console.log('employee: ', action.payload);
   try {
-    const image = action.payload.file
-      ? yield call(uploadImage, action.payload.file)
-      : action.payload.image;
+    const image = action.payload.data?.file
+      ? yield call(uploadImage, action.payload.data?.file)
+      : action.payload.data?.image;
     const result = yield call(putData, editEmployeeUrl, {
       ...action.payload.data,
       image,
@@ -94,7 +97,6 @@ function* editEmployeeSaga(action) {
     toast.error("Có lỗi xảy ra!");
   }
 }
-
 
 function* searchEmployeeSaga(action) {
   const searchEmployeesUrl = apiEmployeeURL + `search`;

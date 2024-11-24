@@ -31,8 +31,7 @@ const AddEmployee = () => {
     const [searchKeyword, setSearchKeyword] = useState('');
     const [action, setAction] = useState('');
     const dispatch = useDispatch();
-    const employees = useSelector((state) => state.employee.employees);
-    const totalElements = useSelector((state) => state.employee.totalElements);
+    const { employees, totalElements, reload } = useSelector((state) => state.employee);
     const dataTable = employees?.map((employee) => ({ ...employee }));
 
     const reloadTable = () => {
@@ -47,7 +46,7 @@ const AddEmployee = () => {
 
     useEffect(() => {
         reloadTable();
-    }, [searchKeyword, pageSize, page, totalElements]);
+    }, [searchKeyword, pageSize, page, reload]);
 
     const handleOpenDialogEdit = (rowData) => {
         if (rowData) {

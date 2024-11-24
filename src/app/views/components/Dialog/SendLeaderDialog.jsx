@@ -56,7 +56,8 @@ const SendLeaderDialog = (props) => {
       let leader = leaders.find(leader => leader.leaderName === dataSendLeader.leaderName);
       setDataSendLeader({
         ...dataSendLeader,
-        leaderPosition: leader?.leaderPosition
+        leaderPosition: leader?.leaderPosition,
+        leaderId: leader?.id
       });
     }
   }, [dataSendLeader?.leaderName]);
@@ -74,7 +75,7 @@ const SendLeaderDialog = (props) => {
           action: 'sendLeader'
         }
       })
-    } 
+    }
     setOpen(false);
     setOpenRegisterDialog(false);
     setOpenEditDialog(false);
@@ -100,7 +101,6 @@ const SendLeaderDialog = (props) => {
                 className="w-100"
                 label={
                   <span className="font pr-10">
-                    {/* <span className="span-required"> * </span> */}
                     Ngày trình
                   </span>
                 }
@@ -111,12 +111,6 @@ const SendLeaderDialog = (props) => {
                 size="small"
                 variant="outlined"
                 value={dataSendLeader?.submitDay ? moment(dataSendLeader?.submitDay).format("YYYY-MM-DD") : ''}
-                // validators={[
-                //   "required",
-                // ]}
-                // errorMessages={[
-                //   "Trường này bắt buộc nhập",
-                // ]}
                 inputProps={{
                   max: moment().format("YYYY-MM-DD")
                 }}

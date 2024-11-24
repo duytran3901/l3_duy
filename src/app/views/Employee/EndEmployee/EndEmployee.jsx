@@ -25,8 +25,7 @@ const EndEmployee = () => {
     const [searchKeyword, setSearchKeyword] = useState('');
     const [action, setAction] = useState('');
     const dispatch = useDispatch();
-    const employees = useSelector((state) => state.employee.employees);
-    const totalElements = useSelector((state) => state.employee.totalElements);
+    const { totalElements, employees, reload } = useSelector((state) => state.employee);
     const dataTable = employees?.map((employee) => ({ ...employee }));
 
     const reloadTable = () => {
@@ -41,7 +40,7 @@ const EndEmployee = () => {
 
     useEffect(() => {
         reloadTable();
-    }, [searchKeyword, pageSize, page, totalElements]);
+    }, [searchKeyword, pageSize, page, reload]);
 
     const handleOpenDialogSave = (rowData) => {
         setEmployeeSelected(rowData);
@@ -73,7 +72,6 @@ const EndEmployee = () => {
                         onClick={() => handleOpenDialogView(rowData)}
                     />
                 </IconButton>
-
             </div>
         );
     };
@@ -84,7 +82,7 @@ const EndEmployee = () => {
         <div className="m-30">
             <div className="mb-sm-30">
                 <Breadcrumb
-                    routeSegments={[{ name: "Quản lý nhân viên" }]}
+                    routeSegments={[{ name: "Kết thúc nhân viên" }]}
                 />
             </div>
             <Grid container spacing={2} justifyContent="space-between">

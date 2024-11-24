@@ -132,9 +132,23 @@ const RegisterEmployeeDialog = (props) => {
       fullWidth={true}
     >
       <DialogTitle className="mt-10">
-        <span className="h3 text-green font-weight-bold">
-          Hồ sơ nhân viên
-        </span>
+        <Grid container className="flex-space-between">
+          <Grid item>
+            <span className="h3 text-green font-weight-bold">
+              Hồ sơ nhân viên
+            </span>
+          </Grid>
+          <Grid item>
+            {employee && employee.numberSaved ? (
+              <span className="text-primary">
+                {" "}
+                Mã hồ sơ: {employee.numberSaved}{" "}
+              </span>
+            ) : (
+              ""
+            )}
+          </Grid>
+        </Grid>
       </DialogTitle>
       <DialogContent dividers className="py-0">
         <Grid container>

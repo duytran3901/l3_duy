@@ -2,7 +2,7 @@ import React from "react";
 import {
     Grid,
     Dialog,
-    DialogContent, 
+    DialogContent,
     DialogTitle
 } from "@material-ui/core";
 import { toast } from "react-toastify";
@@ -31,6 +31,7 @@ const EditEmployeeDialog = (props) => {
     const dispatch = useDispatch();
 
     console.log('id: ', id);
+    console.log('employee: ', employee);
 
 
     const handleCloseDialog = () => {

@@ -90,6 +90,8 @@ const TabEmployee = (props) => {
       return;
     }
     const reader = new FileReader();
+    const formData = new FormData();
+    formData.append("file", file);
     reader.onloadend = () => {
       setEmployeeState({
         ...employeeState,

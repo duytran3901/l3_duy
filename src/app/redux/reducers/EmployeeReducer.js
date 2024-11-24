@@ -24,17 +24,14 @@ const EmployeeSlice = createSlice({
     },
     createEmployee: (state, action) => {
       state.idEmployee = action.payload.id;
-      state.totalElements = state.totalElements + 1;
+      state.reload = !state.reload;
     },
     editEmployee: (state, action) => {
-      const index = state.employees.findIndex(employee => employee.id === action.payload.id);
-      state.employees.splice(index, 1, action.payload);
       state.employee = action.payload;
       state.reload = !state.reload;
     },
-    deleteEmployee: (state, action) => {
+    deleteEmployee: (state) => {
       state.employee = null;
-      state.totalElements = state.totalElements - 1;
       state.reload = !state.reload
     }
   },
