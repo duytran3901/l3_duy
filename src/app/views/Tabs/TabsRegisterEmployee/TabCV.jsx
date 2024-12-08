@@ -129,13 +129,6 @@ const TabCV = (props) => {
                   name="skill"
                   value={employeeSkill || ""}
                   onChange={(e) => handleChange(e)}
-                  inputProps={{
-                    style: {
-                      lineHeight: "1.8",
-                      borderBottom: "1px dotted #000",
-                      paddingBottom: "4px",
-                    },
-                  }}
                 />
                 <Button
                   className="mt-12 mr-12 color-error"
