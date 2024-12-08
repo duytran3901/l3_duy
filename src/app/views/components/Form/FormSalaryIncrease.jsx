@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -16,10 +16,10 @@ import moment from "moment";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { SUBMIT_UPDATE_STATUS } from "app/constants/constants";
 import { SALARY } from "app/redux/actions/actions";
 import UpdateEmployeeSendLeaderDialog from "../Dialog/UpdateEmployeeSendLeaderDialog";
 import LeaderActionDialog from "../Dialog/LeaderActionDialog";
+import ManageEmployeeDialog from "../Dialog/ManageEmployeeDialog";
 
 toast.configure({
   autoClose: 2000,
@@ -39,31 +39,13 @@ const FormSalaryIncrease = (props) => {
   const dispatch = useDispatch();
   const [isOpenSendLeaderDialog, setIsOpenSendLeaderDialog] = useState(false);
   const [isLeaderActionDialogOpen, setIsLeaderActionDialogOpen] = useState(false);
+  const [isLeaderViewDocumentDialogOpen, setIsLeaderViewDocumentDialogOpen] = useState(false);
   const [actionLeader, setActionLeader] = useState('');
-  const [salaryForm, setSalaryForm] = useState(dataSalaryIncrease);
-  const [
-    openLeaderSendNotifyProcessDialog,
-    setOpenLeaderSendNotifyProcessDialog,
-  ] = useState(false);
-  const [statusDialog, setStatusDialog] = useState();
-
-  useEffect(() => {
-    if (dataSalaryIncrease?.id) {
-      // setStatusForm(TYPE_EDIT.index);
-    } else {
-      // setStatusForm(TYPE_ADD.index);
-    }
-    setSalaryForm(dataSalaryIncrease);
-  }, [dataSalaryIncrease]);
 
   const handleCloseDialog = () => {
     setOpen(false);
     if (resetSalary) resetSalary();
   };
-
-  const handleCloseForm = () => {
-    setOpen(false);
-  }
 
   const handleSubmitSalary = () => {
     if (dataSalaryIncrease?.id) {
@@ -90,9 +72,10 @@ const FormSalaryIncrease = (props) => {
     setIsOpenSendLeaderDialog(true);
   };
 
-  const handleCloseLeaderSendNotifyProcessDialog = () => {
-    setOpenLeaderSendNotifyProcessDialog(false);
-  };
+  const handleLeaderClickView = () => {
+    setIsLeaderViewDocumentDialogOpen(true);
+  }
+
   const handleLeaderClickReject = () => {
     setIsLeaderActionDialogOpen(true);
     setActionLeader('reject');
@@ -107,7 +90,7 @@ const FormSalaryIncrease = (props) => {
     setIsLeaderActionDialogOpen(true);
     setActionLeader('approve');
   }
-  
+
   const handleApproveSalaryIncrease = (contentDialog) => {
     const updatedData = {
       ...dataSalaryIncrease,
@@ -154,7 +137,7 @@ const FormSalaryIncrease = (props) => {
   };
 
   return (
-    <Dialog open={open} fullWidth maxWidth="md">
+    <Dialog open={open} onClose={handleCloseDialog} fullWidth maxWidth="md">
       <DialogTitle id="draggable-dialog-title">
         <Grid container justify="space-between" alignItems="center">
           <Grid item>Đề xuất tăng lương</Grid>
@@ -380,14 +363,23 @@ const FormSalaryIncrease = (props) => {
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions className="flex flex-center my-20">
+      <DialogActions className="flex flex-center my-16">
         <Button
           variant="contained"
           color="secondary"
           onClick={handleCloseDialog}
         >
-          {action === 'view' ? 'Đóng' : 'Hủy'}
+          {action === 'view' ? 'Hủy' : 'Hủy'}
         </Button>
+        {action === 'leaderProcess' && (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleLeaderClickView}
+          >
+            Xem hồ sơ
+          </Button>
+        )}
         {action === 'leaderProcess' && (
           <Button
             variant="contained"
@@ -437,7 +429,7 @@ const FormSalaryIncrease = (props) => {
       {isOpenSendLeaderDialog && (
         <UpdateEmployeeSendLeaderDialog
           open={isOpenSendLeaderDialog}
-          setOpen={handleCloseDialog}
+          setOpen={setIsOpenSendLeaderDialog}
           setOpenForm={setOpen}
           employee={employee}
           data={dataSalaryIncrease}
@@ -448,13 +440,20 @@ const FormSalaryIncrease = (props) => {
       {isLeaderActionDialogOpen && (
         <LeaderActionDialog
           open={isLeaderActionDialogOpen}
-          employee={employee}
-          handleCloseRegisterDialog={handleCloseForm}
+          handleCloseRegisterDialog={handleCloseDialog}
           setOpen={setIsLeaderActionDialogOpen}
           action={actionLeader}
           handleApprove={handleApproveSalaryIncrease}
           handleReject={handleRejectSalaryIncrease}
           handleRequest={handleRequestSalaryIncrease}
+        />
+      )}
+      {isLeaderViewDocumentDialogOpen && (
+        <ManageEmployeeDialog
+          open={isLeaderViewDocumentDialogOpen}
+          setOpen={setIsLeaderViewDocumentDialogOpen}
+          employee={employee}
+          type='leader'
         />
       )}
     </Dialog>

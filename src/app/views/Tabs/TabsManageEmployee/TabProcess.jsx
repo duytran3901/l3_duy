@@ -1,4 +1,4 @@
-import { Button, DialogActions, Grid, IconButton, MenuItem } from "@material-ui/core";
+import { Button, Grid, IconButton, MenuItem } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import {
   Edit as EditIcon,
@@ -10,7 +10,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { TextValidator, ValidatorForm, SelectValidator } from "react-material-ui-form-validator";
 import moment from "moment";
 import { ConfirmationDialog } from "egret";
-// import RequestEmployeeDialog from "app/views/organisms/requestDialog/RequestEmployeeDialog";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { EMPLOYEE_POSITION, UPDATE_EMPLOYEE_STATUS } from "app/constants/constants";
@@ -18,7 +17,7 @@ import CustomTable from "app/views/components/Custom/CustomTable";
 import { CustomColumnsProcess } from "app/views/components/Custom/CustomColumns";
 import { PROCESS } from "app/redux/actions/actions";
 import FormProcess from "app/views/components/Form/FormProcess";
-// import FormProcessIncrease from "app/views/components/Form/FormProcessIncrease";
+import NotificationDialog from "app/views/components/Dialog/NotificationDialog";
 
 toast.configure({
   autoClose: 2000,
@@ -27,7 +26,7 @@ toast.configure({
 });
 
 const TabProcess = (props) => {
-  const { employee } = props;
+  const { employee, type } = props;
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(3);
   const [process, setProcess] = useState({
@@ -37,14 +36,8 @@ const TabProcess = (props) => {
   const { processList, totalElements, reload } = useSelector(state => state.process);
   const [isOpenFormProcess, setIsOpenFormProcess] = useState(false);
   const [isConfirmDeleteProcessOpen, setIsConfirmDeleteProcessOpen] = useState(false);
-  const [openAdditionalDialog, setOpenAdditionalDialog] = useState(false);
-  const [openRejectDialog, setOpenRejectDialog] = useState(false);
-  const [disable, setDisable] = useState(false);
-  const [oldProcessApproved, setOldProcessApproved] = useState();
-  const [isSendLeader, setIsSendLeader] = useState(false);
-  const [checkStatus, setCheckStatus] = useState(false);
-  const [checkResponseLeader, setCheckResponseLeader] = useState(false);
-  const [disableSubmit, setDisableSubmit] = useState();
+  const [isNotificationDialogOpen, setIsNotificationDialogOpen] = useState(false);
+  const [processSelected, setProcessSelected] = useState({});
   const [idProcessDelete, setIdProcessDelete] = useState(0);
   const [action, setAction] = useState('');
   const dispatch = useDispatch();
@@ -71,7 +64,7 @@ const TabProcess = (props) => {
   }, [process?.currentPosition]);
 
   useEffect(() => {
-    const oldProcess = processList.find((item) => item.processStatus === 3);
+    const oldProcess = processList.find((item) => item.processStatus === '3');
     if (oldProcess) {
       setProcess({
         ...process,
@@ -124,34 +117,16 @@ const TabProcess = (props) => {
     setAction('sendLeader');
   };
 
-  const handleViewFormProcess = (item) => {
-    setIsSendLeader(false);
-    setProcess(item);
+  const handleViewFormProcess = (rowData) => {
+    setProcessSelected(rowData);
     setIsOpenFormProcess(true);
     setAction('view');
   };
 
-  const handleCloseDialogFormProcess = () => {
-    setIsOpenFormProcess(false);
-    resetProcess();
-  };
-
-  const handleAdditional = (item) => {
-    setProcess(item);
-    setOpenAdditionalDialog(true);
-  };
-  const handleCloseAdditional = () => {
-    resetProcess();
-    setOpenAdditionalDialog(false);
-  };
-  const handleReject = (item) => {
-    setProcess(item);
-    setOpenRejectDialog(true);
-  };
-  const handleCloseRejectDialog = () => {
-    resetProcess();
-    setOpenRejectDialog(false);
-  };
+  const handleOpenDialogNotification = (rowData) => {
+    setProcessSelected(rowData);
+    setIsNotificationDialogOpen(true);
+  }
 
   const handleClickDelete = (rowData) => {
     setIsConfirmDeleteProcessOpen(true);
@@ -162,22 +137,17 @@ const TabProcess = (props) => {
     dispatch({ type: PROCESS.DELETE_PROCESS, payload: id });
     setIsConfirmDeleteProcessOpen(false);
     setIdProcessDelete(0);
+    setProcess({});
   }
 
   const handleSubmit = () => {
     handleOpenDialogFormProcess();
     setProcess(process);
-    // setIsSendLeader(true);
   };
 
   const Action = ({ rowData }) => {
     return (
       <div>
-        {UPDATE_EMPLOYEE_STATUS.EDIT.includes(rowData?.processStatus) && (
-          <IconButton size="small" onClick={() => handleEditProcess(rowData)}>
-            <EditIcon color="primary" fontSize="small" />
-          </IconButton>
-        )}
         {UPDATE_EMPLOYEE_STATUS.VIEW_PROCESS.includes(rowData?.processStatus) && (
           <IconButton size="small">
             <VisibilityIcon
@@ -187,32 +157,41 @@ const TabProcess = (props) => {
             />
           </IconButton>
         )}
-        {UPDATE_EMPLOYEE_STATUS.ADDITIONAL.includes(rowData?.processStatus) && (
-          <IconButton size="small">
-            <NotificationsIcon
-              color="secondary"
-              fontSize="small"
-              onClick={() => handleAdditional(rowData)}
-            />
-          </IconButton>
-        )}
-        {UPDATE_EMPLOYEE_STATUS.REJECT.includes(rowData?.processStatus) && (
-          <IconButton size="small">
-            <NotificationsIcon
-              color="secondary"
-              fontSize="small"
-              onClick={() => handleReject(rowData)}
-            />
-          </IconButton>
-        )}
-        {UPDATE_EMPLOYEE_STATUS.REMOVE.includes(rowData?.processStatus) && (
-          <IconButton size="small">
-            <DeleteIcon
-              color="error"
-              fontSize="small"
-              onClick={() => handleClickDelete(rowData)}
-            />
-          </IconButton>
+        {!type && (
+          <>
+            {UPDATE_EMPLOYEE_STATUS.EDIT.includes(rowData?.processStatus) && (
+              <IconButton size="small" onClick={() => handleEditProcess(rowData)}>
+                <EditIcon color="primary" fontSize="small" />
+              </IconButton>
+            )}
+            {UPDATE_EMPLOYEE_STATUS.ADDITIONAL.includes(rowData?.processStatus) && (
+              <IconButton size="small">
+                <NotificationsIcon
+                  color="secondary"
+                  fontSize="small"
+                  onClick={() => handleOpenDialogNotification(rowData)}
+                />
+              </IconButton>
+            )}
+            {UPDATE_EMPLOYEE_STATUS.REJECT.includes(rowData?.processStatus) && (
+              <IconButton size="small">
+                <NotificationsIcon
+                  color="secondary"
+                  fontSize="small"
+                  onClick={() => handleOpenDialogNotification(rowData)}
+                />
+              </IconButton>
+            )}
+            {UPDATE_EMPLOYEE_STATUS.REMOVE.includes(rowData?.processStatus) && (
+              <IconButton size="small">
+                <DeleteIcon
+                  color="error"
+                  fontSize="small"
+                  onClick={() => handleClickDelete(rowData)}
+                />
+              </IconButton>
+            )}
+          </>
         )}
       </div>
     );
@@ -222,123 +201,131 @@ const TabProcess = (props) => {
 
   return (
     <div>
-      <ValidatorForm onSubmit={handleSubmit} className="mb-30">
-        <Grid container spacing={2} lg={12} md={12}>
-          <Grid item md={2} sm={6} xs={6}>
-            <TextValidator
-              className="w-100"
-              label={
-                <span className="font pr-10 font-size-13">
-                  <span className="span-required"> * </span>
-                  Ngày đề xuất
-                </span>
-              }
-              onChange={e => handleChangeInput(e)}
-              onBlur={e => handleBlurInput(e)}
-              type="date"
-              name="promotionDay"
-              size="small"
-              variant="outlined"
-              value={process?.promotionDay ? moment(process?.promotionDay).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")}
-              validators={[
-                "required"
-              ]}
-              errorMessages={[
-                "Trường này bắt buộc nhập"
-              ]}
-              inputProps={{
-                min: process?.promotionDay ? moment(process?.promotionDay).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")
-              }}
-            />
+      {!type && (
+        <ValidatorForm onSubmit={handleSubmit} className="mb-30">
+          <Grid container spacing={2} lg={12} md={12}>
+            <Grid item md={2} sm={6} xs={6}>
+              <TextValidator
+                className="w-100"
+                label={
+                  <span className="font pr-10 font-size-13">
+                    <span className="span-required"> * </span>
+                    Ngày đề xuất
+                  </span>
+                }
+                onChange={e => handleChangeInput(e)}
+                onBlur={e => handleBlurInput(e)}
+                type="date"
+                name="promotionDay"
+                size="small"
+                variant="outlined"
+                value={process?.promotionDay ? moment(process?.promotionDay).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")}
+                validators={[
+                  "required"
+                ]}
+                errorMessages={[
+                  "Trường này bắt buộc nhập"
+                ]}
+                inputProps={{
+                  min: process?.promotionDay ? moment(process?.promotionDay).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")
+                }}
+              />
+            </Grid>
+            <Grid item md={2} sm={6} xs={6}>
+              <TextValidator
+                disabled
+                className="w-100"
+                label={<span className="font font-size-13">Chức vụ hiện tại</span>}
+                type="text"
+                name="currentPosition"
+                size="small"
+                variant="outlined"
+                value={EMPLOYEE_POSITION.find((item) => item.id === process?.currentPosition)?.name}
+                validators={[
+                  "required"
+                ]}
+                errorMessages={[
+                  "Trường này bắt buộc nhập"
+                ]}
+              />
+            </Grid>
+            <Grid item md={2} sm={6} xs={6}>
+              <SelectValidator
+                className="w-100"
+                label={
+                  <span className="font">
+                    <span className="span-required"> * </span>
+                    Chức vụ đề xuất
+                  </span>
+                }
+                onChange={e => handleChangeInput(e)}
+                name="newPosition"
+                size="small"
+                variant="outlined"
+                value={process?.newPosition || ''}
+                validators={[
+                  "required",
+                  "isGreaterThanOldProcess"
+                ]}
+                errorMessages={[
+                  "Trường này bắt buộc chọn",
+                  "Chức vụ mới phải lớn hơn chức vụ hiện tại"
+                ]}
+              >
+                {EMPLOYEE_POSITION?.map((position) => (
+                  <MenuItem key={position.id} value={position.id}>
+                    {position.name}
+                  </MenuItem>
+                ))}
+              </SelectValidator>
+            </Grid>
+            <Grid item md={4} sm={6} xs={6}>
+              <TextValidator
+                className="w-100"
+                label={
+                  <span className="font pr-10  font-size-13">
+                    <span className="span-required"> * </span>
+                    Ghi chú
+                  </span>
+                }
+                onChange={e => handleChangeInput(e)}
+                onBlur={e => handleBlurInput(e)}
+                type="text"
+                name="note"
+                size="small"
+                variant="outlined"
+                value={process?.note || ''}
+                placeholder='Ghi chú'
+                validators={[
+                  "required",
+                  "maxStringLength:1000"
+                ]}
+                errorMessages={[
+                  "Trường này bắt buộc nhập",
+                  "Nội dung không được vượt quá 1000 ký tự"
+                ]}
+              />
+            </Grid>
+            <Grid item md={2} sm={6} xs={6} className="flex-center">
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={resetProcess}
+                className="mr-8"
+              >
+                Hủy
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Lưu
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item md={2} sm={6} xs={6}>
-            <TextValidator
-              disabled
-              className="w-100"
-              label={<span className="font font-size-13">Chức vụ hiện tại</span>}
-              type="text"
-              name="currentPosition"
-              size="small"
-              variant="outlined"
-              value={EMPLOYEE_POSITION.find((item) => item.id === process?.currentPosition)?.name}
-              validators={[
-                "required"
-              ]}
-              errorMessages={[
-                "Trường này bắt buộc nhập"
-              ]}
-            />
-          </Grid>
-          <Grid item md={2} sm={6} xs={6}>
-            <SelectValidator
-              className="w-100"
-              label={
-                <span className="font">
-                  <span className="span-required"> * </span>
-                  Chức vụ đề xuất
-                </span>
-              }
-              onChange={e => handleChangeInput(e)}
-              name="newPosition"
-              size="small"
-              variant="outlined"
-              value={process?.newPosition || ''}
-              validators={[
-                "required",
-                "isGreaterThanOldProcess"
-              ]}
-              errorMessages={[
-                "Trường này bắt buộc chọn",
-                "Chức vụ mới phải lớn hơn chức vụ hiện tại"
-              ]}
-            >
-              {EMPLOYEE_POSITION?.map((position) => (
-                <MenuItem key={position.id} value={position.id}>
-                  {position.name}
-                </MenuItem>
-              ))}
-            </SelectValidator>
-          </Grid>
-          <Grid item md={4} sm={6} xs={6}>
-            <TextValidator
-              className="w-100"
-              label={
-                <span className="font pr-10  font-size-13">
-                  <span className="span-required"> * </span>
-                  Ghi chú
-                </span>
-              }
-              onChange={e => handleChangeInput(e)}
-              onBlur={e => handleBlurInput(e)}
-              type="text"
-              name="note"
-              size="small"
-              variant="outlined"
-              value={process?.note || ''}
-              placeholder='Ghi chú'
-              validators={[
-                "required",
-              ]}
-              errorMessages={[
-                "Trường này bắt buộc nhập",
-              ]}
-            />
-          </Grid>
-          <DialogActions className="text-center flex-top">
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              disabled={disableSubmit}
-            >
-              Lưu
-            </Button>
-            <Button variant="contained" color="secondary" onClick={resetProcess}>
-              Hủy
-            </Button>
-          </DialogActions>
-        </Grid>
-      </ValidatorForm>
+        </ValidatorForm>
+      )}
       <div className="mt-6">
         <CustomTable
           data={totalElements <= pageSize ? dataTable : dataTable.slice(page * pageSize, page * pageSize + pageSize)}
@@ -359,9 +346,6 @@ const TabProcess = (props) => {
           resetProcess={resetProcess}
           dataProcess={process}
           employee={employee}
-          isSendLeader={isSendLeader}
-          checkStatus={checkStatus}
-          testCheck={checkResponseLeader}
           action={action}
         />
       )}
@@ -371,26 +355,18 @@ const TabProcess = (props) => {
           open={isConfirmDeleteProcessOpen}
           onConfirmDialogClose={() => setIsConfirmDeleteProcessOpen(false)}
           onYesClick={() => handleDeleteProcess(idProcessDelete)}
-          Yes='Có'
-          No='Không'
+          Yes='Xác nhận'
+          No='Hủy'
         />
       )}
-      {/*{openAdditionalDialog && (
-        <RequestEmployeeDialog
-          open={openAdditionalDialog}
-          handleStatusClose={handleCloseAdditional}
-          note={process?.additionalRequest}
-          title={"Yêu cầu bổ sung"}
+      {isNotificationDialogOpen && (
+        <NotificationDialog
+          open={isNotificationDialogOpen}
+          setOpen={setIsNotificationDialogOpen}
+          data={processSelected}
+          type='process'
         />
       )}
-      {openRejectDialog && (
-        <RequestEmployeeDialog
-          open={openRejectDialog}
-          handleStatusClose={handleCloseRejectDialog}
-          note={process?.reasonForRefusal}
-          title={"Lí do từ chối"}
-        />
-      )} */}
     </div>
   );
 };

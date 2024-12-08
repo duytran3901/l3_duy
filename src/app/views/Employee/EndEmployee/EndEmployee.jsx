@@ -15,6 +15,7 @@ import { CustomColumnsEmployee } from "../../components/Custom/CustomColumns";
 import { ACTION_EMPLOYEE, EMPLOYEE_STATUS } from "app/constants/constants";
 import RegisterEmployeeDialog from "app/views/components/Dialog/RegisterEmployeeDialog";
 import SaveEmployeeDialog from "app/views/components/Dialog/SaveEmployeeDialog";
+import { toast } from "react-toastify";
 
 const EndEmployee = () => {
     const [pageSize, setPageSize] = useState(10);
@@ -39,7 +40,11 @@ const EndEmployee = () => {
     }
 
     useEffect(() => {
-        reloadTable();
+        if (searchKeyword.length <= 255) {
+            reloadTable();
+        } else {
+            toast.error('Nội dung tìm kiếm vượt quá 255 ký tự!')
+        }
     }, [searchKeyword, pageSize, page, reload]);
 
     const handleOpenDialogSave = (rowData) => {
@@ -79,14 +84,14 @@ const EndEmployee = () => {
     const columns = CustomColumnsEmployee({ Action: actions, page, pageSize })
 
     return (
-        <div className="m-30">
+        <div className="mx-30 mt-30">
             <div className="mb-sm-30">
                 <Breadcrumb
                     routeSegments={[{ name: "Kết thúc nhân viên" }]}
                 />
             </div>
             <Grid container spacing={2} justifyContent="space-between">
-                <Grid item lg={2} md={3} sm={3} xs={12}>
+                <Grid item lg={3} md={4} sm={6} xs={12}>
                     <Input
                         type="text"
                         name="keyword"
@@ -94,7 +99,7 @@ const EndEmployee = () => {
                             setSearchKeyword(e.target.value.toLowerCase());
                             setPage(0);
                         }}
-                        className="w-100 mb-8 mr-10"
+                        className="w-100 mb-4 mr-10"
                         id="search_box"
                         placeholder='Nhập từ khóa tìm kiếm'
                         startAdornment={
@@ -116,7 +121,7 @@ const EndEmployee = () => {
                         setPageSize={setPageSize}
                         setPage={setPage}
                         rowsPerPageOptions={[5, 10, 20, 50, 100]}
-                        height='calc(100vh - 356px)'
+                        height='calc(100vh - 326px)'
                     />
                 </Grid>
             </Grid>

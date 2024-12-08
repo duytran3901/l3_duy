@@ -29,8 +29,6 @@ const TabPendingProposal = () => {
 
   useEffect(() => {
     updatePage();
-    console.log(dataTable);
-
   }, [page, pageSize, reload]);
 
   useEffect(() => {
@@ -79,7 +77,7 @@ const TabPendingProposal = () => {
         setPageSize={setPageSize}
         setPage={setPage}
         rowsPerPageOptions={[1, 2, 3, 5, 10]}
-        height='calc(100vh - 356px)'
+        height='calc(100vh - 306px)'
       />
       {isOpenFormSalary && (
         <FormProposal

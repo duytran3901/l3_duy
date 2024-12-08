@@ -16,9 +16,10 @@ import { EMPLOYEE } from "../../../redux/actions/actions";
 import CustomTable from "../../components/Custom/CustomTable";
 import { CustomColumnsEmployee } from "../../components/Custom/CustomColumns";
 import { ACTION_EMPLOYEE, EMPLOYEE_STATUS } from "app/constants/constants";
-import EditEmployeeDialog from '../../components/Dialog/AddEmployeeDialog';
+import AddEmployeeDialog from '../../components/Dialog/AddEmployeeDialog';
 import RegisterEmployeeDialog from "app/views/components/Dialog/RegisterEmployeeDialog";
 import NotificationDialog from "app/views/components/Dialog/NotificationDialog";
+import { toast } from "react-toastify";
 
 const AddEmployee = () => {
     const [pageSize, setPageSize] = useState(10);
@@ -45,7 +46,11 @@ const AddEmployee = () => {
     }
 
     useEffect(() => {
-        reloadTable();
+        if (searchKeyword.length <= 255) {
+            reloadTable();
+        } else {
+            toast.error('Nội dung tìm kiếm vượt quá 255 ký tự!')
+        }
     }, [searchKeyword, pageSize, page, reload]);
 
     const handleOpenDialogEdit = (rowData) => {
@@ -59,14 +64,14 @@ const AddEmployee = () => {
     }
 
     const handleOpenDialogView = (rowData) => {
-        setIsRegisterEmployeeDialogOpen(true);
         setEmployeeSelected(rowData);
+        setIsRegisterEmployeeDialogOpen(true);
         setAction('view');
     }
 
     const handleClickDelete = (rowData) => {
-        setIsConfirmDeleteEmployeeOpen(true);
         setEmployeeSelected(rowData);
+        setIsConfirmDeleteEmployeeOpen(true);
     }
 
     const handleDeleteEmployee = (id) => {
@@ -76,8 +81,8 @@ const AddEmployee = () => {
     }
 
     const handleOpenDialogNotification = (rowData) => {
-        setIsNotificationDialogOpen(true);
         setEmployeeSelected(rowData);
+        setIsNotificationDialogOpen(true);
     }
 
     const actions = ({ rowData }) => {
@@ -120,7 +125,7 @@ const AddEmployee = () => {
     const columns = CustomColumnsEmployee({ Action: actions, page, pageSize })
 
     return (
-        <div className="m-30">
+        <div className="mx-30 mt-30">
             <div className="mb-sm-30">
                 <Breadcrumb
                     routeSegments={[{ name: "Thêm nhân viên mới" }]}
@@ -130,14 +135,14 @@ const AddEmployee = () => {
                 <Grid item lg={5} md={5} sm={5} xs={12}>
                     <Button
                         variant="contained"
-                        className="mb-8 mr-16 align-bottom"
+                        className="mb-4 mr-16 align-bottom"
                         color="primary"
-                        onClick={() => handleOpenDialogEdit({})}
+                        onClick={() => handleOpenDialogEdit()}
                     >
                         Thêm nhân viên mới
                     </Button>
                 </Grid>
-                <Grid item lg={2} md={3} sm={3} xs={12}>
+                <Grid item lg={3} md={4} sm={6} xs={12}>
                     <Input
                         type="text"
                         name="keyword"
@@ -145,7 +150,7 @@ const AddEmployee = () => {
                             setSearchKeyword(e.target.value.toLowerCase());
                             setPage(0);
                         }}
-                        className="w-100 mb-8 mr-10"
+                        className="w-100 mb-4 mr-10"
                         id="search_box"
                         placeholder='Nhập từ khóa tìm kiếm'
                         startAdornment={
@@ -167,12 +172,12 @@ const AddEmployee = () => {
                         setPageSize={setPageSize}
                         setPage={setPage}
                         rowsPerPageOptions={[5, 10, 20, 50, 100]}
-                        height='calc(100vh - 356px)'
+                        height='calc(100vh - 326px)'
                     />
                 </Grid>
             </Grid>
             {isEditEmployeeDialogOpen && (
-                <EditEmployeeDialog
+                <AddEmployeeDialog
                     open={isEditEmployeeDialogOpen}
                     setOpen={setIsEditEmployeeDialogOpen}
                     employee={employeeSelected}
@@ -186,8 +191,8 @@ const AddEmployee = () => {
                     open={isConfirmDeleteEmployeeOpen}
                     onConfirmDialogClose={() => setIsConfirmDeleteEmployeeOpen(false)}
                     onYesClick={() => handleDeleteEmployee(employeeSelected.id)}
-                    Yes='Có'
-                    No='Không'
+                    Yes='Xác nhận'
+                    No='Hủy'
                 />
             )}
             {isRegisterEmployeeDialogOpen && (
@@ -202,7 +207,8 @@ const AddEmployee = () => {
                 <NotificationDialog
                     open={isNotificationDialogOpen}
                     setOpen={setIsNotificationDialogOpen}
-                    employee={employeeSelected}
+                    data={employeeSelected}
+                    type='employee'
                 />
             )}
         </div>

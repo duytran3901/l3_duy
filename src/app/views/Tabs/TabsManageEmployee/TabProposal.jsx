@@ -1,4 +1,4 @@
-import { Button, DialogActions, Grid, IconButton, MenuItem } from "@material-ui/core";
+import { Button, Grid, IconButton, MenuItem } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import {
   Edit as EditIcon,
@@ -10,15 +10,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { TextValidator, ValidatorForm, SelectValidator } from "react-material-ui-form-validator";
 import moment from "moment";
 import { ConfirmationDialog } from "egret";
-// import RequestEmployeeDialog from "app/views/organisms/requestDialog/RequestEmployeeDialog";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { EMPLOYEE_POSITION, TYPE_PROPOSAL, UPDATE_EMPLOYEE_STATUS } from "app/constants/constants";
+import { TYPE_PROPOSAL, UPDATE_EMPLOYEE_STATUS } from "app/constants/constants";
 import CustomTable from "app/views/components/Custom/CustomTable";
 import { CustomColumnsProposal } from "app/views/components/Custom/CustomColumns";
 import { PROPOSAL } from "app/redux/actions/actions";
 import FormProposal from "app/views/components/Form/FormProposal";
-// import FormProposalIncrease from "app/views/components/Form/FormProposalIncrease";
+import NotificationDialog from "app/views/components/Dialog/NotificationDialog";
 
 toast.configure({
   autoClose: 2000,
@@ -27,24 +26,18 @@ toast.configure({
 });
 
 const TabProposal = (props) => {
-  const { employee } = props;
+  const { employee, type } = props;
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(3);
   const [proposal, setProposal] = useState({
     proposalDate: moment().format("YYYY-MM-DD"),
     currentPosition: 1
   });
+  const [proposalSelected, setProposalSelected] = useState({});
   const { proposals, totalElements, reload } = useSelector(state => state.proposal);
   const [isOpenFormProposal, setIsOpenFormProposal] = useState(false);
   const [isConfirmDeleteProposalOpen, setIsConfirmDeleteProposalOpen] = useState(false);
-  const [openAdditionalDialog, setOpenAdditionalDialog] = useState(false);
-  const [openRejectDialog, setOpenRejectDialog] = useState(false);
-  const [disable, setDisable] = useState(false);
-  const [oldProposalApproved, setOldProposalApproved] = useState();
-  const [isSendLeader, setIsSendLeader] = useState(false);
-  const [checkStatus, setCheckStatus] = useState(false);
-  const [checkResponseLeader, setCheckResponseLeader] = useState(false);
-  const [disableSubmit, setDisableSubmit] = useState();
+  const [isNotificationDialogOpen, setIsNotificationDialogOpen] = useState(false);
   const [idProposalDelete, setIdProposalDelete] = useState(0);
   const [action, setAction] = useState('');
   const dispatch = useDispatch();
@@ -106,21 +99,7 @@ const TabProposal = (props) => {
   };
 
   const handleEditProposal = (rowData) => {
-    if (rowData.oldProposal === oldProposalApproved) {
-      if (checkResponseLeader) {
-        setDisableSubmit(false);
-      }
-      const formattedStartDate = rowData.proposalDate
-        ? moment(rowData.proposalDate).format("YYYY-MM-DD")
-        : moment().format("YYYY-MM-DD");
-
-      setProposal({
-        ...rowData,
-        proposalDate: formattedStartDate,
-      });
-    } else {
-      toast.error("Mức lương cũ không đúng!");
-    }
+      setProposal(rowData);
   };
 
   const handleOpenDialogFormProposal = (rowData) => {
@@ -129,34 +108,16 @@ const TabProposal = (props) => {
     setAction('sendLeader');
   };
 
-  const handleViewFormProposal = (item) => {
-    setIsSendLeader(false);
-    setProposal(item);
+  const handleViewFormProposal = (rowData) => {
+    setProposalSelected(rowData);
     setIsOpenFormProposal(true);
     setAction('view');
   };
 
-  const handleCloseDialogFormProposal = () => {
-    setIsOpenFormProposal(false);
-    resetProposal();
-  };
-
-  const handleAdditional = (item) => {
-    setProposal(item);
-    setOpenAdditionalDialog(true);
-  };
-  const handleCloseAdditional = () => {
-    resetProposal();
-    setOpenAdditionalDialog(false);
-  };
-  const handleReject = (item) => {
-    setProposal(item);
-    setOpenRejectDialog(true);
-  };
-  const handleCloseRejectDialog = () => {
-    resetProposal();
-    setOpenRejectDialog(false);
-  };
+  const handleOpenDialogNotification = (rowData) => {
+    setProposalSelected(rowData);
+    setIsNotificationDialogOpen(true);
+  }
 
   const handleClickDelete = (rowData) => {
     setIsConfirmDeleteProposalOpen(true);
@@ -167,22 +128,17 @@ const TabProposal = (props) => {
     dispatch({ type: PROPOSAL.DELETE_PROPOSAL, payload: id });
     setIsConfirmDeleteProposalOpen(false);
     setIdProposalDelete(0);
+    setProposal({});
   }
 
   const handleSubmit = () => {
     handleOpenDialogFormProposal();
     setProposal(proposal);
-    // setIsSendLeader(true);
   };
 
   const Action = ({ rowData }) => {
     return (
       <div>
-        {UPDATE_EMPLOYEE_STATUS.EDIT.includes(rowData?.proposalStatus) && (
-          <IconButton size="small" onClick={() => handleEditProposal(rowData)}>
-            <EditIcon color="primary" fontSize="small" />
-          </IconButton>
-        )}
         {UPDATE_EMPLOYEE_STATUS.VIEW_PROCESS.includes(rowData?.proposalStatus) && (
           <IconButton size="small">
             <VisibilityIcon
@@ -192,32 +148,41 @@ const TabProposal = (props) => {
             />
           </IconButton>
         )}
-        {UPDATE_EMPLOYEE_STATUS.ADDITIONAL.includes(rowData?.proposalStatus) && (
-          <IconButton size="small">
-            <NotificationsIcon
-              color="secondary"
-              fontSize="small"
-              onClick={() => handleAdditional(rowData)}
-            />
+        {UPDATE_EMPLOYEE_STATUS.EDIT.includes(rowData?.proposalStatus) && (
+          <IconButton size="small" onClick={() => handleEditProposal(rowData)}>
+            <EditIcon color="primary" fontSize="small" />
           </IconButton>
         )}
-        {UPDATE_EMPLOYEE_STATUS.REJECT.includes(rowData?.proposalStatus) && (
-          <IconButton size="small">
-            <NotificationsIcon
-              color="secondary"
-              fontSize="small"
-              onClick={() => handleReject(rowData)}
-            />
-          </IconButton>
-        )}
-        {UPDATE_EMPLOYEE_STATUS.REMOVE.includes(rowData?.proposalStatus) && (
-          <IconButton size="small">
-            <DeleteIcon
-              color="error"
-              fontSize="small"
-              onClick={() => handleClickDelete(rowData)}
-            />
-          </IconButton>
+        {!type && (
+          <>
+            {UPDATE_EMPLOYEE_STATUS.ADDITIONAL.includes(rowData?.proposalStatus) && (
+              <IconButton size="small">
+                <NotificationsIcon
+                  color="secondary"
+                  fontSize="small"
+                  onClick={() => handleOpenDialogNotification(rowData)}
+                />
+              </IconButton>
+            )}
+            {UPDATE_EMPLOYEE_STATUS.REJECT.includes(rowData?.proposalStatus) && (
+              <IconButton size="small">
+                <NotificationsIcon
+                  color="secondary"
+                  fontSize="small"
+                  onClick={() => handleOpenDialogNotification(rowData)}
+                />
+              </IconButton>
+            )}
+            {UPDATE_EMPLOYEE_STATUS.REMOVE.includes(rowData?.proposalStatus) && (
+              <IconButton size="small">
+                <DeleteIcon
+                  color="error"
+                  fontSize="small"
+                  onClick={() => handleClickDelete(rowData)}
+                />
+              </IconButton>
+            )}
+          </>
         )}
       </div>
     );
@@ -227,148 +192,160 @@ const TabProposal = (props) => {
 
   return (
     <div>
-      <ValidatorForm onSubmit={handleSubmit} className="mb-30">
-        <Grid container spacing={2} lg={12} md={12}>
-          <Grid item md={2} sm={6} xs={6}>
-            <TextValidator
-              className="w-100"
-              label={
-                <span className="font pr-10 font-size-13">
-                  <span className="span-required"> * </span>
-                  Ngày đề xuất
-                </span>
-              }
-              onChange={e => handleChangeInput(e)}
-              onBlur={e => handleBlurInput(e)}
-              type="date"
-              name="proposalDate"
-              size="small"
-              variant="outlined"
-              value={proposal?.proposalDate ? moment(proposal?.proposalDate).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")}
-              validators={[
-                "required"
-              ]}
-              errorMessages={[
-                "Trường này bắt buộc nhập"
-              ]}
-              inputProps={{
-                min: moment().format("YYYY-MM-DD")
-              }}
-            />
+      {!type && (
+        <ValidatorForm onSubmit={handleSubmit} className="mb-30">
+          <Grid container spacing={2} lg={12} md={12}>
+            <Grid item md={2} sm={6} xs={6}>
+              <TextValidator
+                className="w-100"
+                label={
+                  <span className="font pr-10 font-size-13">
+                    <span className="span-required"> * </span>
+                    Ngày đề xuất
+                  </span>
+                }
+                onChange={e => handleChangeInput(e)}
+                onBlur={e => handleBlurInput(e)}
+                type="date"
+                name="proposalDate"
+                size="small"
+                variant="outlined"
+                value={proposal?.proposalDate ? moment(proposal?.proposalDate).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")}
+                validators={[
+                  "required"
+                ]}
+                errorMessages={[
+                  "Trường này bắt buộc nhập"
+                ]}
+                inputProps={{
+                  min: moment().format("YYYY-MM-DD")
+                }}
+              />
+            </Grid>
+            <Grid item md={2} sm={6} xs={6}>
+              <SelectValidator
+                className="w-100"
+                label={
+                  <span className="font">
+                    <span className="span-required"> * </span>
+                    Loại đề xuất
+                  </span>
+                }
+                onChange={e => handleChangeInput(e)}
+                type="text"
+                name="type"
+                size="small"
+                variant="outlined"
+                value={proposal?.type || ''}
+                validators={["required"]}
+                errorMessages={["Trường này bắt buộc chọn"]}
+              >
+                {TYPE_PROPOSAL?.map((type) => (
+                  <MenuItem key={type.id} value={type.id}>
+                    {type.name}
+                  </MenuItem>
+                ))}
+              </SelectValidator>
+            </Grid>
+            <Grid item md={2} sm={6} xs={6}>
+              <TextValidator
+                className="w-100"
+                label={
+                  <span className="font pr-10  font-size-13">
+                    <span className="span-required"> * </span>
+                    Nội dung
+                  </span>
+                }
+                onChange={e => handleChangeInput(e)}
+                onBlur={e => handleBlurInput(e)}
+                type="text"
+                name="content"
+                size="small"
+                variant="outlined"
+                value={proposal?.content || ''}
+                validators={[
+                  "required",
+                  "maxStringLength:1000"
+                ]}
+                errorMessages={[
+                  "Trường này bắt buộc nhập",
+                  "Nội dung không được vượt quá 1000 ký tự"
+                ]}
+              />
+            </Grid>
+            <Grid item md={2} sm={6} xs={6}>
+              <TextValidator
+                className="w-100"
+                label={
+                  <span className="font pr-10  font-size-13">
+                    <span className="span-required"> * </span>
+                    Mô tả
+                  </span>
+                }
+                onChange={e => handleChangeInput(e)}
+                onBlur={e => handleBlurInput(e)}
+                type="text"
+                name="detailedDescription"
+                size="small"
+                variant="outlined"
+                value={proposal?.detailedDescription || ''}
+                validators={[
+                  "required",
+                  "maxStringLength:1000"
+                ]}
+                errorMessages={[
+                  "Trường này bắt buộc nhập",
+                  "Nội dung không được vượt quá 1000 ký tự"
+                ]}
+              />
+            </Grid>
+            <Grid item md={2} sm={6} xs={6}>
+              <TextValidator
+                className="w-100"
+                label={
+                  <span className="font pr-10  font-size-13">
+                    <span className="span-required"> * </span>
+                    Ghi chú
+                  </span>
+                }
+                onChange={e => handleChangeInput(e)}
+                onBlur={e => handleBlurInput(e)}
+                type="text"
+                name="note"
+                size="small"
+                variant="outlined"
+                value={proposal?.note || ''}
+                placeholder='Ghi chú'
+                validators={[
+                  "required",
+                  "maxStringLength:1000"
+                ]}
+                errorMessages={[
+                  "Trường này bắt buộc nhập",
+                  "Nội dung không được vượt quá 1000 ký tự"
+                ]}
+              />
+            </Grid>
+            <Grid item md={2} sm={6} xs={6} className="flex-center">
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={resetProposal}
+                className="mr-8"
+              >
+                Hủy
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                type="submit"
+              >
+                Lưu
+              </Button>
+            </Grid>
           </Grid>
-          <Grid item md={2} sm={6} xs={6}>
-            <SelectValidator
-              className="w-100"
-              label={
-                <span className="font">
-                  <span className="span-required"> * </span>
-                  Loại đề xuất
-                </span>
-              }
-              onChange={e => handleChangeInput(e)}
-              type="text"
-              name="type"
-              size="small"
-              variant="outlined"
-              value={proposal?.type || ''}
-              validators={["required"]}
-              errorMessages={["Trường này bắt buộc chọn"]}
-            >
-              {TYPE_PROPOSAL?.map((type) => (
-                <MenuItem key={type.id} value={type.id}>
-                  {type.name}
-                </MenuItem>
-              ))}
-            </SelectValidator>
-          </Grid>
-          <Grid item md={2} sm={6} xs={6}>
-            <TextValidator
-              className="w-100"
-              label={
-                <span className="font pr-10  font-size-13">
-                  <span className="span-required"> * </span>
-                  Nội dung
-                </span>
-              }
-              onChange={e => handleChangeInput(e)}
-              onBlur={e => handleBlurInput(e)}
-              type="text"
-              name="content"
-              size="small"
-              variant="outlined"
-              value={proposal?.content || ''}
-              validators={[
-                "required"
-              ]}
-              errorMessages={[
-                "Trường này bắt buộc nhập"
-              ]}
-            />
-          </Grid>
-          <Grid item md={2} sm={6} xs={6}>
-            <TextValidator
-              className="w-100"
-              label={
-                <span className="font pr-10  font-size-13">
-                  <span className="span-required"> * </span>
-                  Mô tả
-                </span>
-              }
-              onChange={e => handleChangeInput(e)}
-              onBlur={e => handleBlurInput(e)}
-              type="text"
-              name="detailedDescription"
-              size="small"
-              variant="outlined"
-              value={proposal?.detailedDescription || ''}
-              validators={[
-                "required"
-              ]}
-              errorMessages={[
-                "Trường này bắt buộc nhập"
-              ]}
-            />
-          </Grid>
-          <Grid item md={2} sm={6} xs={6}>
-            <TextValidator
-              className="w-100"
-              label={
-                <span className="font pr-10  font-size-13">
-                  <span className="span-required"> * </span>
-                  Ghi chú
-                </span>
-              }
-              onChange={e => handleChangeInput(e)}
-              onBlur={e => handleBlurInput(e)}
-              type="text"
-              name="note"
-              size="small"
-              variant="outlined"
-              value={proposal?.note || ''}
-              placeholder='Ghi chú'
-              validators={[
-                "required",
-              ]}
-              errorMessages={[
-                "Trường này bắt buộc nhập",
-              ]}
-            />
-          </Grid>
-          <DialogActions className="text-center flex-top">
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              disabled={disableSubmit}
-            >
-              Lưu
-            </Button>
-            <Button variant="contained" color="secondary" onClick={resetProposal}>
-              Hủy
-            </Button>
-          </DialogActions>
-        </Grid>
-      </ValidatorForm>
+        </ValidatorForm>
+      )}
       <div className="mt-6">
         <CustomTable
           data={totalElements <= pageSize ? dataTable : dataTable.slice(page * pageSize, page * pageSize + pageSize)}
@@ -384,15 +361,12 @@ const TabProposal = (props) => {
       </div>
       {isOpenFormProposal && (
         <FormProposal
-        open={isOpenFormProposal}
-        setOpen={setIsOpenFormProposal}
-        resetProposal={resetProposal}
-        dataProposal={proposal}
-        employee={employee}
-        isSendLeader={isSendLeader}
-        checkStatus={checkStatus}
-        testCheck={checkResponseLeader}
-        action={action}
+          open={isOpenFormProposal}
+          setOpen={setIsOpenFormProposal}
+          resetProposal={resetProposal}
+          dataProposal={proposal}
+          employee={employee}
+          action={action}
         />
       )}
       {isConfirmDeleteProposalOpen && (
@@ -401,26 +375,18 @@ const TabProposal = (props) => {
           open={isConfirmDeleteProposalOpen}
           onConfirmDialogClose={() => setIsConfirmDeleteProposalOpen(false)}
           onYesClick={() => handleDeleteProposal(idProposalDelete)}
-          Yes='Có'
-          No='Không'
+          Yes='Xác nhận'
+          No='Hủy'
         />
       )}
-      {/*{openAdditionalDialog && (
-        <RequestEmployeeDialog
-          open={openAdditionalDialog}
-          handleStatusClose={handleCloseAdditional}
-          note={proposal?.additionalRequest}
-          title={"Yêu cầu bổ sung"}
+      {isNotificationDialogOpen && (
+        <NotificationDialog
+          open={isNotificationDialogOpen}
+          setOpen={setIsNotificationDialogOpen}
+          data={proposalSelected}
+          type='proposal'
         />
       )}
-      {openRejectDialog && (
-        <RequestEmployeeDialog
-          open={openRejectDialog}
-          handleStatusClose={handleCloseRejectDialog}
-          note={proposal?.reasonForRefusal}
-          title={"Lí do từ chối"}
-        />
-      )} */}
     </div>
   );
 };

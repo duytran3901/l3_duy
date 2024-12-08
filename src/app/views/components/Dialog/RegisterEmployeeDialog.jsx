@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { EMPLOYEE } from "app/redux/actions/actions";
 import SendLeaderDialog from "./SendLeaderDialog";
 import LeaderActionDialog from "./LeaderActionDialog";
+import { resetEmployee } from "app/redux/reducers/EmployeeReducer";
 
 toast.configure({
   autoClose: 3000,
@@ -38,8 +39,13 @@ const RegisterEmployeeDialog = (props) => {
     dispatch({ type: EMPLOYEE.GET_EMPLOYEE_BY_ID, payload: idEmployee });
   }, [idEmployee])
 
+  useEffect(() => {
+    dispatch(resetEmployee());
+  }, [open])
+
   const handleCloseDialog = () => {
     setOpen(false);
+    dispatch(resetEmployee());
   }
 
   const handleSendLeader = () => {
@@ -134,7 +140,7 @@ const RegisterEmployeeDialog = (props) => {
       <DialogTitle className="mt-10">
         <Grid container className="flex-space-between">
           <Grid item>
-            <span className="h3 text-green font-weight-bold">
+            <span className="h3 text-primary font-weight-bold">
               Hồ sơ nhân viên
             </span>
           </Grid>
@@ -164,7 +170,7 @@ const RegisterEmployeeDialog = (props) => {
             color="secondary"
             onClick={handleCloseDialog}
           >
-            Đóng
+            Hủy
           </Button>
         </DialogActions>
       )}
@@ -175,7 +181,7 @@ const RegisterEmployeeDialog = (props) => {
             color="secondary"
             onClick={handleCloseDialog}
           >
-            Đóng
+            Hủy
           </Button>
           <Button
             variant="contained"
@@ -193,7 +199,7 @@ const RegisterEmployeeDialog = (props) => {
             color="secondary"
             onClick={handleCloseDialog}
           >
-            Đóng
+            Hủy
           </Button>
           <Button
             variant="contained"
@@ -230,8 +236,6 @@ const RegisterEmployeeDialog = (props) => {
       {isLeaderActionDialogOpen && (
         <LeaderActionDialog
           open={isLeaderActionDialogOpen}
-          employee={employee}
-          type='pending'
           handleCloseRegisterDialog={handleCloseDialog}
           setOpen={setIsLeaderActionDialogOpen}
           action={actionLeader}

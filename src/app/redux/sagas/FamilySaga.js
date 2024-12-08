@@ -7,7 +7,7 @@ import {
   deleteFamilyMember
 } from "../reducers/FamilyReducer";
 import { toast } from "react-toastify";
-import { FA, FAMILY, FAMILYMILYFAMILY } from "../actions/actions";
+import { FAMILY } from "../actions/actions";
 import { delData, getData, postData, putData } from "../../services/AxiosServices";
 import ConstantList from "../../appConfig";
 
@@ -16,11 +16,8 @@ const SUCCESS_CODE = 200;
 
 function* createFamilyMemberSaga(action) {
   try {
-    console.log(action.payload);
     const { employeeId, data } = action.payload
     const result = yield call(postData, apiCertificateURL + '?employeeId=' + employeeId, data);
-    console.log(result);
-    
     if (result?.code === SUCCESS_CODE) {
       yield put(createFamilyMember(result?.data));
       toast.success('Thêm thành công!');
@@ -55,8 +52,6 @@ function* getFamilyByIdEmployeeSaga(action) {
   const getCertificatesUrl = apiCertificateURL;
   try {
     const result = yield call(getData, getCertificatesUrl, action.payload);
-    console.log(result.data);
-    
     if (result?.code === SUCCESS_CODE) {
       yield put(getFamilyByIdEmployee(result?.data));
     } else {
@@ -73,8 +68,6 @@ function* deleteFamilyMemberSaga(action) {
   const deleteCertificateUrl = apiCertificateURL + `/${action.payload}`;
   try {
     const result = yield call(delData, deleteCertificateUrl);
-    console.log(result);
-    
     if (result?.code === SUCCESS_CODE) {
       yield put(deleteFamilyMember(action.payload));
       toast.success('Xóa thành công!');

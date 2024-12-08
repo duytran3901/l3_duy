@@ -15,11 +15,8 @@ const SUCCESS_CODE = 200;
 
 function* createExperienceSaga(action) {
   try {
-    console.log(action.payload);
     const { idEmployee, data } = action.payload;
     const result = yield call(postData, apiExperienceURL + '?employeeId=' + idEmployee, data);
-    console.log(result);
-    
     if (result?.code === SUCCESS_CODE) {
       yield put(createExperience(result?.data));
       toast.success('Thêm thành công!');
@@ -54,8 +51,6 @@ function* getExperiencesByIdEmployeeSaga(action) {
   const getExperiencesUrl = apiExperienceURL;
   try {
     const result = yield call(getData, getExperiencesUrl, action.payload);
-    console.log(result.data);
-    
     if (result?.code === SUCCESS_CODE) {
       yield put(getExperiencesByIdEmployee(result?.data));
     } else {
@@ -72,8 +67,6 @@ function* deleteExperienceSaga(action) {
   const deleteExperienceUrl = apiExperienceURL + `/${action.payload}`;
   try {
     const result = yield call(delData, deleteExperienceUrl);
-    console.log(result);
-    
     if (result?.code === SUCCESS_CODE) {
       yield put(deleteExperience(action.payload));
       toast.success('Xóa thành công!');

@@ -8,7 +8,6 @@ import {
   Grid
 } from "@material-ui/core";
 import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
-import moment from "moment";
 import { useDispatch } from "react-redux";
 import { EMPLOYEE } from "app/redux/actions/actions";
 
@@ -54,9 +53,9 @@ const SaveEmployeeDialog = (props) => {
   return (
     <div>
       <div className="m-sm-24">
-        <Dialog open={open} fullWidth={true} maxWidth={"xs"}>
+        <Dialog open={open} onClose={handleCloseDialog} fullWidth={true} maxWidth={"xs"}>
           <DialogTitle className="mt-10">
-            <span className="h3 text-green font-weight-bold">
+            <span className="h3 text-primary font-weight-bold">
               Lưu hồ sơ
             </span>
           </DialogTitle>

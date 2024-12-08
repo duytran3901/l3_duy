@@ -3,7 +3,6 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   employees: [],
   employee: null,
-  idEmployee: 0,
   totalElements: 0,
   reload: false
 };
@@ -19,12 +18,12 @@ const EmployeeSlice = createSlice({
     getEmployeeById: (state, action) => {
       state.employee = action.payload;
     },
-    resetEmployeeId: (state) => {
-      state.idEmployee = 0;
-    },
     createEmployee: (state, action) => {
-      state.idEmployee = action.payload.id;
+      state.employee = action.payload;
       state.reload = !state.reload;
+    },
+    resetEmployee: (state) => {
+      state.employee = null;
     },
     editEmployee: (state, action) => {
       state.employee = action.payload;
@@ -39,8 +38,8 @@ const EmployeeSlice = createSlice({
 
 export const {
   getEmployeeById,
-  resetEmployeeId,
   createEmployee,
+  resetEmployee, 
   editEmployee,
   searchEmployee,
   deleteEmployee

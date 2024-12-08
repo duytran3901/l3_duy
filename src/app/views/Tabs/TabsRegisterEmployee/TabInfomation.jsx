@@ -9,10 +9,9 @@ import {
 } from "@material-ui/core";
 import { FAMILY_MEMBER, GENDER } from "app/constants/constants";
 import "../../../../styles/views/_tab-information.scss";
-// import { searchFamilyByEmployeeAction } from "app/redux/actions/familyAction";
 import moment from "moment";
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+
 const TabInformation = (props) => {
   const { employee } = props;
   const dataFamily = employee?.employeeFamilyDtos;

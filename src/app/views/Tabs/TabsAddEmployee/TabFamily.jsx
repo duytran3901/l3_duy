@@ -14,6 +14,7 @@ import CustomTable from '../../components/Custom/CustomTable';
 import { CustomColumnsFamily } from '../../components/Custom/CustomColumns';
 import { ConfirmationDialog } from 'egret';
 import { FAMILY_MEMBER, GENDER } from 'app/constants/constants';
+import { resetEmployee } from 'app/redux/reducers/EmployeeReducer';
 
 const TabFamily = (props) => {
   const [pageSize, setPageSize] = useState(3);
@@ -22,7 +23,7 @@ const TabFamily = (props) => {
   const family = useSelector((state) => state.family.family);
   const totalElements = useSelector(state => state.family.totalElements);
   const [familyMember, setFamilyMember] = useState({});
-  const [familyMemberSelected, setCertificateSelected] = useState({});
+  const [familyMemberSelected, setFamilyMemberSelected] = useState({});
   const [isConfirmDeleteFamilyMemberOpen, setIsConfirmDeleteFamilyMemberOpen] = useState(false);
   const dispatch = useDispatch();
   const dataTable = family?.map((familyMember) => ({ ...familyMember }));
@@ -33,23 +34,16 @@ const TabFamily = (props) => {
 
   const handleCloseDialog = () => {
     setOpen(false);
+    dispatch(resetEmployee());
   }
 
   useEffect(() => {
-    ValidatorForm.addValidationRule('isValidAge', (value) => {
-      if (!value) return true;
-      const dob = moment(value, "YYYY-MM-DD");
-      const age = moment().diff(dob, 'years');
-      return age >= 18 && age <= 60;
-    });
     ValidatorForm.addValidationRule('isValidCCCD', (value) => {
       if (!value) return true;
       const regex = /^(?:\d{9}|\d{12})$/;
       return regex.test(value);
     });
-
     return () => {
-      ValidatorForm.removeValidationRule('isValidAge');
       ValidatorForm.removeValidationRule('isValidCCCD');
     };
   }, []);
@@ -84,7 +78,7 @@ const TabFamily = (props) => {
     })
   }
 
-  const handleEditCertificate = (rowData) => {
+  const handleEditFamilyMember = (rowData) => {
     if (rowData) {
       setFamilyMember(rowData);
     }
@@ -92,13 +86,14 @@ const TabFamily = (props) => {
 
   const handleClickDelete = (rowData) => {
     setIsConfirmDeleteFamilyMemberOpen(true);
-    setCertificateSelected(rowData);
+    setFamilyMemberSelected(rowData);
   }
 
   const handleDeleteFamilyMember = (id) => {
     dispatch({ type: FAMILY.DELETE_FAMILY_MEMBER, payload: id })
     setIsConfirmDeleteFamilyMemberOpen(false);
-    setCertificateSelected({});
+    setFamilyMemberSelected({});
+    setFamilyMember({});
   }
 
   const reloadTable = () => {
@@ -108,7 +103,7 @@ const TabFamily = (props) => {
   const action = ({ rowData }) => {
     return (
       <div>
-        <IconButton size="small" onClick={() => handleEditCertificate(rowData)}>
+        <IconButton size="small" onClick={() => handleEditFamilyMember(rowData)}>
           <Icon fontSize="small" color="primary">edit</Icon>
         </IconButton>
         <IconButton size="small" onClick={() => handleClickDelete(rowData)}>
@@ -151,14 +146,16 @@ const TabFamily = (props) => {
                 type="text"
                 name="name"
                 value={familyMember.name || ''}
-                placeholder="Tên nhân viên"
+                placeholder="Họ và tên"
                 validators={[
                   "required",
-                  "matchRegexp:^[^0-9!@#\$%\^\&*\)\(+=._-]+$"
+                  "matchRegexp:^[^0-9!@#\$%\^\&*\)\(+=._-]+$",
+                  "maxStringLength:100"
                 ]}
                 errorMessages={[
                   "Trường này bắt buộc nhập",
-                  "Tên chỉ chứa chữ cái"
+                  "Tên chỉ chứa chữ cái",
+                  "Tên không được vượt quá 100 ký tự"
                 ]}
               />
             </Grid>
@@ -204,11 +201,9 @@ const TabFamily = (props) => {
                 value={familyMember.dateOfBirth ? moment(familyMember.dateOfBirth).format("YYYY-MM-DD") : ''}
                 validators={[
                   "required",
-                  // "matchRegexp:^(1[9]|[2-5]\\d|59)$",
                 ]}
                 errorMessages={[
                   "Trường này bắt buộc nhập",
-                  // "Tuổi nhân viên lớn hơn 18 và nhỏ hơn 60"
                 ]}
                 inputProps={{
                   max: moment().format("YYYY-MM-DD")
@@ -258,11 +253,13 @@ const TabFamily = (props) => {
                 placeholder="Email"
                 validators={[
                   "required",
-                  "isEmail"
+                  "isEmail",
+                  "maxStringLength:255"
                 ]}
                 errorMessages={[
                   "Trường này bắt buộc nhập",
-                  "Email sai định dạng"
+                  "Email sai định dạng",
+                  "Email không được vượt quá 255 ký tự"
                 ]}
               />
             </Grid>
@@ -339,9 +336,11 @@ const TabFamily = (props) => {
                 placeholder='Địa chỉ'
                 validators={[
                   "required",
+                  "maxStringLength:255"
                 ]}
                 errorMessages={[
                   "Trường này bắt buộc nhập",
+                  "Nội dung không được vượt quá 255 ký tự"
                 ]}
               />
             </Grid>
@@ -350,17 +349,16 @@ const TabFamily = (props) => {
                 variant="contained"
                 color="secondary"
                 onClick={handleCancel}
-                className="mr-12"
+                className="mr-8"
               >
                 Hủy
               </Button>
               <Button
                 variant="contained"
                 color="primary"
-                className="mr-12"
                 type='submit'
               >
-                {familyMember?.id ? 'Sửa thông tin' : 'Thêm người thân'}
+                Lưu
               </Button>
             </Grid>
           </Grid>
@@ -385,7 +383,6 @@ const TabFamily = (props) => {
             variant="contained"
             color="secondary"
             onClick={handleCloseDialog}
-            className="mr-12"
           >
             Hủy
           </Button>
@@ -393,9 +390,8 @@ const TabFamily = (props) => {
             variant="contained"
             color="primary"
             onClick={handleRegisterEmployee}
-            className="mr-12"
           >
-            Đăng kí
+            Đăng ký
           </Button>
         </DialogActions>
       </Grid>

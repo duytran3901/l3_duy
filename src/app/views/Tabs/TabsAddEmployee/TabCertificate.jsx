@@ -3,7 +3,7 @@ import {
   Grid,
   Button,
   DialogActions,
-  IconButton, 
+  IconButton,
   Icon
 } from "@material-ui/core";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
@@ -13,6 +13,7 @@ import moment from 'moment';
 import CustomTable from '../../components/Custom/CustomTable';
 import { CustomColumnsCertificate } from '../../components/Custom/CustomColumns';
 import { ConfirmationDialog } from 'egret';
+import { resetEmployee } from 'app/redux/reducers/EmployeeReducer';
 
 const TabCertificate = (props) => {
   const [pageSize, setPageSize] = useState(3);
@@ -32,6 +33,7 @@ const TabCertificate = (props) => {
 
   const handleCloseDialog = () => {
     setOpen(false);
+    dispatch(resetEmployee());
   };
 
   const handleChangeInput = (e) => {
@@ -74,6 +76,7 @@ const TabCertificate = (props) => {
   const handleDeleteCertificate = (id) => {
     dispatch({ type: CERTIFICATE.DELETE_CERTIFICATE, payload: id })
     setIsConfirmDeleteCertificateOpen(false);
+    setCertificate({});
     setCertificateSelected({});
   }
 
@@ -129,10 +132,12 @@ const TabCertificate = (props) => {
                 value={certificate.certificateName || ''}
                 placeholder="Tên văn bằng"
                 validators={[
-                  "required"
+                  "required",
+                  "maxStringLength:255"
                 ]}
                 errorMessages={[
-                  "Trường này bắt buộc nhập"
+                  "Trường này bắt buộc nhập",
+                  "Tên văn bằng không được vượt quá 255 ký tự"
                 ]}
               />
             </Grid>
@@ -182,9 +187,11 @@ const TabCertificate = (props) => {
                 placeholder="Lĩnh vực"
                 validators={[
                   "required",
+                  "maxStringLength:255"
                 ]}
                 errorMessages={[
                   "Trường này bắt buộc nhập",
+                  "Nội dung không được vượt quá 255 ký tự"
                 ]}
               />
             </Grid>
@@ -206,10 +213,12 @@ const TabCertificate = (props) => {
                 value={certificate.content || ''}
                 placeholder="Nội dung văn bằng"
                 validators={[
-                  "required"
+                  "required",
+                  "maxStringLength:255"
                 ]}
                 errorMessages={[
-                  "Trường này bắt buộc nhập"
+                  "Trường này bắt buộc nhập",
+                  "Nội dung không được vượt quá 255 ký tự"
                 ]}
               />
             </Grid>
@@ -218,17 +227,16 @@ const TabCertificate = (props) => {
                 variant="contained"
                 color="secondary"
                 onClick={handleCancel}
-                className="mr-12"
+                className='mr-8'
               >
                 Hủy
               </Button>
               <Button
                 variant="contained"
                 color="primary"
-                className="mr-12"
                 type='submit'
               >
-                {certificate?.id ? 'Sửa văn bằng' : 'Thêm văn bằng'}
+                Lưu
               </Button>
             </Grid>
           </Grid>
@@ -253,7 +261,6 @@ const TabCertificate = (props) => {
             variant="contained"
             color="secondary"
             onClick={handleCloseDialog}
-            className="mr-12"
           >
             Hủy
           </Button>
@@ -261,7 +268,6 @@ const TabCertificate = (props) => {
             variant="contained"
             color="primary"
             onClick={handleRegisterEmployee}
-            className="mr-12"
           >
             Đăng ký
           </Button>
@@ -273,8 +279,8 @@ const TabCertificate = (props) => {
           open={isConfirmDeleteCertificateOpen}
           onConfirmDialogClose={() => setIsConfirmDeleteCertificateOpen(false)}
           onYesClick={() => handleDeleteCertificate(certificateSelected.id)}
-          Yes='Có'
-          No='Không'
+          Yes='Xác nhận'
+          No='Hủy'
         />
       )}
     </Grid>

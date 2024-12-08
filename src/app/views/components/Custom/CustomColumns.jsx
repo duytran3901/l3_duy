@@ -24,8 +24,8 @@ export const CustomColumnsEmployee = ({ Action, page, pageSize }) => {
       title: "Thao tác",
       field: "custom",
       align: "center",
-      maxWidth: "110px",
-      minWidth: "110px",
+      maxWidth: "100px",
+      minWidth: "100px",
       render: (rowData) => <Action rowData={rowData} />
     },
     {
@@ -41,7 +41,7 @@ export const CustomColumnsEmployee = ({ Action, page, pageSize }) => {
       align: "left",
       maxWidth: "150px",
       minWidth: "150px",
-      render: (rowData) => shorten(rowData.name, 22),
+      render: (rowData) => shorten(rowData.name, 20),
     },
     {
       title: "Ngày sinh",
@@ -81,27 +81,19 @@ export const CustomColumnsEmployee = ({ Action, page, pageSize }) => {
       minWidth: "100px",
     },
     {
-      title: "Email",
-      field: "email",
-      align: "center",
-      maxWidth: "180px",
-      minWidth: "180px",
-      render: (rowData) => shorten(rowData.email, 26),
-    },
-    {
       title: "Địa chỉ",
       field: "address",
-      align: "center",
+      align: "left",
       maxWidth: "150px",
       minWidth: "150px",
-      render: (rowData) => shorten(rowData.address, 22),
+      render: (rowData) => shorten(rowData.address, 20),
     },
     {
       title: "Trạng thái",
       field: "submitProfileStatus",
       align: "center",
-      maxWidth: "150px",
-      minWidth: "150px",
+      maxWidth: "140px",
+      minWidth: "140px",
       render: (rowData) => {
         const nameStatus = SUBMIT_PROFILE_STATUS.find(
           (item) => item.id === rowData.submitProfileStatus
@@ -127,17 +119,17 @@ export const CustomColumnsCertificate = ({ Action, page, pageSize }) => {
       title: "Thao tác",
       field: "custom",
       align: "center",
-      maxWidth: "110px",
-      minWidth: "110px",
+      maxWidth: "95px",
+      minWidth: "95px",
       render: (rowData) => <Action rowData={rowData} />
     },
     {
       title: "Tên văn bằng",
       field: "certificateName",
       align: "left",
-      maxWidth: "150px",
-      minWidth: "150px",
-      render: (rowData) => shorten(rowData.certificateName, 22),
+      maxWidth: "200px",
+      minWidth: "200px",
+      render: (rowData) => shorten(rowData.certificateName, 38),
     },
     {
       title: "Ngày cấp",
@@ -150,18 +142,18 @@ export const CustomColumnsCertificate = ({ Action, page, pageSize }) => {
     {
       title: "Lĩnh vực",
       field: "field",
-      align: "center",
-      maxWidth: "100px",
-      minWidth: "100px",
-      render: (rowData) => shorten(rowData.field, 26),
+      align: "left",
+      maxWidth: "150px",
+      minWidth: "150px",
+      render: (rowData) => shorten(rowData.field, 28),
     },
     {
       title: "Nội dung",
       field: "content",
-      align: "center",
-      maxWidth: "180px",
-      minWidth: "180px",
-      render: (rowData) => shorten(rowData.content, 26),
+      align: "left",
+      maxWidth: "250px",
+      minWidth: "250px",
+      render: (rowData) => shorten(rowData.content, 47),
     }
   ];
 
@@ -181,8 +173,8 @@ export const CustomColumnsFamily = ({ Action, page, pageSize }) => {
       title: "Thao tác",
       field: "custom",
       align: "center",
-      maxWidth: "110px",
-      minWidth: "110px",
+      maxWidth: "95px",
+      minWidth: "95px",
       render: (rowData) => <Action rowData={rowData} />
     },
     {
@@ -191,7 +183,7 @@ export const CustomColumnsFamily = ({ Action, page, pageSize }) => {
       align: "left",
       maxWidth: "150px",
       minWidth: "150px",
-      render: (rowData) => shorten(rowData.name, 22),
+      render: (rowData) => shorten(rowData.name, 24),
     },
     {
       title: "Ngày sinh",
@@ -205,8 +197,8 @@ export const CustomColumnsFamily = ({ Action, page, pageSize }) => {
       title: "Giới tính",
       field: "gender",
       align: "center",
-      maxWidth: "80px",
-      minWidth: "80px",
+      maxWidth: "90px",
+      minWidth: "90px",
       render: (rowData) => {
         const nameGender = GENDER.find((item) => item.id === rowData.gender);
         return nameGender ? nameGender.name : "";
@@ -216,8 +208,8 @@ export const CustomColumnsFamily = ({ Action, page, pageSize }) => {
       title: "Quan hệ",
       field: "relationShip",
       align: "center",
-      maxWidth: "150px",
-      minWidth: "150px",
+      maxWidth: "130px",
+      minWidth: "130px",
       render: (rowData) => {
         const relationShip = FAMILY_MEMBER.find((item) => item.id === rowData.relationShip);
         return relationShip ? relationShip.name : "";
@@ -227,13 +219,13 @@ export const CustomColumnsFamily = ({ Action, page, pageSize }) => {
       title: "Điện thoại",
       field: "phoneNumber",
       align: "center",
-      maxWidth: "100px",
-      minWidth: "100px",
+      maxWidth: "110px",
+      minWidth: "110px",
     },
     {
       title: "Email",
       field: "email",
-      align: "center",
+      align: "left",
       maxWidth: "180px",
       minWidth: "180px",
       render: (rowData) => shorten(rowData.email, 26),
@@ -241,10 +233,10 @@ export const CustomColumnsFamily = ({ Action, page, pageSize }) => {
     {
       title: "Địa chỉ",
       field: "address",
-      align: "center",
-      maxWidth: "150px",
-      minWidth: "150px",
-      render: (rowData) => shorten(rowData.address, 22),
+      align: "left",
+      maxWidth: "180px",
+      minWidth: "180px",
+      render: (rowData) => shorten(rowData.address, 24),
     }
   ];
 
@@ -264,41 +256,41 @@ export const CustomColumnsSalaryIncrease = ({ Action, page, pageSize }) => {
       title: "Thao tác",
       field: "custum",
       align: "center",
-      maxWidth: "110px",
-      minWidth: "110px",
+      maxWidth: "100px",
+      minWidth: "100px",
       render: (rowData) => <Action rowData={rowData} />,
     },
     {
       title: "Ngày tăng lương",
       field: "startDate",
       align: "center",
-      maxWidth: "130px",
-      minWidth: "130px",
+      maxWidth: "150px",
+      minWidth: "150px",
       render: (rowData) => moment(rowData?.startDate).format("DD/MM/YYYY"),
     },
     {
       title: "Mức lương cũ",
       field: "oldSalary",
-      align: "center",
-      maxWidth: "110px",
-      minWidth: "110px",
+      align: "right",
+      maxWidth: "150px",
+      minWidth: "150px",
       render: (rowData) => `${rowData?.oldSalary.toLocaleString()} VNĐ`,
     },
     {
       title: "Mức lương mới",
       field: "newSalary",
-      align: "center",
-      maxWidth: "110px",
-      minWidth: "110px",
+      align: "right",
+      maxWidth: "150px",
+      minWidth: "150px",
       render: (rowData) => `${rowData?.newSalary.toLocaleString()} VNĐ`,
     },
     {
       title: "Lý do",
       field: "reason",
-      align: "center",
+      align: "left",
       maxWidth: "240px",
       minWidth: "240px",
-      render: (rowData) => shorten(rowData.reason, 23),
+      render: (rowData) => shorten(rowData.reason, 43),
     },
     {
       title: "Trạng thái",
@@ -319,46 +311,56 @@ export const CustomColumnsProcess = ({ Action, page, pageSize }) => {
     {
       title: "STT",
       align: "center",
-      maxWidth: "60px",
-      minWidth: "60px",
+      maxWidth: "55px",
+      minWidth: "55px",
       render: (rowData) => rowData.tableData?.id + 1 + page * pageSize,
     },
     {
       title: "Thao tác",
       field: "custum",
       align: "center",
-      maxWidth: "110px",
-      minWidth: "110px",
+      maxWidth: "100px",
+      minWidth: "100px",
       render: (rowData) => <Action rowData={rowData} />,
     },
     {
       title: "Ngày đề xuất",
       field: "promotionDay",
       align: "center",
+      maxWidth: "150px",
+      minWidth: "150px",
       render: (rowData) => moment(rowData?.promotionDay).format("DD/MM/YYYY"),
     },
     {
       title: "Chức vụ hiện tại",
       field: "currentPosition",
-      align: "center",
+      align: "left",
+      maxWidth: "160px",
+      minWidth: "160px",
       render: (rowData) => EMPLOYEE_POSITION.find((item) => item.id === rowData?.currentPosition)?.name,
     },
     {
       title: "Chức vụ đề xuất",
       field: "newPosition",
-      align: "center",
+      align: "left",
+      maxWidth: "160px",
+      minWidth: "160px",
       render: (rowData) => EMPLOYEE_POSITION.find((item) => item.id === rowData?.newPosition)?.name,
     },
     {
       title: "Ghi chú",
       field: "note",
-      align: "center",
-      render: (rowData) => shorten(rowData.note, 30),
+      align: "left",
+      maxWidth: "220px",
+      minWidth: "220px",
+      render: (rowData) => shorten(rowData.note, 37),
     },
     {
       title: "Trạng thái",
       field: "processStatus",
       align: "center",
+      maxWidth: "150px",
+      minWidth: "150px",
       render: (rowData) => {
         const status = SUBMIT_UPDATE_STATUS.find((item) => item.id === rowData?.processStatus.toLocaleString());
         return status ? status.name : "";
@@ -373,28 +375,32 @@ export const CustomColumnsProposal = ({ Action, page, pageSize }) => {
     {
       title: "STT",
       align: "center",
-      maxWidth: "60px",
-      minWidth: "60px",
+      maxWidth: "55px",
+      minWidth: "55px",
       render: (rowData) => rowData.tableData?.id + 1 + page * pageSize,
     },
     {
       title: "Thao tác",
       field: "custum",
       align: "center",
-      maxWidth: "110px",
-      minWidth: "110px",
+      maxWidth: "100px",
+      minWidth: "100px",
       render: (rowData) => <Action rowData={rowData} />,
     },
     {
       title: "Ngày đề xuất",
       field: "proposalDate",
       align: "center",
+      maxWidth: "130px",
+      minWidth: "130px",
       render: (rowData) => moment(rowData?.proposalDate).format("DD/MM/YYYY"),
     },
     {
       title: "Loại đề xuất",
       field: "type",
       align: "left",
+      maxWidth: "160px",
+      minWidth: "160px",
       render: (rowData) => {
         const nameType = TYPE_PROPOSAL.find((item) => item.id === rowData.type);
         return nameType ? nameType.name : "";
@@ -403,25 +409,33 @@ export const CustomColumnsProposal = ({ Action, page, pageSize }) => {
     {
       title: "Nội dung",
       field: "content",
-      align: "center",
-      render: (rowData) => shorten(rowData.content),
+      align: "left",
+      maxWidth: "180px",
+      minWidth: "180px",
+      render: (rowData) => shorten(rowData.content, 26),
     },
     {
       title: "Mô tả",
       field: "detailedDescription",
-      align: "center",
-      render: (rowData) => shorten(rowData.detailedDescription),
+      align: "left",
+      maxWidth: "180px",
+      minWidth: "180px",
+      render: (rowData) => shorten(rowData.detailedDescription, 26),
     },
     {
       title: "Ghi chú",
       field: "note",
-      align: "center",
-      render: (rowData) => shorten(rowData.note, 23),
+      align: "left",
+      maxWidth: "180px",
+      minWidth: "180px",
+      render: (rowData) => shorten(rowData.note, 26),
     },
     {
       title: "Trạng thái",
       field: "proposalStatus",
       align: "center",
+      maxWidth: "150px",
+      minWidth: "150px",
       render: (rowData) => {
         const status = SUBMIT_UPDATE_STATUS.find((item) => item.id === rowData?.proposalStatus.toLocaleString());
         return status ? status.name : "";

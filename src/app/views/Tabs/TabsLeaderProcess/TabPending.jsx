@@ -1,11 +1,8 @@
 import React, { useState } from "react";
-import { Grid, Button, IconButton, Input, InputAdornment } from '@material-ui/core';
+import { Grid, IconButton, Input, InputAdornment } from '@material-ui/core';
 import {
-    Edit as EditIcon,
-    Delete as DeleteIcon,
-    Visibility as VisibilityIcon,
-    Notifications as NotificationsIcon,
-    Description as DescriptionIcon
+  Visibility as VisibilityIcon,
+  Description as DescriptionIcon
 } from "@material-ui/icons";
 import SearchIcon from '@material-ui/icons/Search';
 import { Link } from "react-router-dom";
@@ -17,6 +14,7 @@ import { CustomColumnsEmployee } from "../../components/Custom/CustomColumns";
 import { ACTION_EMPLOYEE, EMPLOYEE_STATUS } from "app/constants/constants";
 import RegisterEmployeeDialog from "app/views/components/Dialog/RegisterEmployeeDialog";
 import FormResignation from "app/views/components/Form/FormResignation";
+import { toast } from "react-toastify";
 
 const TabPending = () => {
   const [pageSize, setPageSize] = useState(10);
@@ -43,7 +41,11 @@ const TabPending = () => {
   }
 
   useEffect(() => {
-    reloadTable();
+    if (searchKeyword.length <= 255) {
+      reloadTable();
+  } else {
+      toast.error('Nội dung tìm kiếm vượt quá 255 ký tự!')
+  }
   }, [searchKeyword, pageSize, page, totalElements, reload]);
 
   const handleOpenDialogPending = (rowData) => {
@@ -98,7 +100,7 @@ const TabPending = () => {
               setSearchKeyword(e.target.value.toLowerCase());
               setPage(0);
             }}
-            className="w-100 mb-8 mr-10"
+            className="w-100 mb-4 mr-10"
             id="search_box"
             placeholder='Nhập từ khóa tìm kiếm'
             startAdornment={
@@ -138,7 +140,6 @@ const TabPending = () => {
           setOpen={setIsResignationFormOpen}
           employee={employeeSelected}
           action={action}
-        // handleCloseDialog={}
         />
       )}
     </div>

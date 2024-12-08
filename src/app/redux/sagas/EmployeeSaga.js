@@ -20,8 +20,6 @@ function* uploadImage(file) {
   formData.append("file", file);
   try {
     const data = yield call(postData, apiEmployeeURL + "upload-image", formData);
-    console.log('data: ', data);
-    
     if (data.id) {
       return data?.name
         ? ConstantList.API_ENPOINT + `public/image/${data?.name}`
@@ -60,7 +58,6 @@ function* createEmployeeSaga(action) {
 
 function* editEmployeeSaga(action) {
   const editEmployeeUrl = apiEmployeeURL + `${action.payload.id}`;
-  console.log('employee: ', action.payload);
   try {
     const image = action.payload.data?.file
       ? yield call(uploadImage, action.payload.data?.file)
@@ -69,8 +66,6 @@ function* editEmployeeSaga(action) {
       ...action.payload.data,
       image,
     });
-    console.log('res: ', result);
-    
     if (result?.code === SUCCESS_CODE) {
       yield put(editEmployee(result?.data));
       switch (action.payload?.action) {
@@ -135,8 +130,6 @@ function* getEmployeeByIdSaga(action) {
   const url = apiEmployeeURL + `${action.payload}`;
   try {
     const result = yield call(getData, url);
-    console.log(result);
-
     if (result?.code === SUCCESS_CODE) {
       yield put(getEmployeeById(result?.data));
     } else {

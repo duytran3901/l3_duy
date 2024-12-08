@@ -39,12 +39,10 @@ const useStyles = makeStyles({
 
 const ManageEmployeeDialog = (props) => {
     const classes = useStyles();
-    const { open, setOpen, employee } = props;
+    const { open, setOpen, employee, type } = props;
     const [isRegisterEmployeeDialogOpen, setIsRegisterEmployeeDialogOpen] = useState(false);
     const [isResignationFormOpen, setIsResignationFormOpen] = useState(false);
     const [action, setAction] = useState('');
-
-    console.log('id: ', employee.id);
 
     const handleCloseDialog = () => {
         setOpen(false);
@@ -64,17 +62,17 @@ const ManageEmployeeDialog = (props) => {
         {
             label: "Tăng lương",
             a11yPropsIndex: 0,
-            content: <TabSalaryIncrease employee={employee} />
+            content: <TabSalaryIncrease employee={employee} type={type}/>
         },
         {
             label: "Thăng chức",
             a11yPropsIndex: 1,
-            content: <TabProcess employee={employee} />
+            content: <TabProcess employee={employee} type={type}/>
         },
         {
             label: "Đề xuất",
             a11yPropsIndex: 2,
-            content: <TabProposal employee={employee} />
+            content: <TabProposal employee={employee} type={type}/>
         }
     ]
 
@@ -86,7 +84,7 @@ const ManageEmployeeDialog = (props) => {
             fullWidth={true}
         >
             <DialogTitle className="mt-10">
-                <span className="h3 text-green font-weight-bold">
+                <span className="h3 text-primary font-weight-bold">
                     Cập nhật nhân viên
                 </span>
             </DialogTitle>
@@ -98,8 +96,8 @@ const ManageEmployeeDialog = (props) => {
                                 alt="avatar"
                                 src={
                                     employee?.image
-                                    ? employee?.image
-                                    : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTht9-qZYmqErdGMhJVbRf7BfhLRGspNWaFnR8nddu3x7Da7nqh23vsG6VWtG_VE9G9kLU&usqp=CAU"
+                                        ? employee?.image
+                                        : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTht9-qZYmqErdGMhJVbRf7BfhLRGspNWaFnR8nddu3x7Da7nqh23vsG6VWtG_VE9G9kLU&usqp=CAU"
                                 }
                                 className={`m-auto ${classes.largeAvatar}`}
                             />
@@ -181,22 +179,26 @@ const ManageEmployeeDialog = (props) => {
                     color="secondary"
                     onClick={handleCloseDialog}
                 >
-                    Đóng
+                    Hủy
                 </Button>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleClickEnd}
-                >
-                    Kết thúc
-                </Button>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleClickView}
-                >
-                    Xem hồ sơ
-                </Button>
+                {!type && (
+                    <>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleClickEnd}
+                        >
+                            Kết thúc
+                        </Button>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleClickView}
+                        >
+                            Xem hồ sơ
+                        </Button>
+                    </>
+                )}
             </DialogActions>
             {isRegisterEmployeeDialogOpen && (
                 <RegisterEmployeeDialog

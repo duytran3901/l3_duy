@@ -30,7 +30,7 @@ const LeaderProcess = () => {
     ]
 
     return (
-        <div className="m-30">
+        <div className="mx-30 mt-30">
             <CustomTab tabs={tabs}></CustomTab>
         </div>
     )

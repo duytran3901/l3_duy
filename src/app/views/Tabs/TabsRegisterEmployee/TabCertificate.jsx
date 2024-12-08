@@ -8,8 +8,8 @@ import {
 } from "@material-ui/core";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 import "../../../../styles/views/_tab-certificate.scss";
+
 const TabCertificate = (props) => {
   const { employee } = props;
   const dataCertificate = employee?.certificatesDto;

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     Grid,
     Dialog,
@@ -14,9 +14,10 @@ import { CustomTab } from "app/views/components/Custom/CustomTabs";
 import TabEmployee from "app/views/Tabs/TabsAddEmployee/TabEmployee";
 import TabCertificate from "app/views/Tabs/TabsAddEmployee/TabCertificate";
 import TabFamily from "app/views/Tabs/TabsAddEmployee/TabFamily";
-import { resetEmployeeId } from "app/redux/reducers/EmployeeReducer";
 import { useDispatch } from "react-redux";
 import RegisterEmployeeDialog from "app/views/components/Dialog/RegisterEmployeeDialog";
+import { EMPLOYEE } from "app/redux/actions/actions";
+import { resetEmployee } from "app/redux/reducers/EmployeeReducer";
 
 toast.configure({
     autoClose: 3000,
@@ -24,23 +25,29 @@ toast.configure({
     limit: 3
 });
 
-const EditEmployeeDialog = (props) => {
+const AddEmployeeDialog = (props) => {
     const { open, setOpen, employee, setEmployee, action } = props;
-    const [id, setId] = useState(employee.id || 0);
     const [isRegisterEmployeeDialogOpen, setIsRegisterEmployeeDialogOpen] = useState(false);
     const dispatch = useDispatch();
 
-    console.log('id: ', id);
-    console.log('employee: ', employee);
-
-
     const handleCloseDialog = () => {
         setOpen(false);
-        dispatch(resetEmployeeId());
     }
 
+    useEffect(() => {
+        dispatch(resetEmployee());
+      }, [open])
+
     const handleRegisterEmployee = () => {
-        console.log('click dang ki!');
+        if (employee?.id) {
+            dispatch({
+                type: EMPLOYEE.UPDATE_EMPLOYEE,
+                payload: {
+                    id: employee?.id,
+                    data: employee
+                }
+            })
+        }
         setIsRegisterEmployeeDialogOpen(true);
     }
 
@@ -52,17 +59,16 @@ const EditEmployeeDialog = (props) => {
                 employee={employee}
                 setOpen={setOpen}
                 setEmployee={setEmployee}
-                id={id}
-                setId={setId}
                 handleRegisterEmployee={handleRegisterEmployee}
             />
         },
         {
             label: "Thông tin văn bằng",
             a11yPropsIndex: 1,
-            disabled: id ? false : true,
+            disabled: employee?.id ? false : true,
             content: <TabCertificate
-                idEmployee={employee ? id : 0}
+                employee={employee}
+                idEmployee={employee ? employee?.id : 0}
                 setOpen={setOpen}
                 handleRegisterEmployee={handleRegisterEmployee}
             />
@@ -70,9 +76,10 @@ const EditEmployeeDialog = (props) => {
         {
             label: "Thông tin gia đình",
             a11yPropsIndex: 2,
-            disabled: id ? false : true,
+            disabled: employee?.id ? false : true,
             content: <TabFamily
-                idEmployee={employee ? id : 0}
+                employee={employee}
+                idEmployee={employee ? employee?.id : 0}
                 setOpen={setOpen}
                 handleRegisterEmployee={handleRegisterEmployee}
             />
@@ -87,7 +94,7 @@ const EditEmployeeDialog = (props) => {
             fullWidth={true}
         >
             <DialogTitle className="mt-10">
-                <span className="h3 text-green font-weight-bold">
+                <span className="h3 font-weight-bold text-primary">
                     {(!employee?.id ? "Thêm nhân viên" : "Sửa thông tin nhân viên")}
                 </span>
             </DialogTitle>
@@ -103,7 +110,7 @@ const EditEmployeeDialog = (props) => {
                     open={isRegisterEmployeeDialogOpen}
                     setOpen={setIsRegisterEmployeeDialogOpen}
                     setOpenEditDialog={setOpen}
-                    idEmployee={id}
+                    idEmployee={employee?.id}
                     action={action}
                 />
             )}
@@ -111,4 +118,4 @@ const EditEmployeeDialog = (props) => {
     )
 }
 
-export default EditEmployeeDialog;
+export default AddEmployeeDialog;

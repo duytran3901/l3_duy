@@ -24,10 +24,7 @@ toast.configure({
 
 const ExperienceDialog = (props) => {
   const { open, setOpen, exp, setExp, employeeId } = props;
-  // const [id, setId] = useState(employee?.id || 0);
   const dispatch = useDispatch();
-
-  console.log('id: ', employeeId);
 
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
@@ -52,7 +49,6 @@ const ExperienceDialog = (props) => {
   }
 
   const handleSubmitForm = () => {
-    console.log(exp);
     if (exp?.id) {
       dispatch({ type: EXPERIENCE.UPDATE_EXPERIENCE, payload: { id: exp.id, data: exp } });
     } else {
@@ -85,7 +81,7 @@ const ExperienceDialog = (props) => {
       fullWidth={true}
     >
       <DialogTitle className="mt-10">
-        <span className="h3 text-green font-weight-bold">
+        <span className="h3 text-primary font-weight-bold">
           {(!exp?.id ? "Thêm kinh nghiệm làm việc" : "Sửa kinh nghiệm làm việc")}
         </span>
       </DialogTitle>
@@ -114,11 +110,13 @@ const ExperienceDialog = (props) => {
                       placeholder="Tên công ty"
                       validators={[
                         "required",
-                        "matchRegexp:^[^!@#\$%\^\&*\)\(+=._-]+$"
+                        "matchRegexp:^[^!@#\$%\^\&*\)\(+=._-]+$",
+                        "maxStringLength:255"
                       ]}
                       errorMessages={[
                         "Trường này bắt buộc nhập",
-                        "Tên không chứa ký hiệu đặc biệt"
+                        "Tên không chứa ký hiệu đặc biệt",
+                        "Tên công ty không được vượt quá 255 ký tự"
                       ]}
                     />
                   </Grid>
@@ -199,9 +197,11 @@ const ExperienceDialog = (props) => {
                       placeholder='Lý do nghỉ việc'
                       validators={[
                         "required",
+                        "maxStringLength:255"
                       ]}
                       errorMessages={[
                         "Trường này bắt buộc nhập",
+                        "Lý do không được vượt quá 255 ký tự"
                       ]}
                     />
                   </Grid>
@@ -224,9 +224,11 @@ const ExperienceDialog = (props) => {
                       placeholder='Địa chỉ công ty'
                       validators={[
                         "required",
+                        "maxStringLength:255"
                       ]}
                       errorMessages={[
                         "Trường này bắt buộc nhập",
+                        "Địa chỉ không được vượt quá 255 ký tự"
                       ]}
                     />
                   </Grid>
@@ -263,7 +265,6 @@ const ExperienceDialog = (props) => {
                 variant="contained"
                 color="secondary"
                 onClick={handleCloseDialog}
-                className="mr-12"
               >
                 Hủy
               </Button>
@@ -271,7 +272,6 @@ const ExperienceDialog = (props) => {
                 variant="contained"
                 color="primary"
                 type="submit"
-                className="mr-12"
               >
                 Lưu
               </Button>

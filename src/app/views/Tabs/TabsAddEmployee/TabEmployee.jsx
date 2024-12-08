@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { EMPLOYEE } from 'app/redux/actions/actions';
 import { GENDER, TEAM } from 'app/constants/constants';
 import moment from 'moment';
+import { resetEmployee } from 'app/redux/reducers/EmployeeReducer';
 
 const useStyles = makeStyles({
   largeAvatar: {
@@ -23,20 +24,20 @@ const useStyles = makeStyles({
 
 const TabEmployee = (props) => {
   const classes = useStyles();
-  const { employee, setEmployee, setOpen, id, setId, handleRegisterEmployee } = props;
-  const [employeeState, setEmployeeState] = useState(employee || {});
-  const [showRegisterButton, setShowRegisterButton] = useState(id ? true : false);
+  const { employee, setEmployee, setOpen, handleRegisterEmployee } = props;
+  const [showRegisterButton, setShowRegisterButton] = useState(employee?.id ? true : false);
   const dispatch = useDispatch();
-  const idEmployee = useSelector((state) => state.employee?.idEmployee);
+  const employeeState = useSelector((state) => state.employee?.employee);
 
   useEffect(() => {
-    if (idEmployee && !id) {
-      setId(idEmployee);
+    if (employeeState) {
+      setEmployee(employeeState);
     }
-  }, [idEmployee, id, setId, employee]);
+  }, [employeeState]);
 
   const handleCloseDialog = () => {
     setOpen(false);
+    dispatch(resetEmployee());
   };
 
   useEffect(() => {
@@ -68,8 +69,8 @@ const TabEmployee = (props) => {
 
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
-    setEmployeeState({
-      ...employeeState,
+    setEmployee({
+      ...employee,
       [name]: value
     });
   };
@@ -77,8 +78,8 @@ const TabEmployee = (props) => {
   const handleBlurInput = (e) => {
     const { name, value } = e.target;
     const inputValue = value.trim();
-    setEmployeeState({
-      ...employeeState,
+    setEmployee({
+      ...employee,
       [name]: inputValue
     });
   };
@@ -93,8 +94,8 @@ const TabEmployee = (props) => {
     const formData = new FormData();
     formData.append("file", file);
     reader.onloadend = () => {
-      setEmployeeState({
-        ...employeeState,
+      setEmployee({
+        ...employee,
         image: reader.result,
         file: file,
       });
@@ -105,15 +106,13 @@ const TabEmployee = (props) => {
   };
 
   const handleSubmitForm = () => {
-    console.log(employeeState);
-
-    if (id) {
-      dispatch({ type: EMPLOYEE.UPDATE_EMPLOYEE, payload: { id: id, data: employeeState } });
+    if (employee?.id) {
+      dispatch({ type: EMPLOYEE.UPDATE_EMPLOYEE, payload: { id: employee?.id, data: employee } });
     } else {
-      dispatch({ type: EMPLOYEE.CREATE_EMPLOYEE, payload: employeeState });
+      dispatch({ type: EMPLOYEE.CREATE_EMPLOYEE, payload: employee });
       setShowRegisterButton(true);
     }
-    setEmployee(employeeState);
+    setEmployee(employee);
   };
 
   return (
@@ -124,8 +123,8 @@ const TabEmployee = (props) => {
             <Avatar
               alt="avatar"
               src={
-                employeeState?.image
-                  ? employeeState?.image
+                employee?.image
+                  ? employee?.image
                   : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTht9-qZYmqErdGMhJVbRf7BfhLRGspNWaFnR8nddu3x7Da7nqh23vsG6VWtG_VE9G9kLU&usqp=CAU"
               }
               className={`m-auto ${classes.largeAvatar}`}
@@ -163,7 +162,7 @@ const TabEmployee = (props) => {
                   size="small"
                   name="code"
                   variant="outlined"
-                  value={employeeState.code || ''}
+                  value={employee.code || ''}
                   placeholder="Mã nhân viên"
                   validators={[
                     "required",
@@ -190,15 +189,17 @@ const TabEmployee = (props) => {
                   onBlur={e => handleBlurInput(e)}
                   type="text"
                   name="name"
-                  value={employeeState.name || ''}
+                  value={employee.name || ''}
                   placeholder="Tên nhân viên"
                   validators={[
                     "required",
-                    "matchRegexp:^[^0-9!@#\$%\^\&*\)\(+=._-]+$"
+                    "matchRegexp:^[^0-9!@#\$%\^\&*\)\(+=._-]+$",
+                    "maxStringLength:100"
                   ]}
                   errorMessages={[
                     "Trường này bắt buộc nhập",
-                    "Tên chỉ chứa chữ cái"
+                    "Tên chỉ chứa chữ cái",
+                    "Tên không được vượt quá 100 ký tự"
                   ]}
                 />
               </Grid>
@@ -216,7 +217,7 @@ const TabEmployee = (props) => {
                   name="gender"
                   size="small"
                   variant="outlined"
-                  value={employeeState.gender || ''}
+                  value={employee.gender || ''}
                   validators={["required"]}
                   errorMessages={["Trường này bắt buộc chọn"]}
                 >
@@ -242,7 +243,7 @@ const TabEmployee = (props) => {
                   name="dateOfBirth"
                   size="small"
                   variant="outlined"
-                  value={employeeState.dateOfBirth ? moment(employeeState.dateOfBirth).format("YYYY-MM-DD") : ''}
+                  value={employee.dateOfBirth ? moment(employee.dateOfBirth).format("YYYY-MM-DD") : ''}
                   validators={[
                     "required",
                     "isValidAge"
@@ -271,7 +272,7 @@ const TabEmployee = (props) => {
                   name="phone"
                   size="small"
                   variant="outlined"
-                  value={employeeState.phone || ''}
+                  value={employee.phone || ''}
                   placeholder="Số điện thoại"
                   validators={[
                     "required",
@@ -298,15 +299,17 @@ const TabEmployee = (props) => {
                   name="email"
                   size="small"
                   variant="outlined"
-                  value={employeeState.email || ''}
+                  value={employee.email || ''}
                   placeholder="Email"
                   validators={[
                     "required",
-                    "isEmail"
+                    "isEmail",
+                    "maxStringLength:255"
                   ]}
                   errorMessages={[
                     "Trường này bắt buộc nhập",
-                    "Email sai định dạng"
+                    "Email sai định dạng",
+                    "Email không được vượt quá 255 ký tự"
                   ]}
                 />
               </Grid>
@@ -324,7 +327,7 @@ const TabEmployee = (props) => {
                   name="team"
                   size="small"
                   variant="outlined"
-                  value={employeeState.team || ''}
+                  value={employee.team || ''}
                   validators={["required"]}
                   errorMessages={["Trường này bắt buộc chọn"]}
                 >
@@ -350,7 +353,7 @@ const TabEmployee = (props) => {
                   name="citizenIdentificationNumber"
                   size="small"
                   variant="outlined"
-                  value={employeeState.citizenIdentificationNumber || ''}
+                  value={employee.citizenIdentificationNumber || ''}
                   placeholder='Số Căn cước công dân / Chứng minh thư'
                   validators={[
                     "required",
@@ -377,7 +380,7 @@ const TabEmployee = (props) => {
                   name="dateOfIssuanceCard"
                   size="small"
                   variant="outlined"
-                  value={employeeState.dateOfIssuanceCard ? moment(employeeState.dateOfIssuanceCard).format("YYYY-MM-DD") : ''}
+                  value={employee.dateOfIssuanceCard ? moment(employee.dateOfIssuanceCard).format("YYYY-MM-DD") : ''}
                   validators={[
                     "required",
                   ]}
@@ -404,13 +407,15 @@ const TabEmployee = (props) => {
                   name="placeOfIssueCard"
                   size="small"
                   variant="outlined"
-                  value={employeeState.placeOfIssueCard || ''}
+                  value={employee.placeOfIssueCard || ''}
                   placeholder='Nơi cấp thẻ'
                   validators={[
                     "required",
+                    "maxStringLength:255"
                   ]}
                   errorMessages={[
                     "Trường này bắt buộc nhập",
+                    "Email không được vượt quá 255 ký tự"
                   ]}
                 />
               </Grid>
@@ -429,13 +434,15 @@ const TabEmployee = (props) => {
                   name="address"
                   size="small"
                   variant="outlined"
-                  value={employeeState.address || ''}
+                  value={employee.address || ''}
                   placeholder='Địa chỉ'
                   validators={[
                     "required",
+                    "maxStringLength:255"
                   ]}
                   errorMessages={[
                     "Trường này bắt buộc nhập",
+                    "Địa chỉ không được vượt quá 255 ký tự"
                   ]}
                 />
               </Grid>
@@ -447,7 +454,6 @@ const TabEmployee = (props) => {
             variant="contained"
             color="secondary"
             onClick={handleCloseDialog}
-            className="mr-12"
           >
             Hủy
           </Button>
@@ -455,7 +461,6 @@ const TabEmployee = (props) => {
             variant="contained"
             color="primary"
             type="submit"
-            className="mr-12"
           >
             Lưu
           </Button>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog, Button, DialogActions} from "@material-ui/core";
+import { Dialog, Button, DialogActions } from "@material-ui/core";
 
 const ConfirmationDialog = ({
   open,
@@ -20,16 +20,16 @@ const ConfirmationDialog = ({
       <div className="pt-24 px-20 pb-8">
         <h4 className="capitalize">{title}</h4>
         <p>{text}</p>
-        <DialogActions>
-          <div className="flex flex-space-between flex-middle">
+        <DialogActions className="flex-center">
+          <div className="flex flex-space-between">
             {No && (<Button onClick={onConfirmDialogClose} variant="contained" color="secondary">
               {No}
             </Button>)}
-            <Button onClick={onYesClick} className={"ml-16"} variant="contained" color="primary">
+            <Button onClick={onYesClick} className={"ml-8"} variant="contained" color="primary">
               {Yes}
             </Button>
           </div>
-          </DialogActions>
+        </DialogActions>
       </div>
     </Dialog>
   );

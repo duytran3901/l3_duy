@@ -16,7 +16,6 @@ const SUCCESS_CODE = 200;
 
 function* createSalarySaga(action) {
   try {
-    console.log(action.payload);
     const { employeeId, data, type } = action.payload;
     const result = yield call(postData, apiSalaryURL + '?employeeId=' + employeeId, data);
     if (result?.code === SUCCESS_CODE) {
@@ -57,8 +56,6 @@ function* getSalarysByIdEmployeeSaga(action) {
   const getSalarysUrl = apiSalaryURL;
   try {
     const result = yield call(getData, getSalarysUrl, action.payload);
-    console.log('result: ' ,result.data);
-    
     if (result?.code === SUCCESS_CODE) {
       yield put(getSalarysByIdEmployee(result?.data));
     } else {
@@ -75,8 +72,6 @@ function* getSalarysByLeaderSaga() {
   const getSalarysUrl = apiSalaryURL + '/current-leader';
   try {
     const result = yield call(getData, getSalarysUrl);
-    console.log(result.data);
-    
     if (result?.code === SUCCESS_CODE) {
       yield put(getSalarysByLeader(result?.data));
     } else {
@@ -93,8 +88,6 @@ function* deleteSalarySaga(action) {
   const deleteSalaryUrl = apiSalaryURL + `/${action.payload}`;
   try {
     const result = yield call(delData, deleteSalaryUrl);
-    console.log(result);
-    
     if (result?.code === SUCCESS_CODE) {
       yield put(deleteSalary(action.payload));
       toast.success('Xóa thành công!');

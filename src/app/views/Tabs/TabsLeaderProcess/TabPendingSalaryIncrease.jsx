@@ -19,7 +19,7 @@ const TabPendingSalaryIncrease = () => {
   const employee = useSelector(state => state.employee.employee);
   const [isOpenFormSalary, setIsOpenFormSalary] = useState(false);
   const [isRegisterEmployeeDialogOpen, setIsRegisterEmployeeDialogOpen] = useState(false);
-  const [dataSelected, setDataSelected] = useState(false);
+  const [dataSelected, setDataSelected] = useState({});
   const dispatch = useDispatch();
   const dataTable = salarys?.map((salary) => ({ ...salary }));
 
@@ -29,8 +29,6 @@ const TabPendingSalaryIncrease = () => {
 
   useEffect(() => {
     updatePage();
-    console.log(dataTable);
-
   }, [page, pageSize, reload]);
 
   useEffect(() => {
@@ -79,7 +77,7 @@ const TabPendingSalaryIncrease = () => {
         setPageSize={setPageSize}
         setPage={setPage}
         rowsPerPageOptions={[1, 2, 3, 5, 10]}
-        height='calc(100vh - 356px)'
+        height='calc(100vh - 306px)'
       />
       {isOpenFormSalary && (
         <FormSalaryIncrease

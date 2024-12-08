@@ -12,6 +12,7 @@ import CustomTable from "../../components/Custom/CustomTable";
 import { CustomColumnsEmployee } from "../../components/Custom/CustomColumns";
 import { EMPLOYEE_STATUS } from "app/constants/constants";
 import RegisterEmployeeDialog from "app/views/components/Dialog/RegisterEmployeeDialog";
+import { toast } from "react-toastify";
 
 const LeaderApproved = () => {
     const [pageSize, setPageSize] = useState(10);
@@ -38,7 +39,11 @@ const LeaderApproved = () => {
     }
 
     useEffect(() => {
-        reloadTable();
+        if (searchKeyword.length <= 255) {
+            reloadTable();
+        } else {
+            toast.error('Nội dung tìm kiếm vượt quá 255 ký tự!')
+        }
     }, [searchKeyword, pageSize, page, totalElements, reload]);
 
     const handleOpenDialogView = (rowData) => {
@@ -57,7 +62,7 @@ const LeaderApproved = () => {
     const columns = CustomColumnsEmployee({ Action: actions, page, pageSize });
 
     return (
-        <div className="m-30">
+        <div className="mx-30 mt-30">
             <Grid container spacing={2} justifyContent="space-between">
                 <Grid item lg={2} md={3} sm={3} xs={12}>
                     <Input
@@ -67,7 +72,7 @@ const LeaderApproved = () => {
                             setSearchKeyword(e.target.value.toLowerCase());
                             setPage(0);
                         }}
-                        className="w-100 mb-8 mr-10"
+                        className="w-100 mb-4 mr-10"
                         id="search_box"
                         placeholder='Nhập từ khóa tìm kiếm'
                         startAdornment={
@@ -89,7 +94,7 @@ const LeaderApproved = () => {
                         setPageSize={setPageSize}
                         setPage={setPage}
                         rowsPerPageOptions={[5, 10, 20, 50, 100]}
-                        height='calc(100vh - 356px)'
+                        height='calc(100vh - 266px)'
                     />
                 </Grid>
             </Grid>

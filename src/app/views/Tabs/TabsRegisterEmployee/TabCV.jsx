@@ -6,6 +6,8 @@ import {
   TEAM,
   EMPLOYEE_STATUS,
 } from "app/constants/constants";
+import MailOutlineIcon from '@material-ui/icons/MailOutline';
+import PhoneIcon from '@material-ui/icons/Phone';
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { Button, Icon, IconButton } from "@material-ui/core";
@@ -16,6 +18,7 @@ import iconLocation from "../../../assets/images/location.png";
 import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
 import { CERTIFICATE, EMPLOYEE, EXPERIENCE } from "app/redux/actions/actions";
 import ExperienceDialog from "app/views/components/Dialog/ExperienceDialog";
+import { shorten } from "app/utilities/shorten";
 
 const TabCV = (props) => {
   const { employee } = props;
@@ -89,45 +92,13 @@ const TabCV = (props) => {
               src={employee?.image || "/assets/images/avatar.jpg"}
             />
           </div>
-          <p className="profile-email">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
-              />
-            </svg>
-            <span>{employee?.email}</span>
-          </p>
-          <p className="profile-phone">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"
-              />
-            </svg>
-            <span>{employee?.phone}</span>
-          </p>
         </div>
         <div className="cv-skills">
           <h4 className="skills-tittle">
-            kỹ năng
+            <span>kỹ năng</span>
             {ACTION_EMPLOYEE.EDIT.includes(Number(employee?.submitProfileStatus))
               && EMPLOYEE_STATUS.ADD.includes(Number(employee?.submitProfileStatus))
-              && (<IconButton size="small">
+              && (<IconButton size="small" className="px-8">
                 <Icon
                   fontSize="small"
                   color="primary"
@@ -154,22 +125,20 @@ const TabCV = (props) => {
                 <TextValidator
                   multiline
                   fullWidth
-                  className="mt-16 "
+                  className="mt-16"
                   name="skill"
                   value={employeeSkill || ""}
                   onChange={(e) => handleChange(e)}
+                  inputProps={{
+                    style: {
+                      lineHeight: "1.8",
+                      borderBottom: "1px dotted #000",
+                      paddingBottom: "4px",
+                    },
+                  }}
                 />
                 <Button
-                  className="mt-12 mr-12"
-                  size="small"
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                >
-                  Lưu
-                </Button>
-                <Button
-                  className="mt-12 color-error"
+                  className="mt-12 mr-12 color-error"
                   size="small"
                   variant="contained"
                   color="secondary"
@@ -178,6 +147,15 @@ const TabCV = (props) => {
                   }}
                 >
                   Hủy
+                </Button>
+                <Button
+                  className="mt-12"
+                  size="small"
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                >
+                  Lưu
                 </Button>
               </ValidatorForm>
             )}
@@ -192,14 +170,6 @@ const TabCV = (props) => {
                 <div className="cv-rating"></div>
                 <div className="cv-rating"></div>
                 <div className="cv-rating"></div>
-              </div>
-            </div>
-            <div className="skill-rating-content-item">
-              <span>Tiếng trung</span>
-              <div className="rating-wrapper">
-                <div className="cv-rating"></div>
-                <div className="cv-rating"></div>
-                <div className="cv-rating rating-disabled"></div>
               </div>
             </div>
           </div>
@@ -233,27 +203,25 @@ const TabCV = (props) => {
                 <li>
                   <span className="activity-day">01/2019 - 03/2022</span>
                   <br></br>
-                  <span className="activity-name">TÌNH NGUYỆN VIÊN</span>
-                  <br></br>
-                  <span className="activity-description">
-                    -Tập hợp những món quà và phân phát tới người vô gia cư.
-                    <br></br>
-                    -Chia sẻ động viên họ vượt qua giai đoạn khó khăn, giúp họ
-                    <br></br>
-                    có suy nghĩ lạc quan hươn trong cuộc sống.
+                  <span className="activity-name">
+                    TÌNH NGUYỆN VIÊN <br />
+                    TỔ CHỨC HOA PHƯỢNG ĐỎ
                   </span>
-                </li>
-                <li>
-                  <span className="activity-day">02/2019 - 05/2019</span>
                   <br></br>
-                  <span className="activity-name">TÌNH NGUYỆN VIÊN</span>
-                  <br></br>
-                  <span className="activity-description">
-                    -Tham gia đội tình nguyện dạy học cho trẻ em làng SOS- cầu
-                    giấy.
-                    <br></br>
-                    -Tham gia hiến máu 2019.
-                  </span>
+                  <ul className="activity-description">
+                    <li>
+                      <span className="activity-dot">
+                        &#x2022;
+                      </span>
+                      <span>Tập hợp những món quà và phân phát tới người vô gia cư.</span>
+                    </li>
+                    <li>
+                      <span className="activity-dot">
+                        &#x2022;
+                      </span>
+                      <span>Chia sẻ động viên họ vượt qua giai đoạn khó khăn, giúp họ có suy nghĩ lạc quan hươn trong cuộc sống.</span>
+                    </li>
+                  </ul>
                 </li>
               </ul>
             </div>
@@ -266,19 +234,31 @@ const TabCV = (props) => {
           <h4 className="job-tittle">{TEAM.find((item) => item.id === employee?.team)?.name}</h4>
         </div>
         <div className="cv-details">
-          <div className="details-gender">
+          <div className="item-detail details-gender">
             <img alt="icon" src={iconGender} />
             <span>
               {GENDER.find((item) => item.id === employee?.gender)?.name}
             </span>
           </div>
-          <div className="details-birthday">
+          <div className="item-detail details-email">
+            <span className="detail-icon">
+              <MailOutlineIcon></MailOutlineIcon>
+            </span>
+            <span>{shorten(employee?.email, 26)}</span>
+          </div>
+          <div className="item-detail details-birthday">
             <img alt="icon" src={iconCake} />
             <span>{moment(employee?.dateOfBirth).format("DD/MM/YYYY")}</span>
           </div>
-          <div className="details-address">
+          <div className="item-detail details-phone">
+            <span className="detail-icon">
+              <PhoneIcon></PhoneIcon>
+            </span>
+            <span>{employee?.phone}</span>
+          </div>
+          <div className="item-detail details-address">
             <img alt="icon" src={iconLocation} />
-            <span>{employee?.address}</span>
+            <span>{shorten(employee?.address, 140)}</span>
           </div>
         </div>
         <div className="cv-goals border-left">
@@ -286,6 +266,7 @@ const TabCV = (props) => {
           <div className="goals-layer">
             <p className="goals-content">
               <span className="goals-quotes_left">&#700;&#700;</span>
+              <br />
               Áp dụng những kinh nghiệm về kỹ năng bán hàng và sự hiểu biết về
               thị trường để trở thành một nhân viên bán hàng chuyên nghiệp, mang
               đến nhiều giá trị cho khách hàng. Từ đó giúp Công ty tăng số lượng
@@ -296,11 +277,11 @@ const TabCV = (props) => {
         </div>
         <div className="cv-experiences border-left">
           <h3 className="experiences-heading">
-            kinh nghiệm làm việc{" "}
+            <span>kinh nghiệm làm việc{" "}</span>
             <div className="button-exp">
               {ACTION_EMPLOYEE.EDIT.includes(Number(employee?.submitProfileStatus))
                 && EMPLOYEE_STATUS.ADD.includes(Number(employee?.submitProfileStatus))
-                && (<IconButton size="small">
+                && (<IconButton size="small" className="px-12 py-0">
                   <Icon
                     fontSize="small"
                     color="primary"
@@ -323,7 +304,7 @@ const TabCV = (props) => {
                       <span className="experience-dot">&#x2022;</span>
                     </span>
                     <span className="experience-company">
-                      {item?.companyName}
+                      {shorten(item?.companyName, 27)}
                     </span>
                     <span className="button-exp">
                       {" "}
@@ -356,7 +337,8 @@ const TabCV = (props) => {
                   </div>
                 </h4>
 
-                <h5 className="experience-job">Mô tả công việc</h5>
+                <h5 className="experience-job">Trưởng nhóm kinh doanh</h5>
+                {/* <h5 className="experience-job">Mô tả công việc</h5> */}
 
                 <div className="experience-list">
                   {item?.jobDescription?.split("-").map((part, index) => (
@@ -385,8 +367,7 @@ const TabCV = (props) => {
                   <span className="detail-content">
                     {typeof certificate?.issueDate
                       ? moment(certificate?.issueDate).format("YYYY")
-                      : ""}
-                    : {certificate.certificateName}
+                      : ""}: {certificate.certificateName}
                   </span>
                 </span>
               );
@@ -404,12 +385,12 @@ const TabCV = (props) => {
         />
       )}
       <ConfirmationDialog
-        open={openConfirmationDialog}
-        onYesClick={() => handleConfirmDelete(exp?.id)}
         title='Bạn có chắc chắn muốn xóa kinh nghiệm làm việc này không?'
-
-        Yes='Có'
-        No='Không'
+        open={openConfirmationDialog}
+        onConfirmDialogClose={() => setOpenConfirmationDialog(false)}
+        onYesClick={() => handleConfirmDelete(exp?.id)}
+        Yes='Xác nhận'
+        No='Hủy'
       />
     </div>
   );

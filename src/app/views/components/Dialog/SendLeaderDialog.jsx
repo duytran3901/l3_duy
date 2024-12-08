@@ -13,6 +13,7 @@ import moment from 'moment';
 import { LEADER_POSITION } from 'app/constants/constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { EMPLOYEE, LEADER } from 'app/redux/actions/actions';
+import { resetEmployee } from 'app/redux/reducers/EmployeeReducer';
 
 const SendLeaderDialog = (props) => {
   const { employee, setOpen, setOpenRegisterDialog, setOpenEditDialog, open } = props;
@@ -76,9 +77,10 @@ const SendLeaderDialog = (props) => {
         }
       })
     }
+    dispatch(resetEmployee());
     setOpen(false);
     setOpenRegisterDialog(false);
-    setOpenEditDialog(false);
+    if (setOpenEditDialog) setOpenEditDialog(false);
   };
 
   return (
@@ -89,7 +91,7 @@ const SendLeaderDialog = (props) => {
       fullWidth={true}
     >
       <DialogTitle className="mt-10">
-        <span className="h3 text-green font-weight-bold">
+        <span className="h3 text-primary font-weight-bold">
           Trình lãnh đạo
         </span>
       </DialogTitle>
@@ -175,10 +177,12 @@ const SendLeaderDialog = (props) => {
                 value={dataSendLeader?.submitContent || ''}
                 placeholder="Nội dung"
                 validators={[
-                  "required"
+                  "required",
+                  "maxStringLength:1000"
                 ]}
                 errorMessages={[
-                  "Trường này bắt buộc nhập"
+                  "Trường này bắt buộc nhập",
+                  "Nội dung không được vượt quá 1000 ký tự"
                 ]}
               />
             </Grid>
@@ -188,14 +192,12 @@ const SendLeaderDialog = (props) => {
               variant="contained"
               color="secondary"
               onClick={handleCloseDialog}
-              className="mr-12"
             >
               Hủy
             </Button>
             <Button
               variant="contained"
               color="primary"
-              className="mr-12"
               type='submit'
             >
               Trình lãnh đạo

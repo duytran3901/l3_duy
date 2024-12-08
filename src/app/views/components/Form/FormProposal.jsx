@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -14,10 +14,11 @@ import {
 import "../../../../styles/components/_form.scss";
 import moment from "moment";
 import { useDispatch } from "react-redux";
-import { SUBMIT_UPDATE_STATUS, TYPE_PROPOSAL } from "app/constants/constants";
+import { TYPE_PROPOSAL } from "app/constants/constants";
 import { PROPOSAL } from "app/redux/actions/actions";
 import UpdateEmployeeSendLeaderDialog from "../Dialog/UpdateEmployeeSendLeaderDialog";
 import LeaderActionDialog from "../Dialog/LeaderActionDialog";
+import ManageEmployeeDialog from "../Dialog/ManageEmployeeDialog";
 
 const FormProposal = (props) => {
   const {
@@ -29,23 +30,15 @@ const FormProposal = (props) => {
     action
   } = props;
   const dispatch = useDispatch();
-  // const [statusForm, setStatusForm] = useState(TYPE_ADD.index);
   const [isOpenSendLeaderDialog, setIsOpenSendLeaderDialog] = useState(false);
   const [isLeaderActionDialogOpen, setIsLeaderActionDialogOpen] = useState(false);
+  const [isLeaderViewDocumentDialogOpen, setIsLeaderViewDocumentDialogOpen] = useState(false);
   const [actionLeader, setActionLeader] = useState('');
-  const [
-    openLeaderSendNotifyProposalDialog,
-    setOpenLeaderSendNotifyProposalDialog,
-  ] = useState(false);
 
   const handleCloseDialog = () => {
     setOpen(false);
     if (resetProposal) resetProposal();
   };
-  
-  const handleCloseForm = () => {
-    setOpen(false);
-  }
 
   const handleSubmitProposal = () => {
     if (dataProposal?.id) {
@@ -71,9 +64,11 @@ const FormProposal = (props) => {
   const handleSendLeader = () => {
     setIsOpenSendLeaderDialog(true);
   };
-  const handleCloseLeaderSendNotifyProposalDialog = () => {
-    setOpenLeaderSendNotifyProposalDialog(false);
-  };
+
+  const handleLeaderClickView = () => {
+    setIsLeaderViewDocumentDialogOpen(true);
+  }
+
   const handleLeaderClickReject = () => {
     setIsLeaderActionDialogOpen(true);
     setActionLeader('reject');
@@ -88,7 +83,7 @@ const FormProposal = (props) => {
     setIsLeaderActionDialogOpen(true);
     setActionLeader('approve');
   }
-  
+
   const handleApproveProposal = (contentDialog) => {
     const updatedData = {
       ...dataProposal,
@@ -135,7 +130,7 @@ const FormProposal = (props) => {
   };
 
   return (
-    <Dialog open={open} fullWidth maxWidth="md">
+    <Dialog open={open} onClose={handleCloseDialog} fullWidth maxWidth="md">
       <DialogTitle id="draggable-dialog-title">
         <Grid container justify="space-between" alignItems="center">
           <Grid item>Đề xuất thăng chức</Grid>
@@ -307,14 +302,23 @@ const FormProposal = (props) => {
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions className="flex flex-center my-20">
+      <DialogActions className="flex flex-center my-16">
         <Button
           variant="contained"
           color="secondary"
           onClick={handleCloseDialog}
         >
-          {action === 'view' ? 'Đóng' : 'Hủy'}
+          {action === 'view' ? 'Hủy' : 'Hủy'}
         </Button>
+        {action === 'leaderProcess' && (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleLeaderClickView}
+          >
+            Xem hồ sơ
+          </Button>
+        )}
         {action === 'leaderProcess' && (
           <Button
             variant="contained"
@@ -364,7 +368,7 @@ const FormProposal = (props) => {
       {isOpenSendLeaderDialog && (
         <UpdateEmployeeSendLeaderDialog
           open={isOpenSendLeaderDialog}
-          setOpen={handleCloseDialog}
+          setOpen={setIsOpenSendLeaderDialog}
           setOpenForm={setOpen}
           employee={employee}
           data={dataProposal}
@@ -375,13 +379,20 @@ const FormProposal = (props) => {
       {isLeaderActionDialogOpen && (
         <LeaderActionDialog
           open={isLeaderActionDialogOpen}
-          employee={employee}
-          handleCloseRegisterDialog={handleCloseForm}
+          handleCloseRegisterDialog={handleCloseDialog}
           setOpen={setIsLeaderActionDialogOpen}
           action={actionLeader}
           handleApprove={handleApproveProposal}
           handleReject={handleRejectProposal}
           handleRequest={handleRequestProposal}
+        />
+      )}
+      {isLeaderViewDocumentDialogOpen && (
+        <ManageEmployeeDialog
+          open={isLeaderViewDocumentDialogOpen}
+          setOpen={setIsLeaderViewDocumentDialogOpen}
+          employee={employee}
+          type='leader'
         />
       )}
     </Dialog>

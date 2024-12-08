@@ -7,9 +7,8 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import CustomTable from "app/views/components/Custom/CustomTable";
-import { CustomColumnsProcess, CustomColumnsSalaryIncrease } from "app/views/components/Custom/CustomColumns";
+import { CustomColumnsProcess } from "app/views/components/Custom/CustomColumns";
 import { EMPLOYEE, PROCESS } from "app/redux/actions/actions";
-import FormSalaryIncrease from "app/views/components/Form/FormSalaryIncrease";
 import RegisterEmployeeDialog from "app/views/components/Dialog/RegisterEmployeeDialog";
 import FormProcess from "app/views/components/Form/FormProcess";
 
@@ -30,8 +29,6 @@ const TabPendingProcess = () => {
 
   useEffect(() => {
     updatePage();
-    console.log(dataTable);
-
   }, [page, pageSize, reload]);
 
   useEffect(() => {
@@ -80,7 +77,7 @@ const TabPendingProcess = () => {
         setPageSize={setPageSize}
         setPage={setPage}
         rowsPerPageOptions={[1, 2, 3, 5, 10]}
-        height='calc(100vh - 356px)'
+        height='calc(100vh - 306px)'
       />
       {isOpenFormProcess && (
         <FormProcess

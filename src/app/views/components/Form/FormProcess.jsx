@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -13,13 +13,14 @@ import {
 } from "@material-ui/core";
 import "../../../../styles/components/_form.scss";
 import moment from "moment";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { EMPLOYEE_POSITION, SUBMIT_UPDATE_STATUS } from "app/constants/constants";
+import { EMPLOYEE_POSITION } from "app/constants/constants";
 import UpdateEmployeeSendLeaderDialog from "../Dialog/UpdateEmployeeSendLeaderDialog";
 import { PROCESS } from "app/redux/actions/actions";
 import LeaderActionDialog from "../Dialog/LeaderActionDialog";
+import ManageEmployeeDialog from "../Dialog/ManageEmployeeDialog";
 
 toast.configure({
   autoClose: 2000,
@@ -34,51 +35,18 @@ const FormProcess = (props) => {
     employee,
     dataProcess,
     resetProcess,
-    isLeaderAction,
-    checkStatus,
-    testCheck,
     action
   } = props;
   const dispatch = useDispatch();
-  // const [statusForm, setStatusForm] = useState(TYPE_ADD.index);
   const [isOpenSendLeaderDialog, setIsOpenSendLeaderDialog] = useState(false);
   const [isLeaderActionDialogOpen, setIsLeaderActionDialogOpen] = useState(false);
+  const [isLeaderViewDocumentDialogOpen, setIsLeaderViewDocumentDialogOpen] = useState(false);
   const [actionLeader, setActionLeader] = useState('');
-  const [isProcess, setIsProcess] = useState(false);
-  const [
-    openLeaderSendNotifyProcessDialog,
-    setOpenLeaderSendNotifyProcessDialog,
-  ] = useState(false);
-  const [statusDialog, setStatusDialog] = useState();
-
-  useEffect(() => {
-    if (dataProcess?.id) {
-      // setStatusForm(TYPE_EDIT.index);
-    } else {
-      // setStatusForm(TYPE_ADD.index);
-    }
-  }, [dataProcess]);
-
-  const handleAddProcess = () => {
-    const data = {
-      id: employee?.id,
-      data: [{ ...dataProcess }],
-    };
-    if (!checkStatus) {
-      // dispatch(addProcessActionRequest(data));
-    } else {
-      toast.error("Đang trong quá trình duyệt không thể thêm bản ghi!");
-    }
-  };
 
   const handleCloseDialog = () => {
     setOpen(false);
     if (resetProcess) resetProcess();
   };
-
-  const handleCloseForm = () => {
-    setOpen(false);
-  }
 
   const handleSubmitProcess = () => {
     if (dataProcess?.id) {
@@ -102,11 +70,12 @@ const FormProcess = (props) => {
   };
   const handleSendLeader = () => {
     setIsOpenSendLeaderDialog(true);
-    setIsProcess(true);
   };
-  const handleCloseLeaderSendNotifyProcessDialog = () => {
-    setOpenLeaderSendNotifyProcessDialog(false);
-  };
+
+  const handleLeaderClickView = () => {
+    setIsLeaderViewDocumentDialogOpen(true);
+  }
+
   const handleLeaderClickReject = () => {
     setIsLeaderActionDialogOpen(true);
     setActionLeader('reject');
@@ -168,7 +137,7 @@ const FormProcess = (props) => {
   };
 
   return (
-    <Dialog open={open} fullWidth maxWidth="md">
+    <Dialog open={open} onClose={handleCloseDialog} fullWidth maxWidth="md">
       <DialogTitle id="draggable-dialog-title">
         <Grid container justify="space-between" alignItems="center">
           <Grid item>Đề xuất thăng chức</Grid>
@@ -393,14 +362,23 @@ const FormProcess = (props) => {
           </Box>
         </Box>
       </DialogContent>
-      <DialogActions className="flex flex-center my-20">
+      <DialogActions className="flex flex-center my-16">
         <Button
           variant="contained"
           color="secondary"
           onClick={handleCloseDialog}
         >
-          {action === 'view' ? 'Đóng' : 'Hủy'}
+          {action === 'view' ? 'Hủy' : 'Hủy'}
         </Button>
+        {action === 'leaderProcess' && (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleLeaderClickView}
+          >
+            Xem hồ sơ
+          </Button>
+        )}
         {action === 'leaderProcess' && (
           <Button
             variant="contained"
@@ -450,7 +428,7 @@ const FormProcess = (props) => {
       {isOpenSendLeaderDialog && (
         <UpdateEmployeeSendLeaderDialog
           open={isOpenSendLeaderDialog}
-          setOpen={handleCloseDialog}
+          setOpen={setIsOpenSendLeaderDialog}
           setOpenForm={setOpen}
           employee={employee}
           data={dataProcess}
@@ -461,13 +439,20 @@ const FormProcess = (props) => {
       {isLeaderActionDialogOpen && (
         <LeaderActionDialog
           open={isLeaderActionDialogOpen}
-          employee={employee}
-          handleCloseRegisterDialog={handleCloseForm}
+          handleCloseRegisterDialog={handleCloseDialog}
           setOpen={setIsLeaderActionDialogOpen}
           action={actionLeader}
           handleApprove={handleApproveProcess}
           handleReject={handleRejectProcess}
           handleRequest={handleRequestProcess}
+        />
+      )}
+      {isLeaderViewDocumentDialogOpen && (
+        <ManageEmployeeDialog
+          open={isLeaderViewDocumentDialogOpen}
+          setOpen={setIsLeaderViewDocumentDialogOpen}
+          employee={employee}
+          type='leader'
         />
       )}
     </Dialog>

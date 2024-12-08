@@ -16,7 +16,6 @@ const SUCCESS_CODE = 200;
 
 function* createProcessSaga(action) {
   try {
-    console.log(action.payload);
     const { employeeId, data, type } = action.payload;
     const result = yield call(postData, apiProcessURL + '?employeeId=' + employeeId, data);
     if (result?.code === SUCCESS_CODE) {
@@ -57,8 +56,6 @@ function* getProcesssByIdEmployeeSaga(action) {
   const getProcessListUrl = apiProcessURL;
   try {
     const result = yield call(getData, getProcessListUrl, action.payload);
-    console.log('result: ', result);
-
     if (result?.code === SUCCESS_CODE) {
       yield put(getProcessListByIdEmployee(result?.data));
     } else {
@@ -75,8 +72,6 @@ function* getProcesssByLeaderSaga() {
   const getProcesssUrl = apiProcessURL + '/current-leader';
   try {
     const result = yield call(getData, getProcesssUrl);
-    console.log(result.data);
-
     if (result?.code === SUCCESS_CODE) {
       yield put(getProcessListByLeader(result?.data));
     } else {
@@ -93,8 +88,6 @@ function* deleteProcessSaga(action) {
   const deleteProcessUrl = apiProcessURL + `/${action.payload}`;
   try {
     const result = yield call(delData, deleteProcessUrl);
-    console.log(result);
-
     if (result?.code === SUCCESS_CODE) {
       yield put(deleteProcess(action.payload));
       toast.success('Xóa thành công!');

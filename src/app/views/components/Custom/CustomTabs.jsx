@@ -19,7 +19,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box p={1}>
+        <Box p={0}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -61,6 +61,13 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     maxWidth: '75vw',
     padding: theme.spacing(3),
+    backgroundColor: '#ededed',
+    overflowY: 'auto',
+  },
+  tabPanelVertical: {
+    width: '100%',
+    maxWidth: '75vw',
+    padding: 0,
     backgroundColor: '#ededed',
     overflowY: 'auto',
   },
@@ -125,7 +132,7 @@ export const VerticalCustomTab = (props) => {
           <Tab key={index} label={tab.label} {...a11yPropsVertical(index)} disabled={tab.disabled} />
         ))}
       </Tabs>
-      <div className={classes.tabPanel}>
+      <div className={classes.tabPanelVertical}>
         {tabs.map((tab, index) => (
           <TabPanel key={index} value={value} index={index} dir={theme.direction}>
             {tab.content}

@@ -30,8 +30,6 @@ function* getLeaderByIdSaga(action) {
   const url = apiLeaderURL + `${action.payload}`;
   try {
     const result = yield call(getData, url);
-    console.log(result);
-
     if (result?.code === SUCCESS_CODE) {
       yield put(getLeaderById(result?.data));
     } else {

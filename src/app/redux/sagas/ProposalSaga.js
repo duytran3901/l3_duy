@@ -16,11 +16,8 @@ const SUCCESS_CODE = 200;
 
 function* createProposalSaga(action) {
   try {
-    console.log(action.payload);
     const { employeeId, data, type } = action.payload;
     const result = yield call(postData, apiProposalURL + '?employeeId=' + employeeId, data);
-    console.log(result);
-
     if (result?.code === SUCCESS_CODE) {
       yield put(createProposal(result?.data));
       if (type) {
@@ -59,8 +56,6 @@ function* getProposalsByIdEmployeeSaga(action) {
   const getProposalsUrl = apiProposalURL;
   try {
     const result = yield call(getData, getProposalsUrl, action.payload);
-    console.log('result: ', result.data);
-
     if (result?.code === SUCCESS_CODE) {
       yield put(getProposalsByIdEmployee(result?.data));
     } else {
@@ -77,8 +72,6 @@ function* getProposalsByLeaderSaga() {
   const getProposalsUrl = apiProposalURL + '/current-leader';
   try {
     const result = yield call(getData, getProposalsUrl);
-    console.log(result.data);
-
     if (result?.code === SUCCESS_CODE) {
       yield put(getProposalsByLeader(result?.data));
     } else {
@@ -95,8 +88,6 @@ function* deleteProposalSaga(action) {
   const deleteProposalUrl = apiProposalURL + `/${action.payload}`;
   try {
     const result = yield call(delData, deleteProposalUrl);
-    console.log(result);
-
     if (result?.code === SUCCESS_CODE) {
       yield put(deleteProposal(action.payload));
       toast.success('Xóa thành công!');

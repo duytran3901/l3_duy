@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -7,8 +7,6 @@ import {
   DialogContent,
   Grid,
 } from "@material-ui/core";
-import { useDispatch } from "react-redux";
-import { EMPLOYEE } from '../../../redux/actions/actions'
 import moment from "moment/moment";
 import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
 
@@ -17,14 +15,11 @@ const LeaderActionDialog = (props) => {
     open,
     handleCloseRegisterDialog,
     action,
-    employee,
     setOpen,
     handleApprove,
     handleReject,
     handleRequest,
-
   } = props;
-  const dispatch = useDispatch();
   const [contentDialog, setContentDialog] = useState({
     title: "",
     type: "",
@@ -99,7 +94,7 @@ const LeaderActionDialog = (props) => {
       fullWidth={true}
     >
       <DialogTitle className="mt-10">
-        <span className="h3 text-green font-weight-bold">
+        <span className="h3 text-primary font-weight-bold">
           {contentDialog.title}
         </span>
       </DialogTitle>
@@ -143,10 +138,12 @@ const LeaderActionDialog = (props) => {
                 value={contentDialog?.content || ''}
                 placeholder="Nội dung"
                 validators={[
-                  "required"
+                  "required",
+                  "maxStringLength:1000"
                 ]}
                 errorMessages={[
-                  "Trường này bắt buộc nhập"
+                  "Trường này bắt buộc nhập",
+                  "Nội dung không được vượt quá 1000 ký tự"
                 ]}
                 inputProps={{
                   min: contentDialog?.content ? moment(contentDialog?.content).format("YYYY-MM-DD") : moment().format("YYYY-MM-DD")
@@ -159,14 +156,12 @@ const LeaderActionDialog = (props) => {
               variant="contained"
               color="secondary"
               onClick={handleCloseLeaderActionDialog}
-              className="mr-12"
             >
               Hủy
             </Button>
             <Button
               variant="contained"
               color="primary"
-              className="mr-12"
               type='submit'
             >
               Lưu

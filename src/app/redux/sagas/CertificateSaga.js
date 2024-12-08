@@ -16,11 +16,8 @@ const SUCCESS_CODE = 200;
 
 function* createCertificateSaga(action) {
   try {
-    console.log(action.payload);
     const { employeeId, data } = action.payload
     const result = yield call(postData, apiCertificateURL + '?employeeId=' + employeeId, data);
-    console.log(result);
-    
     if (result?.code === SUCCESS_CODE) {
       yield put(createCertificate(result?.data));
       toast.success('Thêm thành công!');
@@ -55,8 +52,6 @@ function* getCertificatesByIdEmployeeSaga(action) {
   const getCertificatesUrl = apiCertificateURL;
   try {
     const result = yield call(getData, getCertificatesUrl, action.payload);
-    console.log(result.data);
-    
     if (result?.code === SUCCESS_CODE) {
       yield put(getCertificatesByIdEmployee(result?.data));
     } else {
@@ -73,8 +68,6 @@ function* deleteCertificateSaga(action) {
   const deleteCertificateUrl = apiCertificateURL + `/${action.payload}`;
   try {
     const result = yield call(delData, deleteCertificateUrl);
-    console.log(result);
-    
     if (result?.code === SUCCESS_CODE) {
       yield put(deleteCertificate(action.payload));
       toast.success('Xóa thành công!');
