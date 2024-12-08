@@ -34,14 +34,14 @@ const TabProposal = (props) => {
     currentPosition: 1
   });
   const [proposalSelected, setProposalSelected] = useState({});
-  const { proposals, totalElements, reload } = useSelector(state => state.proposal);
+  const { proposalsByIdEmployee, totalElementsByIdEmployee, reload } = useSelector(state => state.proposal);
   const [isOpenFormProposal, setIsOpenFormProposal] = useState(false);
   const [isConfirmDeleteProposalOpen, setIsConfirmDeleteProposalOpen] = useState(false);
   const [isNotificationDialogOpen, setIsNotificationDialogOpen] = useState(false);
   const [idProposalDelete, setIdProposalDelete] = useState(0);
   const [action, setAction] = useState('');
   const dispatch = useDispatch();
-  const dataTable = proposals?.map((proposal) => ({ ...proposal }));
+  const dataTable = proposalsByIdEmployee?.map((proposal) => ({ ...proposal }));
 
   const updatePage = () => {
     if (employee?.id) {
@@ -64,14 +64,14 @@ const TabProposal = (props) => {
   }, [proposal?.oldProposal]);
 
   useEffect(() => {
-    const oldProposal = proposals.find((item) => item.proposalStatus === 3);
+    const oldProposal = proposalsByIdEmployee.find((item) => item.proposalStatus === 3);
     if (oldProposal) {
       setProposal({
         ...proposal,
         currentPosition: oldProposal.newPosition
       })
     }
-  }, [proposals]);
+  }, [proposalsByIdEmployee]);
 
 
   const resetProposal = () => {
@@ -110,6 +110,7 @@ const TabProposal = (props) => {
 
   const handleViewFormProposal = (rowData) => {
     setProposalSelected(rowData);
+    setProposal(rowData);
     setIsOpenFormProposal(true);
     setAction('view');
   };
@@ -348,9 +349,9 @@ const TabProposal = (props) => {
       )}
       <div className="mt-6">
         <CustomTable
-          data={totalElements <= pageSize ? dataTable : dataTable.slice(page * pageSize, page * pageSize + pageSize)}
+          data={totalElementsByIdEmployee <= pageSize ? dataTable : dataTable.slice(page * pageSize, page * pageSize + pageSize)}
           columns={columns}
-          total={totalElements}
+          total={totalElementsByIdEmployee}
           pageSize={pageSize}
           page={page}
           setPageSize={setPageSize}

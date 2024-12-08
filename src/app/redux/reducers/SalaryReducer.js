@@ -2,8 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   salarys: [],
+  salarysByIdEmployee: [],
   salary: null,
   totalElements: 0,
+  totalElementsByIdEmployee: 0,
   reload: false
 };
 
@@ -12,8 +14,8 @@ const SalarySlice = createSlice({
   initialState,
   reducers: {
     getSalarysByIdEmployee: (state, action) => {
-      state.salarys = action.payload;
-      state.totalElements = action.payload.length;
+      state.salarysByIdEmployee = action.payload;
+      state.totalElementsByIdEmployee = action.payload.length;
     },
     getSalarysByLeader: (state, action) => {
       state.salarys = action.payload;

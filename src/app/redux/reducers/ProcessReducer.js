@@ -2,8 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   processList: [],
+  processListByIdEmployee: [],
   process: null,
   totalElements: 0,
+  totalElementsByIdEmployee: 0,
   reload: false
 };
 
@@ -12,8 +14,8 @@ const ProcessSlice = createSlice({
   initialState,
   reducers: {
     getProcessListByIdEmployee: (state, action) => {
-      state.processList = action.payload;
-      state.totalElements = action.payload.length;
+      state.processListByIdEmployee = action.payload;
+      state.totalElementsByIdEmployee = action.payload.length;
     },
     getProcessListByLeader: (state, action) => {
       state.processList = action.payload;

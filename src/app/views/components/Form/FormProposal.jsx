@@ -133,7 +133,7 @@ const FormProposal = (props) => {
     <Dialog open={open} onClose={handleCloseDialog} fullWidth maxWidth="md">
       <DialogTitle id="draggable-dialog-title">
         <Grid container justify="space-between" alignItems="center">
-          <Grid item>Đề xuất thăng chức</Grid>
+          <Grid item>Đề xuất</Grid>
           <Grid item>
             <IconButton onClick={handleCloseDialog}>
               <Icon color="secondary">close</Icon>

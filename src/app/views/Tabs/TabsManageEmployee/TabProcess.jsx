@@ -33,7 +33,7 @@ const TabProcess = (props) => {
     promotionDay: moment().format("YYYY-MM-DD"),
     currentPosition: 1
   });
-  const { processList, totalElements, reload } = useSelector(state => state.process);
+  const { processListByIdEmployee, totalElementsByIdEmployee, reload } = useSelector(state => state.process);
   const [isOpenFormProcess, setIsOpenFormProcess] = useState(false);
   const [isConfirmDeleteProcessOpen, setIsConfirmDeleteProcessOpen] = useState(false);
   const [isNotificationDialogOpen, setIsNotificationDialogOpen] = useState(false);
@@ -41,7 +41,7 @@ const TabProcess = (props) => {
   const [idProcessDelete, setIdProcessDelete] = useState(0);
   const [action, setAction] = useState('');
   const dispatch = useDispatch();
-  const dataTable = processList?.map((process) => ({ ...process }));
+  const dataTable = processListByIdEmployee?.map((process) => ({ ...process }));
 
   const updatePage = () => {
     if (employee?.id) {
@@ -64,7 +64,7 @@ const TabProcess = (props) => {
   }, [process?.currentPosition]);
 
   useEffect(() => {
-    const oldProcess = processList.find((item) => item.processStatus === '3');
+    const oldProcess = processListByIdEmployee.find((item) => item.processStatus === '3');
     if (oldProcess) {
       setProcess({
         ...process,
@@ -76,7 +76,7 @@ const TabProcess = (props) => {
         currentPosition: 1
       });
     }
-  }, [processList]);
+  }, [processListByIdEmployee]);
 
 
   const resetProcess = () => {
@@ -119,6 +119,7 @@ const TabProcess = (props) => {
 
   const handleViewFormProcess = (rowData) => {
     setProcessSelected(rowData);
+    setProcess(rowData);
     setIsOpenFormProcess(true);
     setAction('view');
   };
@@ -328,9 +329,9 @@ const TabProcess = (props) => {
       )}
       <div className="mt-6">
         <CustomTable
-          data={totalElements <= pageSize ? dataTable : dataTable.slice(page * pageSize, page * pageSize + pageSize)}
+          data={totalElementsByIdEmployee <= pageSize ? dataTable : dataTable.slice(page * pageSize, page * pageSize + pageSize)}
           columns={columns}
-          total={totalElements}
+          total={totalElementsByIdEmployee}
           pageSize={pageSize}
           page={page}
           setPageSize={setPageSize}

@@ -2,8 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   proposals: [],
+  proposalsByIdEmployee: [],
   proposal: null,
   totalElements: 0,
+  totalElementsByIdEmployee: 0,
   reload: false
 };
 
@@ -12,8 +14,8 @@ const ProposalSlice = createSlice({
   initialState,
   reducers: {
     getProposalsByIdEmployee: (state, action) => {
-      state.proposals = action.payload;
-      state.totalElements = action.payload.length;
+      state.proposalsByIdEmployee = action.payload;
+      state.totalElementsByIdEmployee = action.payload.length;
     },
     getProposalsByLeader: (state, action) => {
       state.proposals = action.payload;

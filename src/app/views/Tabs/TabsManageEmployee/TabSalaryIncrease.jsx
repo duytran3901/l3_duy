@@ -33,7 +33,7 @@ const TabSalaryIncrease = (props) => {
     startDate: moment().format("YYYY-MM-DD"),
     oldSalary: 0,
   });
-  const { salarys, totalElements, reload } = useSelector(state => state.salary);
+  const { salarysByIdEmployee, totalElementsByIdEmployee, reload } = useSelector(state => state.salary);
   const [isOpenFormSalary, setIsOpenFormSalary] = useState(false);
   const [isConfirmDeleteSalaryOpen, setIsConfirmDeleteSalaryOpen] = useState(false);
   const [isNotificationDialogOpen, setIsNotificationDialogOpen] = useState(false);
@@ -41,7 +41,7 @@ const TabSalaryIncrease = (props) => {
   const [idSalaryDelete, setIdSalaryDelete] = useState(0);
   const [action, setAction] = useState('');
   const dispatch = useDispatch();
-  const dataTable = salarys?.map((salary) => ({ ...salary }));
+  const dataTable = salarysByIdEmployee?.map((salary) => ({ ...salary }));
 
   const updatePage = () => {
     if (employee?.id) {
@@ -64,7 +64,7 @@ const TabSalaryIncrease = (props) => {
   }, [salary?.oldSalary]);
 
   useEffect(() => {
-    const oldSalary = salarys.find((item) => item.salaryIncreaseStatus === 3);
+    const oldSalary = salarysByIdEmployee.find((item) => item.salaryIncreaseStatus === 3);
     if (oldSalary) {
       setSalary({
         ...salary,
@@ -76,7 +76,7 @@ const TabSalaryIncrease = (props) => {
         oldSalary: 0
       });
     }
-  }, [salarys]);
+  }, [salarysByIdEmployee]);
 
 
   const resetSalary = () => {
@@ -111,13 +111,8 @@ const TabSalaryIncrease = (props) => {
     }
   };
 
-  const handleOpenDialogFormSalary = (rowData) => {
-    setSalary(rowData);
-    setIsOpenFormSalary(true);
-    setAction('sendLeader')
-  };
-
   const handleViewFormSalary = (rowData) => {
+    setSalary(rowData);
     setSalarySelected(rowData);
     setIsOpenFormSalary(true);
     setAction('view');
@@ -141,7 +136,8 @@ const TabSalaryIncrease = (props) => {
   }
 
   const handleSubmit = () => {
-    handleOpenDialogFormSalary();
+    setIsOpenFormSalary(true);
+    setAction('sendLeader');
     setSalary(salary);
   };
 
@@ -357,9 +353,9 @@ const TabSalaryIncrease = (props) => {
       )}
       <div className="mt-6">
         <CustomTable
-          data={totalElements <= pageSize ? dataTable : dataTable.slice(page * pageSize, page * pageSize + pageSize)}
+          data={totalElementsByIdEmployee <= pageSize ? dataTable : dataTable.slice(page * pageSize, page * pageSize + pageSize)}
           columns={columns}
-          total={totalElements}
+          total={totalElementsByIdEmployee}
           pageSize={pageSize}
           page={page}
           setPageSize={setPageSize}
