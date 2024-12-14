@@ -25,17 +25,17 @@ const ProposalSlice = createSlice({
       state.proposal = action.payload;
     },
     createProposal: (state, action) => {
-      state.proposals = [...action.payload, ...state.proposals];
-      state.totalElements = state.totalElements + 1;
+      state.proposalsByIdEmployee = [...action.payload, ...state.proposalsByIdEmployee];
+      state.totalElementsByIdEmployee = state.totalElementsByIdEmployee + 1;
     },
     editProposal: (state, action) => {
-      const index = state.proposals.findIndex(proposal => proposal.id === action.payload.id);
-      state.proposals.splice(index, 1, action.payload);
+      const index = state.proposalsByIdEmployee.findIndex(proposal => proposal.id === action.payload.id);
+      state.proposalsByIdEmployee.splice(index, 1, action.payload);
       state.reload = !state.reload;
     },
     deleteProposal: (state, action) => {
       state.reload = !state.reload;
-      state.totalElements = state.totalElements - 1;
+      state.totalElementsByIdEmployee = state.totalElementsByIdEmployee - 1;
     }
   },
 });

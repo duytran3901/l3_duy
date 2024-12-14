@@ -111,12 +111,6 @@ const TabProcess = (props) => {
     }
   };
 
-  const handleOpenDialogFormProcess = (rowData) => {
-    setProcess(rowData);
-    setIsOpenFormProcess(true);
-    setAction('sendLeader');
-  };
-
   const handleViewFormProcess = (rowData) => {
     setProcessSelected(rowData);
     setProcess(rowData);
@@ -142,8 +136,14 @@ const TabProcess = (props) => {
   }
 
   const handleSubmit = () => {
-    handleOpenDialogFormProcess();
-    setProcess(process);
+    let processPendingApprove = processListByIdEmployee?.find(item => item?.processStatus === '2');
+    if (!processPendingApprove) {
+      setIsOpenFormProcess(true);
+      setAction('sendLeader');
+      setProcess(process);
+    } else {
+      toast.error('Có bản ghi đang chờ duyệt. Không thể tạo thêm!');
+    }
   };
 
   const Action = ({ rowData }) => {

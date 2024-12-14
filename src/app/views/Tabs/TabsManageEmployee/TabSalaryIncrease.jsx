@@ -136,9 +136,14 @@ const TabSalaryIncrease = (props) => {
   }
 
   const handleSubmit = () => {
-    setIsOpenFormSalary(true);
-    setAction('sendLeader');
-    setSalary(salary);
+    let salaryPendingApprove = salarysByIdEmployee?.find(item => item?.salaryIncreaseStatus === 2);
+    if (!salaryPendingApprove) {
+      setIsOpenFormSalary(true);
+      setAction('sendLeader');
+      setSalary(salary);
+    } else {
+      toast.error('Có bản ghi đang chờ duyệt. Không thể tạo thêm!');
+    }
   };
 
   const Action = ({ rowData }) => {

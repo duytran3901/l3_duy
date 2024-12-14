@@ -209,6 +209,10 @@
   border-radius: 50%;
   background-color: #888888;
 }
+.item-detail .detail-icon svg {
+  width: 40px;
+  height: 30px;
+}
 .cv-goals {
   position: relative;
   padding: 0px 0 0 35px;
@@ -304,7 +308,7 @@
   max-width: 40%;
   text-overflow: ellipsis;
   overflow: hidden;
-  vertical-align: bottom;
+  vertical-align: top;
   margin-left: 18px;
   transform: scaleX(1.19);
   transform-origin: left;

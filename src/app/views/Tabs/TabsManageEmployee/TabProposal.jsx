@@ -99,13 +99,7 @@ const TabProposal = (props) => {
   };
 
   const handleEditProposal = (rowData) => {
-      setProposal(rowData);
-  };
-
-  const handleOpenDialogFormProposal = (rowData) => {
     setProposal(rowData);
-    setIsOpenFormProposal(true);
-    setAction('sendLeader');
   };
 
   const handleViewFormProposal = (rowData) => {
@@ -133,8 +127,14 @@ const TabProposal = (props) => {
   }
 
   const handleSubmit = () => {
-    handleOpenDialogFormProposal();
-    setProposal(proposal);
+    let proposalPendingApprove = proposalsByIdEmployee?.find(item => item?.proposalStatus === 2 && item?.type === proposal?.type);
+    if (!proposalPendingApprove) {
+      setIsOpenFormProposal(true);
+      setAction('sendLeader');
+      setProposal(proposal);
+    } else {
+      toast.error('Đã có loại đề xuất này đang chờ duyệt. Không thể tạo thêm!');
+    }
   };
 
   const Action = ({ rowData }) => {

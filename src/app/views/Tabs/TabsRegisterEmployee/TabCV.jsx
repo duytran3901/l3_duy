@@ -18,7 +18,7 @@ import iconLocation from "../../../assets/images/location.png";
 import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
 import { CERTIFICATE, EMPLOYEE, EXPERIENCE } from "app/redux/actions/actions";
 import ExperienceDialog from "app/views/components/Dialog/ExperienceDialog";
-import { shorten } from "app/utilities/shorten";
+import { wrapText } from "app/utilities/wrapText";
 
 const TabCV = (props) => {
   const { employee } = props;
@@ -234,10 +234,10 @@ const TabCV = (props) => {
             </span>
           </div>
           <div className="item-detail details-email">
-            <span className="detail-icon">
+            <div className="detail-icon">
               <MailOutlineIcon></MailOutlineIcon>
-            </span>
-            <span>{shorten(employee?.email, 26)}</span>
+            </div>
+            <span>{wrapText(employee?.email, 27)}</span>
           </div>
           <div className="item-detail details-birthday">
             <img alt="icon" src={iconCake} />
@@ -251,7 +251,7 @@ const TabCV = (props) => {
           </div>
           <div className="item-detail details-address">
             <img alt="icon" src={iconLocation} />
-            <span>{shorten(employee?.address, 140)}</span>
+            <span>{employee?.address}</span>
           </div>
         </div>
         <div className="cv-goals border-left">
@@ -297,7 +297,7 @@ const TabCV = (props) => {
                       <span className="experience-dot">&#x2022;</span>
                     </span>
                     <span className="experience-company">
-                      {shorten(item?.companyName, 27)}
+                      {item?.companyName}
                     </span>
                     <span className="button-exp">
                       {" "}

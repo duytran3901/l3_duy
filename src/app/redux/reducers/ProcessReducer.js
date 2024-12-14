@@ -25,17 +25,17 @@ const ProcessSlice = createSlice({
       state.process = action.payload;
     },
     createProcess: (state, action) => {
-      state.processList = [...action.payload, ...state.processList];
-      state.totalElements = state.totalElements + 1;
+      state.processListByIdEmployee = [...action.payload, ...state.processListByIdEmployee];
+      state.totalElementsByIdEmployee = state.totalElementsByIdEmployee + 1;
     },
     editProcess: (state, action) => {
-      const index = state.processList.findIndex(process => process.id === action.payload.id);
-      state.processList.splice(index, 1, action.payload);
+      const index = state.processListByIdEmployee.findIndex(process => process.id === action.payload.id);
+      state.processListByIdEmployee.splice(index, 1, action.payload);
       state.reload = !state.reload;
     },
     deleteProcess: (state, action) => {
       state.reload = !state.reload;
-      state.totalElements = state.totalElements - 1;
+      state.totalElementsByIdEmployee = state.totalElementsByIdEmployee - 1;
     }
   },
 });

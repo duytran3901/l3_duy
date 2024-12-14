@@ -25,17 +25,18 @@ const SalarySlice = createSlice({
       state.salary = action.payload;
     },
     createSalary: (state, action) => {
-      state.salarys = [...action.payload, ...state.salarys];
+      state.salarysByIdEmployee = [...action.payload, ...state.salarysByIdEmployee];
       state.totalElements = state.totalElements + 1;
+      state.totalElementsByIdEmployee = state.totalElementsByIdEmployee + 1;
     },
     editSalary: (state, action) => {
-      const index = state.salarys.findIndex(salary => salary.id === action.payload.id);
-      state.salarys.splice(index, 1, action.payload);
+      const index = state.salarysByIdEmployee.findIndex(salary => salary.id === action.payload.id);
+      state.salarysByIdEmployee.splice(index, 1, action.payload);
       state.reload = !state.reload;
     },
     deleteSalary: (state, action) => {
       state.reload = !state.reload;
-      state.totalElements = state.totalElements - 1;
+      state.totalElementsByIdEmployee = state.totalElementsByIdEmployee - 1;
     }
   },
 });

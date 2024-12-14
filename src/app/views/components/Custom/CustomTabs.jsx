@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
   tabPanelVertical: {
     width: '100%',
     maxWidth: '75vw',
-    padding: 0,
+    padding: '20px',
     backgroundColor: '#ededed',
     overflowY: 'auto',
   },
