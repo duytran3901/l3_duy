@@ -194,12 +194,12 @@ const TabEmployee = (props) => {
                   validators={[
                     "required",
                     "matchRegexp:^[^0-9!@#\$%\^\&*\)\(+=._-]+$",
-                    "maxStringLength:100"
+                    "maxStringLength:50"
                   ]}
                   errorMessages={[
                     "Trường này bắt buộc nhập",
                     "Tên chỉ chứa chữ cái",
-                    "Tên không được vượt quá 100 ký tự"
+                    "Tên không được vượt quá 50 ký tự"
                   ]}
                 />
               </Grid>

@@ -39,6 +39,9 @@ const CustomTable = (props) => {
           },
           cellStyle: {
             padding: "8px 12px",
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
             border: "1px solid #e6e6e6",
             height: "46px"
           },
