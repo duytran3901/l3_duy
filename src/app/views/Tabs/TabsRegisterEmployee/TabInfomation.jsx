@@ -46,13 +46,13 @@ const TabInformation = (props) => {
           <h4 className="information-heading">I. Thông tin bản thân</h4>
           <div className="information-details">
             <Grid container spacing={2}>
-              <Grid item md={8} lg={8} sm={8} className="detail">
+              <Grid item md={9} lg={9} sm={9} className="detail">
                 <span className="detail-tittle">1. Họ và tên nhân viên:</span>
                 <span className="detail-content underline-dashed">
                   {employee?.name}
                 </span>
               </Grid>
-              <Grid item md={4} lg={4} sm={4} className="detail">
+              <Grid item md={3} lg={3} sm={3} className="detail">
                 <span className="detail-tittle">2. Giới tính:</span>
                 <span className="detail-content underline-dashed">
                   {GENDER.find((gender) => gender.id === employee?.gender)
